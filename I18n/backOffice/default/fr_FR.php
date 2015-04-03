@@ -34,5 +34,6 @@ return array(
     'Please wait ...' => 'Veuillez patienter ...',
     'No results found for your search.' => 'Aucun resultat trouvé pour votre recherche.',
     'Search' => 'Rechercher',
-    'Title, Ref ...' => 'Titre, Ref ...'
+    'Title, Ref ...' => 'Titre, Ref ...',
+    'For questions or bug reporting, thank you to use %url.' => "Pour toutes questions ou déclaration de bug, merci d'utiliser %url",
 );
