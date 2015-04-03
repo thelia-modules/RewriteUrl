@@ -1,0 +1,119 @@
+<script>
+  (function($, $module){
+
+    var i18n = {
+      category: "{intl l="Category"}",
+      product: "{intl l="Product"}",
+      brand: "{intl l="Brand"}",
+      folder: "{intl l="Folder"}",
+      content: "{intl l="content"}"
+    };
+
+    /*****************************************/
+    /*********** Action reassign *************/
+    /*****************************************/
+    var $modalSearch = $module.find('.js-modal-search');
+    var $modalSearchLoader = $modalSearch.find('.js-loader');
+
+    $module.on('click', '.js-action-reassign', function(event){
+      event.preventDefault();
+      $modalSearch.find('.js-input-url-id').val($(this).data('id'));
+      $modalSearch.modal('show');
+    });
+
+    $modalSearch.on('submit', '.js-form-search', function(event){
+      event.preventDefault();
+    });
+
+    var searchTimer = null;
+    $modalSearch.on('keyup' ,'.js-input-search', function(){
+      var val = $(this).val();
+
+      if (searchTimer !== null) {
+        clearTimeout(searchTimer)
+      }
+
+      $modalSearch.find('.js-alert-no-result').addClass('hide');
+
+      if (val.length > 3) {
+        $modalSearchLoader.removeClass('hide');
+
+        searchTimer = setTimeout(function(elem) {
+          $.ajax({
+            url: '{url path="/admin/module/rewriteurl/search"}',
+            data: {
+              q: val
+            },
+            dataType: 'json',
+            method: 'GET',
+            success: function(data) {
+              $modalSearchLoader.addClass('hide');
+              var options = [];
+              for (var type in data) {
+                options.push('<optgroup label="' + i18n[type] + '">');
+                for (var id in data[type]) {
+                  options.push('<option value="' + id + '::' + type +'">' + data[type][id] + '</option>');
+                }
+                options.push('</optgroup>');
+              }
+
+              if (options.length > 0) {
+                $modalSearch.find(".js-block-search-result select").html(options.join(''));
+                $modalSearch.find('.js-block-search-result').removeClass('hide');
+              } else {
+                this.error();
+              }
+            },
+            error: function() {
+              $modalSearchLoader.addClass('hide');
+
+              $modalSearch.find('.js-block-search-result').addClass('hide');
+              $modalSearch.find('.js-alert-no-result').removeClass('hide');
+            }
+          });
+        }, 350, this);
+      } else {
+        $modalSearchLoader.addClass('hide');
+        $modalSearch.find('.js-block-search-result').addClass('hide');
+      }
+    });
+
+    $modalSearch.on('change' ,".js-block-search-result select", function(event){
+      $modalSearch.find('.js-input-reassign').val($(this).val());
+    });
+
+    /*****************************************/
+    /************ Action delete **************/
+    /*****************************************/
+
+    $module.on('click', '.js-action-delete', function(){
+      $module.find('.js-input-delete').val($(this).data('id'));
+    });
+
+    /*****************************************/
+    /************ Action default *************/
+    /*****************************************/
+
+    $module.on('click', '.js-action-add', function(event) {
+      event.preventDefault();
+      $module.find('.js-alert-error').addClass('hide');
+
+      var val = $module.find('.js-input-url-add').val();
+      if (val !== "") {
+        $.get('{url path="/admin/module/rewriteurl/exist"}', {
+          q : val
+        }, function(data) {
+          if (data == false){
+            $module.find('.js-form-add').submit();
+          } else {
+            var reassignLink = "<a href='"+data.reassignUrl+"&current_tab=modules'>{intl l='link'}</a>";
+            $module.find('.js-alert-error')
+                    .removeClass('hide')
+                    .html("{intl l='Error this url already exist you can reassign by follow this '}"+reassignLink);
+          }
+        });
+      }
+    });
+
+  }(jQuery, jQuery("#module-RewriteUrl")));
+</script>

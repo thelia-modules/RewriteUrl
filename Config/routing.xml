@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<routes xmlns="http://symfony.com/schema/routing"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://symfony.com/schema/routing http://symfony.com/schema/routing/routing-1.0.xsd">
+
+    <route id="rewrite.url.delete" path="/admin/module/rewriteurl/delete">
+        <default key="_controller">RewriteUrl\Controller\Admin\RewriteUrlAdminController::deleteAction</default>
+    </route>
+    <route id="rewrite.url.search" path="/admin/module/rewriteurl/search">
+        <default key="_controller">RewriteUrl\Controller\Admin\RewriteUrlAdminController::searchAction</default>
+    </route>
+    <route id="rewrite.url.exist" path="/admin/module/rewriteurl/exist">
+        <default key="_controller">RewriteUrl\Controller\Admin\RewriteUrlAdminController::existAction</default>
+    </route>
+    <route id="rewrite.url.add" path="/admin/module/rewriteurl/add">
+        <default key="_controller">RewriteUrl\Controller\Admin\RewriteUrlAdminController::addAction</default>
+    </route>
+    <route id="rewrite.url.setdefault" path="/admin/module/rewriteurl/setdefault">
+        <default key="_controller">RewriteUrl\Controller\Admin\RewriteUrlAdminController::setDefaultAction</default>
+    </route>
+    <route id="rewrite.url.reassign" path="/admin/module/rewriteurl/reassign">
+        <default key="_controller">RewriteUrl\Controller\Admin\RewriteUrlAdminController::reassignAction</default>
+    </route>
+
+</routes>

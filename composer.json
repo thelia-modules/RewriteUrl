@@ -1,0 +1,25 @@
+{
+  "name": "thelia/rewrite-url-module",
+  "license": "LGPL-3.0+",
+  "type": "thelia-module",
+  "require": {
+    "thelia/installer": "~1.1"
+  },
+  "extra": {
+    "installer-name": "RewriteUrl"
+  },
+  "authors": [
+    {
+      "name": "Vincent Lopes",
+      "email": "vlopes@openstudio.fr",
+      "homepage": "http://thelia.net",
+      "role": "Developer"
+    },
+    {
+      "name": "Gilles Bourgeat",
+      "email": "gbourgeat@openstudio.fr",
+      "homepage": "http://thelia.net",
+      "role": "Developer"
+    }
+  ]
+}

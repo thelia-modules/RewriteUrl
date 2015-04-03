@@ -1,0 +1,33 @@
+# Rewrite Url
+
+Authors: Thelia <info@thelia.net>, Vincent Lopes <vlopes@openstudio.fr>, Gilles Bourgeat <gbourgeat@openstudio.fr>
+
+This module manage rewritten urls for products, categories, brands, folders, contents
+
+## Compatibility
+
+Thelia > 2.0
+
+## Installation
+
+### Manually
+
+* Copy the module into ```<thelia_root>/local/modules/``` directory and be sure that the name of the module is RewriteUrl.
+* Activate it in your thelia administration panel
+
+### Composer
+
+Add it in your main thelia composer.json file
+
+```
+composer require thelia/rewrite-url-module:~1.0
+```
+
+## Usage
+
+BackOffice :
+- in Product edit tab modules
+- in Folder edit tab modules
+- in Content edit tab modules
+- in Brand edit tab modules
+- in Category edit tab modules
