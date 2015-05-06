@@ -2,7 +2,10 @@
 
 Authors: Thelia <info@thelia.net>, Vincent Lopes <vlopes@openstudio.fr>, Gilles Bourgeat <gbourgeat@openstudio.fr>
 
-This module manage rewritten urls for products, categories, brands, folders, contents
+This module manage rewritten urls for products, categories, folders, contents, brands
+
+* Allows you to reassign a url to another (product, category, folder, content, brand)
+* Allows you to reassign a default url to your (product, category, folder, content, brand)
 
 ## Compatibility
 
