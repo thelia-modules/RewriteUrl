@@ -61,7 +61,7 @@ class RewriteUrlAdminController extends BaseAdminController
         $id_url = $this->getRequest()->request->get('id_url');
         $rewritingUrl = RewritingUrlQuery::create()->findOneById($id_url);
 
-        if ($rewritingUrl) {
+        if ($rewritingUrl !== null) {
             $event = new RewriteUrlEvent($rewritingUrl);
             $this->dispatch(RewriteUrlEvents::REWRITEURL_DELETE, $event);
         }
@@ -242,7 +242,7 @@ class RewriteUrlAdminController extends BaseAdminController
             $isRedirection = RewritingUrlQuery::create()->findByRedirected($rewrite->getId());
 
             //Update urls who redirected to updated URL
-            if ($isRedirection != null) {
+            if ($isRedirection !== null) {
                 /** @var \Thelia\Model\RewritingUrl $redirected */
                 foreach ($isRedirection as $redirected) {
                     $redirected->setRedirected($rewrite->getRedirected());

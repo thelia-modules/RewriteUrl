@@ -14,28 +14,10 @@
         <form name="rewriteurl.setdefault.form" class="RewriteUrl\Form\SetDefaultForm"/>
     </forms>
 
-    <commands>
-        <!--
-        <command class="MyModule\Command\MySuperCommand" />
-        -->
-    </commands>
-
     <services>
         <service id="rewriteurl.action" class="RewriteUrl\EventListeners\RewriteUrlListener">
             <tag name="kernel.event_subscriber"/>
         </service>
     </services>
 
-
-    <!--
-    <exports>
-
-    </exports>
-    -->
-
-    <!--
-    <imports>
-
-    </imports>
-    -->
 </config>

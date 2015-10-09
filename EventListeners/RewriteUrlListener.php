@@ -44,27 +44,37 @@ class RewriteUrlListener implements EventSubscriberInterface
     {
         $rewritingUrl = $event->getRewritingUrl();
 
-        try {
-            if ($rewritingUrl !== null) {
+        $newDefault = null;
 
-                $isRedirection = RewritingUrlQuery::create()->findByRedirected($rewritingUrl->getId());
-
-                //Update urls who redirected to deleted URL
-                if ($isRedirection != null) {
-                    /** @var \Thelia\Model\RewritingUrl $redirected */
-                    foreach ($isRedirection as $redirected) {
-                        $redirected->setRedirected($rewritingUrl->getRedirected());
-                        $newEvent = new RewriteUrlEvent($redirected);
-                        $event->getDispatcher()->dispatch(RewriteUrlEvents::REWRITEURL_UPDATE, $newEvent);
-                    }
-                }
-
-                $rewritingUrl->delete();
+        // test if default url
+        if ($event->getRewritingUrl()->getRedirected() === null) {
+            // add new default url
+            if (null !== $newDefault = RewritingUrlQuery::create()->findOneByRedirected($rewritingUrl->getId())) {
+                $event->getDispatcher()->dispatch(
+                    RewriteUrlEvents::REWRITEURL_UPDATE,
+                    new RewriteUrlEvent(
+                        $newDefault->setRedirected(null)
+                    )
+                );
             }
-
-        } catch (\Exception $e) {
-            die($e->getMessage());
         }
+
+        $isRedirection = RewritingUrlQuery::create()->findByRedirected($rewritingUrl->getId());
+
+        //Update urls who redirected to deleted URL
+        /** @var \Thelia\Model\RewritingUrl $redirected */
+        foreach ($isRedirection as $redirected) {
+            $event->getDispatcher()->dispatch(
+                RewriteUrlEvents::REWRITEURL_UPDATE,
+                new RewriteUrlEvent(
+                    $redirected->setRedirected(
+                        ($newDefault !== null) ? $newDefault->getId() : $rewritingUrl->getRedirected()
+                    )
+                )
+            );
+        }
+
+        $rewritingUrl->delete();
     }
 
     /**
@@ -124,7 +134,6 @@ class RewriteUrlListener implements EventSubscriberInterface
      */
     public function updateRewrite(RewriteUrlEvent $event)
     {
-        $rewritingUrl = $event->getRewritingUrl();
-        $rewritingUrl->save();
+        $event->getRewritingUrl()->save();
     }
 }

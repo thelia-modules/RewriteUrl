@@ -1,4 +1,5 @@
 <script>
+  "use strict";
   (function($, $module){
 
     var i18n = {
@@ -39,7 +40,7 @@
       if (val.length > 3) {
         $modalSearchLoader.removeClass('hide');
 
-        searchTimer = setTimeout(function(elem) {
+        searchTimer = setTimeout(function() {
           $.ajax({
             url: '{url path="/admin/module/rewriteurl/search"}',
             data: {
@@ -79,7 +80,7 @@
       }
     });
 
-    $modalSearch.on('change' ,".js-block-search-result select", function(event){
+    $modalSearch.on('change' ,".js-block-search-result select", function(){
       $modalSearch.find('.js-input-reassign').val($(this).val());
     });
 
@@ -95,7 +96,7 @@
     /************ Action default *************/
     /*****************************************/
 
-    $module.on('click', '.js-action-add', function(event) {
+    $module.on('submit', '.js-form-add', function(event){
       event.preventDefault();
       $module.find('.js-alert-error').addClass('hide');
 

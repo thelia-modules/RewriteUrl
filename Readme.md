@@ -1,7 +1,5 @@
 # Rewrite Url
 
-Authors: Thelia <info@thelia.net>, Vincent Lopes <vlopes@openstudio.fr>, Gilles Bourgeat <gbourgeat@openstudio.fr>
-
 This module manage rewritten urls for products, categories, folders, contents, brands
 
 * Allows you to reassign a url to another (product, category, folder, content, brand)
@@ -23,7 +21,7 @@ Thelia > 2.0
 Add it in your main thelia composer.json file
 
 ```
-composer require thelia/rewrite-url-module:~1.0
+composer require thelia/rewrite-url-module:~1.1
 ```
 
 ## Usage

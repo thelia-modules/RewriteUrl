@@ -17,9 +17,9 @@
             <div class="table-responsive">
                 <table class="table table-striped table-condensed">
                     <caption>
-                        {intl l='Default url' d="rewriteurl"}
+                        {intl l='Default url' d="rewriteurl.bo.default"}
                         <button type="button" class="btn btn-default pull-right js-popover" data-html="true" data-container="body" data-toggle="popover" data-placement="left"
-                                data-content="{intl l='For questions or bug reporting, thank you to use %url.' url='<a href=\'https://github.com/thelia-modules/RewriteUrl\' target=\'_blank\'>GitHub</a>'}">
+                                data-content="{intl l='For questions or bug reporting, thank you to use %url.' url='<a href=\'https://github.com/thelia-modules/RewriteUrl\' target=\'_blank\'>GitHub</a>' d="rewriteurl.bo.default"}">
                             <i class="glyphicon glyphicon-info-sign"></i>
                         </button>
                     </caption>
@@ -28,8 +28,9 @@
                         <thead>
                         <tr>
                             <th>#</th>
-                            <th>{intl l='View locale' d="rewriteurl"}</th>
-                            <th>{intl l='Url' d="rewriteurl"}</th>
+                            <th>{intl l='View locale' d="rewriteurl.bo.default"}</th>
+                            <th>{intl l='Url' d="rewriteurl.bo.default"}</th>
+                            <th>{intl l='Actions' d="rewriteurl.bo.default"}</th>
                         </tr>
                         </thead>
 
@@ -46,6 +47,10 @@
                                 <td>
                                     {$URL}
                                 </td>
+                                <td>
+                                    <a class="btn btn-default btn-danger btn-xs js-action-delete" title="{intl l='Delete this redirect' d="rewriteurl.bo.default"}"  href="#rewrite_delete_dialog" data-id="{$ID_URL}" data-is_default="{$IS_DEFAULT}" data-toggle="modal"><i class="glyphicon glyphicon-trash"></i></a>
+                                    <a class="btn btn-default btn-info btn-xs js-action-reassign" title="{intl l='Reassign this redirect' d="rewriteurl.bo.default"}"  data-id="{$ID_URL}" data-is_default="{$IS_DEFAULT}"><i class="glyphicon glyphicon-refresh"></i></a>
+                                </td>
                             </tr>
                         {/loop}
                         </tbody>
@@ -55,17 +60,17 @@
             <div class="table-responsive">
                 <table class="table table-striped table-condensed">
                     <caption>
-                        {intl l='Url redirected' d="rewriteurl"}
+                        {intl l='Url redirected' d="rewriteurl.bo.default"}
                     </caption>
 
                     {ifloop rel="rewriteUrl"}
                         <thead>
                         <tr>
                             <th>#</th>
-                            <th>{intl l='View locale' d="rewriteurl"}</th>
-                            <th>{intl l='Url' d="rewriteurl"}</th>
-                            <th>{intl l='Redirected' d="rewriteurl"}</th>
-                            <th class="actions">{intl l='Actions' d="rewriteurl"}</th>
+                            <th>{intl l='View locale' d="rewriteurl.bo.default"}</th>
+                            <th>{intl l='Url' d="rewriteurl.bo.default"}</th>
+                            <th>{intl l='Redirected' d="rewriteurl.bo.default"}</th>
+                            <th class="actions">{intl l='Actions' d="rewriteurl.bo.default"}</th>
                         </tr>
                         </thead>
 
@@ -100,9 +105,9 @@
                                                     <input type="hidden" name="{$name}" value="{$ID_URL}"/>
                                                 {/form_field}
 
-                                                <button title="{intl l='Set this redirect to default' d="rewriteurl"}" class="btn btn-default btn-primary btn-xs js-action-default" type="submit"><i class="glyphicon glyphicon-home"></i></button>
-                                                <a class="btn btn-default btn-danger btn-xs js-action-delete" title="{intl l='Delete this redirect' d="rewriteurl"}"  href="#rewrite_delete_dialog" data-id="{$ID_URL}" data-is_default="{$IS_DEFAULT}" data-toggle="modal"><i class="glyphicon glyphicon-trash"></i></a>
-                                                <a class="btn btn-default btn-info btn-xs js-action-reassign" title="{intl l='Reassign this redirect' d="rewriteurl"}"  data-id="{$ID_URL}" data-is_default="{$IS_DEFAULT}"><i class="glyphicon glyphicon-refresh"></i></a>
+                                                <button title="{intl l='Set this redirect to default' d="rewriteurl.bo.default"}" class="btn btn-default btn-primary btn-xs js-action-default" type="submit"><i class="glyphicon glyphicon-home"></i></button>
+                                                <a class="btn btn-default btn-danger btn-xs js-action-delete" title="{intl l='Delete this redirect' d="rewriteurl.bo.default"}"  href="#rewrite_delete_dialog" data-id="{$ID_URL}" data-is_default="{$IS_DEFAULT}" data-toggle="modal"><i class="glyphicon glyphicon-trash"></i></a>
+                                                <a class="btn btn-default btn-info btn-xs js-action-reassign" title="{intl l='Reassign this redirect' d="rewriteurl.bo.default"}"  data-id="{$ID_URL}" data-is_default="{$IS_DEFAULT}"><i class="glyphicon glyphicon-refresh"></i></a>
                                             </form>
                                         {/form}
 
@@ -115,16 +120,16 @@
                     {elseloop rel="rewriteUrl"}
                         <td>
                             <div class="alert alert-info">
-                                {intl l="No redirected url." d="rewriteurl"}
+                                {intl l="No redirected url." d="rewriteurl.bo.default"}
                             </div>
                         </td>
                     {/elseloop}
                 </table>
                 <div class="title title-without-tabs clearfix">
-                    {intl l="New url" d="rewriteurl"}
+                    {intl l="New url" d="rewriteurl.bo.default"}
                 </div>
                 {form name="rewriteurl.add.form"}
-                    <form class="form-inline js-form-add" action="{url path='/admin/module/rewriteurl/add' }" method="post">
+                    <form class="js-form-add" action="{url path='/admin/module/rewriteurl/add' }" method="post">
 
                         {form_hidden_fields form=$form}
 
@@ -143,7 +148,8 @@
                         {/form_field}
 
                         <div class="row">
-                            <div class="form-group col-md-1">
+                            <div class="col-md-2">
+                                <div class="form-group ">
                                 {form_field form=$form field="locale"}
                                     <select class="form-control" name="{$name}" id="">
                                         {loop type="lang" name="lang_loop"}
@@ -153,24 +159,31 @@
                                         {/loop}
                                     </select>
                                 {/form_field}
+                                </div>
                             </div>
-                            <div class="form-group col-md-6">
+                            <div class="col-md-5">
+                                <div class="form-group">
                                 {form_field form=$form field="url"}
                                     <div class="input-group">
                                         <span class="input-group-addon">{$url_language|default:{config key="url_site"}}/</span>
                                         <input type="text" name="{$name}" class="form-control js-input-url-add" placeholder="Url" required>
                                     </div>
                                 {/form_field}
+                                </div>
                             </div>
-                            <div class="form-group col-md-3">
+                            <div class="col-md-3">
+                                <div class="form-group ">
                                 {form_field form=$form field="default"}
                                     <select class="form-control" name="{$name}">
-                                        <option value="0">{intl l="Redirect to default" d="rewriteurl"}</option>
-                                        <option value="1">{intl l="Default" d="rewriteurl"}</option>
+                                        <option value="0">{intl l="Redirect to default" d="rewriteurl.bo.default"}</option>
+                                        <option value="1">{intl l="Default" d="rewriteurl.bo.default"}</option>
                                     </select>
                                 {/form_field}
+                                </div>
                             </div>
-                            <a href="#" class="btn btn-primary col-md-1 js-action-add">{intl l="Validate" d="rewriteurl"}</a>
+                            <div class="col-md-2">
+                                <button type="submit" class="btn btn-primary js-action-add">{intl l="Validate" d="rewriteurl.bo.default"}</button>
+                            </div>
                         </div>
                     </form>
                 {/form}
@@ -185,13 +198,13 @@
                     <form class="js-form-search">
                         <div class="form-group">
                             <div class="input-group">
-                                <div class="input-group-addon">{intl l="Search" d="rewriteurl"}</div>
-                                <input name="search" class="js-input-search form-control" type="text" placeholder="{intl l="Title, Ref ..." d="rewriteurl"}"/>
+                                <div class="input-group-addon">{intl l="Search" d="rewriteurl.bo.default"}</div>
+                                <input name="search" class="js-input-search form-control" type="text" placeholder="{intl l="Title, Ref ..." d="rewriteurl.bo.default"}"/>
                             </div>
                         </div>
-                        <div class="js-loader text-center hide">{intl l="Please wait ..." d="rewriteurl"}</div>
+                        <div class="js-loader text-center hide">{intl l="Please wait ..." d="rewriteurl.bo.default"}</div>
                         <div class="alert alert-warning text-center hide js-alert-no-result">
-                            {intl l="No results found for your search." d="rewriteurl"}
+                            {intl l="No results found for your search." d="rewriteurl.bo.default"}
                         </div>
                         <div class="form-group js-block-search-result hide">
                             <select class="form-control" size="10"></select>
@@ -218,7 +231,7 @@
                                 <input type="hidden" name="{$name}" value="" class="js-input-reassign" />
                             {/form_field}
 
-                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal">{intl l="Close" d="rewriteurl.bo.default"}</button>
 
                             <input type="submit" class="btn btn-primary"/>
                         </form>
@@ -238,8 +251,8 @@
     file = "includes/generic-confirm-dialog.html"
 
     dialog_id       = "rewrite_delete_dialog"
-    dialog_title    = {intl l="Delete redirect" }
-    dialog_message  = {intl l="Do you really want to delete this redirect ?" }
+    dialog_title    = {intl l="Delete Url" d="rewriteurl.bo.default"}
+    dialog_message  = {intl l="Do you really want to delete this Url ?" d="rewriteurl.bo.default"}
 
     form_action         = {url path='/admin/module/rewriteurl/delete'}
     form_content        = {$smarty.capture.rewrite_delete_dialog nofilter}
