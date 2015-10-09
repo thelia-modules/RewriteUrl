@@ -1,3 +1,7 @@
+# 1.1.1
+
+- Fix reassign the default url
+
 # 1.1.0
 
 - Fix UI
