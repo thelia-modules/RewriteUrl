@@ -3,6 +3,7 @@
 This module manage rewritten urls for products, categories, folders, contents, brands
 
 * Allows you to reassign a url to another (product, category, folder, content, brand)
+* Allows you to reassign all urls to another (product, category, folder, content, brand)
 * Allows you to reassign a default url to your (product, category, folder, content, brand)
 
 ## Compatibility
@@ -21,7 +22,7 @@ Thelia > 2.0
 Add it in your main thelia composer.json file
 
 ```
-composer require thelia/rewrite-url-module:~1.1
+composer require thelia/rewrite-url-module:~1.2
 ```
 
 ## Usage
