@@ -1,3 +1,7 @@
+# 1.2.0
+
+- Add redirection for all urls
+
 # 1.1.1
 
 - Fix reassign the default url

@@ -35,9 +35,8 @@ class ReassignForm extends BaseForm
         $this->formBuilder
             ->add(
                 'rewrite-id',
-                'text',
+                'integer',
                 array(
-                    'constraints'   => array(new NotBlank()),
                     'required'      => true
                 )
             )
@@ -47,6 +46,13 @@ class ReassignForm extends BaseForm
                 array(
                     'constraints'   => array(new NotBlank()),
                     'required'      => true
+                )
+            )
+            ->add(
+                'all',
+                'integer',
+                array(
+                    'required' => true
                 )
             )
         ;

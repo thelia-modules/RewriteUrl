@@ -189,6 +189,28 @@
                 {/form}
             </div>
         </div>
+
+        {loop type="rewrite_url" name="rewriteUrl" view_id=$ID view=$viewName limit=1}
+        <div class="col-md-12">
+            <p class="title title-without-tabs">
+                {intl l='Redirect all urls' d="rewriteurl.bo.default"}
+            </p>
+            <div class="alert alert-warning">
+                <div class="row">
+                    <div class="col-md-6">
+                        {intl l="Redirect all urls on a (category, product, folder, content, brand)." d="rewriteurl.bo.default"}
+                        <br />
+                        {intl l="This action is irreversible after confirmation." d="rewriteurl.bo.default"}
+                    </div>
+                    <div class="col-md-6">
+                        <a href="#" class="btn btn-danger js-action-redirect-all" data-id="{$ID}">
+                            {intl l='Redirect all urls' d="rewriteurl.bo.default"}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {/loop}
     </div>
 
     <div class="modal fade js-modal-search" tabindex="-1" role="dialog" aria-hidden="true">
@@ -229,6 +251,10 @@
 
                             {form_field form=$form field="select-reassign"}
                                 <input type="hidden" name="{$name}" value="" class="js-input-reassign" />
+                            {/form_field}
+
+                            {form_field form=$form field="all"}
+                                <input type="hidden" name="{$name}" value="" class="js-input-all" />
                             {/form_field}
 
                             <button type="button" class="btn btn-default" data-dismiss="modal">{intl l="Close" d="rewriteurl.bo.default"}</button>

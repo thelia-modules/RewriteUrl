@@ -28,6 +28,7 @@ use Thelia\Model\ContentI18nQuery;
 use Thelia\Model\FolderI18nQuery;
 use Thelia\Model\ProductI18nQuery;
 use Thelia\Model\ProductQuery;
+use Thelia\Model\RewritingUrl;
 use Thelia\Model\RewritingUrlQuery;
 use Thelia\Tools\URL;
 use Thelia\Log\Tlog;
@@ -233,55 +234,18 @@ class RewriteUrlAdminController extends BaseAdminController
             $form = $this->validateForm($reassignForm);
             $data = $form->getData($form);
 
+            $all = $data['all'];
             $newRewrite = explode('::', $data['select-reassign']);
+            $rewriteId = $data['rewrite-id'];
             $newView = $newRewrite[1];
             $newViewId = $newRewrite[0];
 
-            $rewrite = RewritingUrlQuery::create()->findOneById($data['rewrite-id']);
 
-            // add new default url
-            if (null !== $newDefault = RewritingUrlQuery::create()->findOneByRedirected($rewrite->getId())) {
-                $this->getDispatcher()->dispatch(
-                    RewriteUrlEvents::REWRITEURL_UPDATE,
-                    new RewriteUrlEvent(
-                        $newDefault->setRedirected(null)
-                    )
-                );
-            }
-
-            //Update urls who redirected to updated URL
-            if (null !== $isRedirection = RewritingUrlQuery::create()->findByRedirected($rewrite->getId())) {
-                /** @var \Thelia\Model\RewritingUrl $redirected */
-                foreach ($isRedirection as $redirected) {
-                    $this->dispatch(
-                        RewriteUrlEvents::REWRITEURL_UPDATE,
-                        new RewriteUrlEvent(
-                            $redirected->setRedirected(
-                                ($newDefault !== null) ? $newDefault->getId() : $rewrite->getRedirected()
-                            )
-                        )
-                    );
-                }
-            }
-
-            $rewrite->setView($newView)
-                ->setViewId($newViewId);
-
-            //Check if default url already exist for the view with the locale
-            $rewriteDefault = RewritingUrlQuery::create()
-                ->filterByView($newView)
-                ->filterByViewId($newViewId)
-                ->filterByViewLocale($rewrite->getViewLocale())
-                ->findOneByRedirected(null);
-
-            if ($rewriteDefault !== null) {
-                $rewrite->setRedirected($rewriteDefault->getId());
+            if ($all === 1) {
+                self::allReassign($rewriteId, $newView, $newViewId);
             } else {
-                $rewrite->setRedirected(null);
+                self::simpleReassign($rewriteId, $newView, $newViewId);
             }
-
-            $event = new RewriteUrlEvent($rewrite);
-            $this->dispatch(RewriteUrlEvents::REWRITEURL_UPDATE, $event);
 
             if (method_exists($this, 'generateSuccessRedirect')) {
                 //for 2.1
@@ -304,6 +268,95 @@ class RewriteUrlAdminController extends BaseAdminController
                 ->setGeneralError($message)
             ;
         }
+    }
+
+    /**
+     * @param int $rewriteId
+     * @param string $newView
+     * @param int $newViewId
+     */
+    protected function allReassign($rewriteId, $newView, $newViewId)
+    {
+        $origin = RewritingUrlQuery::create()->findOneById($rewriteId);
+
+        $rewrites = RewritingUrlQuery::create()
+            ->filterByView($origin->getView())
+            ->filterByViewId($origin->getViewId())
+            ->find();
+
+        /** @var RewritingUrl $rewrite */
+        foreach ($rewrites as $rewrite) {
+            $destination = RewritingUrlQuery::create()
+                ->filterByView($newView)
+                ->filterByViewId($newViewId)
+                ->filterByViewLocale($rewrite->getViewLocale())
+                ->filterByRedirected(null)
+                ->findOne();
+
+            $rewrite
+                ->setView($newView)
+                ->setViewId($newViewId)
+                ->setRedirected(($destination === null) ? null : $destination->getId());
+
+            $this->getDispatcher()->dispatch(
+                RewriteUrlEvents::REWRITEURL_UPDATE,
+                new RewriteUrlEvent($rewrite)
+            );
+        }
+    }
+
+    /**
+     * @param int $rewriteId
+     * @param string $newView
+     * @param int $newViewId
+     */
+    protected function simpleReassign($rewriteId, $newView, $newViewId)
+    {
+        $rewrite = RewritingUrlQuery::create()->findOneById($rewriteId);
+
+        // add new default url
+        if (null !== $newDefault = RewritingUrlQuery::create()->findOneByRedirected($rewrite->getId())) {
+            $this->getDispatcher()->dispatch(
+                RewriteUrlEvents::REWRITEURL_UPDATE,
+                new RewriteUrlEvent(
+                    $newDefault->setRedirected(null)
+                )
+            );
+        }
+
+        //Update urls who redirected to updated URL
+        if (null !== $isRedirection = RewritingUrlQuery::create()->findByRedirected($rewrite->getId())) {
+            /** @var \Thelia\Model\RewritingUrl $redirected */
+            foreach ($isRedirection as $redirected) {
+                $this->dispatch(
+                    RewriteUrlEvents::REWRITEURL_UPDATE,
+                    new RewriteUrlEvent(
+                        $redirected->setRedirected(
+                            ($newDefault !== null) ? $newDefault->getId() : $rewrite->getRedirected()
+                        )
+                    )
+                );
+            }
+        }
+
+        $rewrite->setView($newView)
+            ->setViewId($newViewId);
+
+        //Check if default url already exist for the view with the locale
+        $rewriteDefault = RewritingUrlQuery::create()
+            ->filterByView($newView)
+            ->filterByViewId($newViewId)
+            ->filterByViewLocale($rewrite->getViewLocale())
+            ->findOneByRedirected(null);
+
+        if ($rewriteDefault !== null) {
+            $rewrite->setRedirected($rewriteDefault->getId());
+        } else {
+            $rewrite->setRedirected(null);
+        }
+
+        $event = new RewriteUrlEvent($rewrite);
+        $this->dispatch(RewriteUrlEvents::REWRITEURL_UPDATE, $event);
     }
 
     /**

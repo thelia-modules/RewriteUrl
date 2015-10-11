@@ -20,6 +20,7 @@
     $module.on('click', '.js-action-reassign', function(event){
       event.preventDefault();
       $modalSearch.find('.js-input-url-id').val($(this).data('id'));
+      $modalSearch.find('.js-input-all').val(0);
       $modalSearch.modal('show');
     });
 
@@ -115,6 +116,17 @@
           }
         });
       }
+    });
+
+    /*****************************************/
+    /******** Action redirect all ************/
+    /*****************************************/
+
+    $module.on('click', '.js-action-redirect-all', function(event) {
+      event.preventDefault();
+      $modalSearch.find('.js-input-url-id').val($(this).data('id'));
+      $modalSearch.find('.js-input-all').val(1);
+      $modalSearch.modal('show');
     });
 
   }(jQuery, jQuery("#module-RewriteUrl")));
