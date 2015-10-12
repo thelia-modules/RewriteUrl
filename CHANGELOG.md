@@ -1,3 +1,7 @@
+# 1.2.1
+
+- Fix bug id url for redirection all urls
+
 # 1.2.0
 
 - Add redirection for all urls
