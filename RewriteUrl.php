@@ -12,6 +12,10 @@
 
 namespace RewriteUrl;
 
+use Propel\Runtime\Connection\ConnectionInterface;
+use Thelia\Model\Map\RewritingUrlTableMap;
+use Thelia\Model\RewritingUrl;
+use Thelia\Model\RewritingUrlQuery;
 use Thelia\Module\BaseModule;
 
 /**
@@ -27,4 +31,34 @@ class RewriteUrl extends BaseModule
 
     /** @var string  */
     const MODULE_NAME = "rewriteurl";
+
+    /**
+     * @param string $currentVersion
+     * @param string $newVersion
+     * @param ConnectionInterface $con
+     * @throws \Exception
+     * @throws \Propel\Runtime\Exception\PropelException
+     * @since 1.2.3
+     */
+    public function update($currentVersion, $newVersion, ConnectionInterface $con)
+    {
+        /*
+         * Fix for urls that redirect on itself
+         */
+        $urls = RewritingUrlQuery::create()
+            ->where(RewritingUrlTableMap::ID . " = " . RewritingUrlTableMap::REDIRECTED)
+            ->find();
+
+        /** @var RewritingUrl $url */
+        foreach ($urls as $url) {
+            $parent = RewritingUrlQuery::create()
+                ->filterByView($url->getView())
+                ->filterByViewId($url->getViewId())
+                ->filterByViewLocale($url->getViewLocale())
+                ->filterByRedirected(null)
+                ->findOne();
+
+            $url->setRedirected(($parent === null) ? null : $parent->getId())->save();
+        }
+    }
 }

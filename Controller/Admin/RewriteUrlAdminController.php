@@ -12,7 +12,7 @@
 
 namespace RewriteUrl\Controller\Admin;
 
-use Thelia\Model\RewritingUrl as ModuleRewritingUrl;
+use RewriteUrl\Model\RewritingUrlOverride;
 use RewriteUrl\Event\RewriteUrlEvent;
 use RewriteUrl\Event\RewriteUrlEvents;
 use RewriteUrl\Form\AddUrlForm;
@@ -64,7 +64,7 @@ class RewriteUrlAdminController extends BaseAdminController
 
         if ($rewritingUrl !== null) {
             $event = new RewriteUrlEvent($rewritingUrl);
-            $this->dispatch(RewriteUrlEvents::REWRITEURL_DELETE, $event);
+            $this->getDispatcher()->dispatch(RewriteUrlEvents::REWRITEURL_DELETE, $event);
         }
 
         if (method_exists($this, 'generateSuccessRedirect')) {
@@ -99,7 +99,8 @@ class RewriteUrlAdminController extends BaseAdminController
      */
     public function addAction()
     {
-        $message = false;
+        $message = null;
+        $exception = null;
 
         if (null !== $response = $this->checkAuth(array(AdminResources::MODULE), 'RewriteUrl', AccessManager::CREATE)) {
             return $response;
@@ -115,11 +116,11 @@ class RewriteUrlAdminController extends BaseAdminController
                 throw new \Exception("Url already exist");
             }
 
-            $rewriting = new ModuleRewritingUrl();
-            $rewriting->setUrl($data['url']);
-            $rewriting->setView($data['view']);
-            $rewriting->setViewId($data['view-id']);
-            $rewriting->setViewLocale($data['locale']);
+            $rewriting = (new RewritingUrlOverride())
+            ->setUrl($data['url'])
+            ->setView($data['view'])
+            ->setViewId($data['view-id'])
+            ->setViewLocale($data['locale']);
 
             $rewriteDefault = RewritingUrlQuery::create()
                 ->filterByView($rewriting->getView())
@@ -137,8 +138,10 @@ class RewriteUrlAdminController extends BaseAdminController
                 }
             }
 
-            $event = new RewriteUrlEvent($rewriting);
-            $this->dispatch(RewriteUrlEvents::REWRITEURL_ADD, $event);
+            $this->getDispatcher()->dispatch(
+                RewriteUrlEvents::REWRITEURL_ADD,
+                new RewriteUrlEvent($rewriting)
+            );
 
             if (method_exists($this, 'generateSuccessRedirect')) {
                 //for 2.1
@@ -148,14 +151,14 @@ class RewriteUrlAdminController extends BaseAdminController
                 $this->redirectSuccess($addForm);
             }
 
-        } catch (FormValidationException $e) {
-            $message = $this->createStandardFormValidationErrorMessage($e);
-        } catch (\Exception $e) {
-            $message = $e->getMessage();
+        } catch (FormValidationException $exception) {
+            $message = $this->createStandardFormValidationErrorMessage($exception);
+        } catch (\Exception $exception) {
+            $message = $exception->getMessage();
         }
 
-        if ($message !== false) {
-            Tlog::getInstance()->error(sprintf("Error during order delivery process : %s. Exception was %s", $message, $e->getMessage()));
+        if ($message !== null && $exception !== null) {
+            Tlog::getInstance()->error(sprintf("Error during order delivery process : %s. Exception was %s", $message, $exception->getMessage()));
 
             $addForm->setErrorMessage($message);
 
@@ -193,7 +196,7 @@ class RewriteUrlAdminController extends BaseAdminController
 
             $rewritingUrl = RewritingUrlQuery::create()->findOneById($data['rewrite-id']);
             $newEvent = new RewriteUrlEvent($rewritingUrl);
-            $this->dispatch(RewriteUrlEvents::REWRITEURL_SET_DEFAULT, $newEvent);
+            $this->getDispatcher()->dispatch(RewriteUrlEvents::REWRITEURL_SET_DEFAULT, $newEvent);
         } catch (FormValidationException $e) {
             $message = $this->createStandardFormValidationErrorMessage($e);
         } catch (\Exception $e) {
@@ -328,7 +331,7 @@ class RewriteUrlAdminController extends BaseAdminController
         if (null !== $isRedirection = RewritingUrlQuery::create()->findByRedirected($rewrite->getId())) {
             /** @var \Thelia\Model\RewritingUrl $redirected */
             foreach ($isRedirection as $redirected) {
-                $this->dispatch(
+                $this->getDispatcher()->dispatch(
                     RewriteUrlEvents::REWRITEURL_UPDATE,
                     new RewriteUrlEvent(
                         $redirected->setRedirected(
@@ -356,7 +359,7 @@ class RewriteUrlAdminController extends BaseAdminController
         }
 
         $event = new RewriteUrlEvent($rewrite);
-        $this->dispatch(RewriteUrlEvents::REWRITEURL_UPDATE, $event);
+        $this->getDispatcher()->dispatch(RewriteUrlEvents::REWRITEURL_UPDATE, $event);
     }
 
     /**
