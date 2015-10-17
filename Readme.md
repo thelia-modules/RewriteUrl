@@ -6,6 +6,12 @@ This module manage rewritten urls for products, categories, folders, contents, b
 * Allows you to reassign all urls to another (product, category, folder, content, brand)
 * Allows you to reassign a default url to your (product, category, folder, content, brand)
 
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/thelia-modules/RewriteUrl/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/thelia-modules/RewriteUrl/?branch=master)
+[![License](https://poser.pugx.org/thelia/rewrite-url-module/license)](https://packagist.org/packages/thelia/rewrite-url-module)
+[![Latest Stable Version](https://poser.pugx.org/thelia/rewrite-url-module/v/stable)](https://packagist.org/packages/thelia/rewrite-url-module)
+
+#### [See the changelog](https://github.com/thelia-modules/RewriteUrl/blob/master/CHANGELOG.md)
+
 ## Compatibility
 
 Thelia > 2.0
@@ -33,3 +39,7 @@ BackOffice :
 - in Content edit tab modules
 - in Brand edit tab modules
 - in Category edit tab modules
+
+## Screenshot
+
+![RewriteUrl](https://github.com/thelia-modules/RewriteUrl/blob/master/screenshot.jpeg)

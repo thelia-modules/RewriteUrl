@@ -133,6 +133,10 @@
 
                         {form_hidden_fields form=$form}
 
+                        {if $form_error}
+                            <div class="alert alert-danger">{$form_error_message}</div>
+                        {/if}
+
                         <div class="alert alert-danger js-alert-error hide"></div>
 
                         {form_field form=$form field='success_url'}
