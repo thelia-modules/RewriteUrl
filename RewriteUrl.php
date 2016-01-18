@@ -40,7 +40,7 @@ class RewriteUrl extends BaseModule
      * @throws \Propel\Runtime\Exception\PropelException
      * @since 1.2.3
      */
-    public function update($currentVersion, $newVersion, ConnectionInterface $con)
+    public function update($currentVersion, $newVersion, ConnectionInterface $con = null)
     {
         /*
          * Fix for urls that redirect on itself
