@@ -280,7 +280,7 @@ class RewriteUrlAdminController extends BaseAdminController
      * @param string $newView
      * @param int $newViewId
      */
-    protected function allReassign($rewriteId, $newView, $newViewId)
+    public function allReassign($rewriteId, $newView, $newViewId)
     {
         $origin = RewritingUrlQuery::create()->findOneById($rewriteId);
 
@@ -379,16 +379,7 @@ class RewriteUrlAdminController extends BaseAdminController
 
         if ($rewritingUrl !== null) {
             if (in_array($rewritingUrl->getView(), $this->falseView)) {
-                $redirectedUrls = RewritingUrlQuery::create()->filterByRedirected($rewritingUrl->getId());
-
-                /** @var RewritingUrl $redirectedUrl */
-                foreach ($redirectedUrls as $redirectedUrl) {
-                    $redirectedUrl->setRedirected(null)
-                        ->save();
-                }
-                $rewritingUrl->delete();
-
-                return $this->jsonResponse(json_encode(false));
+                return $this->jsonResponse(json_encode(["status" => "non_view_url", "rewrite_id" => $rewritingUrl->getId()]));
             }
 
             $route = $this->getRoute(

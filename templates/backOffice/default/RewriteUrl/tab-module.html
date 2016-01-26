@@ -144,45 +144,45 @@
                         {/form_field}
 
                         {form_field form=$form field="view"}
-                            <input type="hidden" name="{$name}" value="{$viewName}"/>
+                            <input id="view_name" type="hidden" name="{$name}" value="{$viewName}"/>
                         {/form_field}
 
                         {form_field form=$form field="view-id"}
-                            <input type="hidden" name="{$name}" value="{$ID}"/>
+                            <input id="view_id" type="hidden" name="{$name}" value="{$ID}"/>
                         {/form_field}
 
                         <div class="row">
                             <div class="col-md-2">
                                 <div class="form-group ">
-                                {form_field form=$form field="locale"}
-                                    <select class="form-control" name="{$name}" id="">
-                                        {loop type="lang" name="lang_loop"}
-                                            <option value="{$LOCALE}"{if $IS_DEFAULT}selected{/if} >
-                                                {$TITLE}
-                                            </option>
-                                        {/loop}
-                                    </select>
-                                {/form_field}
+                                    {form_field form=$form field="locale"}
+                                        <select class="form-control" name="{$name}" id="">
+                                            {loop type="lang" name="lang_loop"}
+                                                <option value="{$LOCALE}"{if $IS_DEFAULT}selected{/if} >
+                                                    {$TITLE}
+                                                </option>
+                                            {/loop}
+                                        </select>
+                                    {/form_field}
                                 </div>
                             </div>
                             <div class="col-md-5">
                                 <div class="form-group">
-                                {form_field form=$form field="url"}
-                                    <div class="input-group">
-                                        <span class="input-group-addon">{$url_language|default:{config key="url_site"}}/</span>
-                                        <input type="text" name="{$name}" class="form-control js-input-url-add" placeholder="Url" required>
-                                    </div>
-                                {/form_field}
+                                    {form_field form=$form field="url"}
+                                        <div class="input-group">
+                                            <span class="input-group-addon">{$url_language|default:{config key="url_site"}}/</span>
+                                            <input type="text" name="{$name}" class="form-control js-input-url-add" placeholder="Url" required>
+                                        </div>
+                                    {/form_field}
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="form-group ">
-                                {form_field form=$form field="default"}
-                                    <select class="form-control" name="{$name}">
-                                        <option value="0">{intl l="Redirect to default" d="rewriteurl.bo.default"}</option>
-                                        <option value="1">{intl l="Default" d="rewriteurl.bo.default"}</option>
-                                    </select>
-                                {/form_field}
+                                    {form_field form=$form field="default"}
+                                        <select class="form-control" name="{$name}">
+                                            <option value="0">{intl l="Redirect to default" d="rewriteurl.bo.default"}</option>
+                                            <option value="1">{intl l="Default" d="rewriteurl.bo.default"}</option>
+                                        </select>
+                                    {/form_field}
                                 </div>
                             </div>
                             <div class="col-md-2">
@@ -195,25 +195,25 @@
         </div>
 
         {loop type="rewrite_url" name="rewriteUrl" view_id=$ID view=$viewName limit=1}
-        <div class="col-md-12">
-            <p class="title title-without-tabs">
-                {intl l='Redirect all urls' d="rewriteurl.bo.default"}
-            </p>
-            <div class="alert alert-warning">
-                <div class="row">
-                    <div class="col-md-6">
-                        {intl l="Redirect all urls on a (category, product, folder, content, brand)." d="rewriteurl.bo.default"}
-                        <br />
-                        {intl l="This action is irreversible after confirmation." d="rewriteurl.bo.default"}
-                    </div>
-                    <div class="col-md-6">
-                        <a href="#" class="btn btn-danger js-action-redirect-all" data-id="{$ID_URL}">
-                            {intl l='Redirect all urls' d="rewriteurl.bo.default"}
-                        </a>
+            <div class="col-md-12">
+                <p class="title title-without-tabs">
+                    {intl l='Redirect all urls' d="rewriteurl.bo.default"}
+                </p>
+                <div class="alert alert-warning">
+                    <div class="row">
+                        <div class="col-md-6">
+                            {intl l="Redirect all urls on a (category, product, folder, content, brand)." d="rewriteurl.bo.default"}
+                            <br />
+                            {intl l="This action is irreversible after confirmation." d="rewriteurl.bo.default"}
+                        </div>
+                        <div class="col-md-6">
+                            <a href="#" class="btn btn-danger js-action-redirect-all" data-id="{$ID_URL}">
+                                {intl l='Redirect all urls' d="rewriteurl.bo.default"}
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
         {/loop}
     </div>
 

@@ -106,8 +106,14 @@
         $.get('{url path="/admin/module/rewriteurl/exist"}', {
           q : val
         }, function(data) {
-          if (data == false){
+          if (data == false) {
             $module.find('.js-form-add').submit();
+          } else if (data.status == "non_view_url") {
+            var newView = $("#view_name").val();
+            var newViewId = $("#view_id").val();
+            $.post('{url path="/admin/module/rewriteurl/reassign/all/"}'+data.rewrite_id+'/'+newView+'/'+newViewId, function(data) {
+
+            });
           } else {
             var reassignLink = "<a href='"+data.reassignUrl+"&current_tab=modules'>{intl l='link'}</a>";
             $module.find('.js-alert-error')
