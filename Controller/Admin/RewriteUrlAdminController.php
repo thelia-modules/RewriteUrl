@@ -50,6 +50,8 @@ class RewriteUrlAdminController extends BaseAdminController
         'product'   => 'products'
     );
 
+    private $falseView = array('obsolete-rewritten-url');
+
     /**
      * @return mixed
      */
@@ -117,10 +119,10 @@ class RewriteUrlAdminController extends BaseAdminController
             }
 
             $rewriting = (new RewritingUrlOverride())
-            ->setUrl($data['url'])
-            ->setView($data['view'])
-            ->setViewId($data['view-id'])
-            ->setViewLocale($data['locale']);
+                ->setUrl($data['url'])
+                ->setView($data['view'])
+                ->setViewId($data['view-id'])
+                ->setViewLocale($data['locale']);
 
             $rewriteDefault = RewritingUrlQuery::create()
                 ->filterByView($rewriting->getView())
@@ -278,7 +280,7 @@ class RewriteUrlAdminController extends BaseAdminController
      * @param string $newView
      * @param int $newViewId
      */
-    protected function allReassign($rewriteId, $newView, $newViewId)
+    public function allReassign($rewriteId, $newView, $newViewId)
     {
         $origin = RewritingUrlQuery::create()->findOneById($rewriteId);
 
@@ -376,6 +378,10 @@ class RewriteUrlAdminController extends BaseAdminController
         $rewritingUrl = RewritingUrlQuery::create()->findOneByUrl($search);
 
         if ($rewritingUrl !== null) {
+            if (in_array($rewritingUrl->getView(), $this->falseView)) {
+                return $this->jsonResponse(json_encode(["status" => "non_view_url", "rewrite_id" => $rewritingUrl->getId()]));
+            }
+
             $route = $this->getRoute(
                 "admin.".$this->correspondence[$rewritingUrl->getView()].".update",
                 [$rewritingUrl->getView().'_id'=>$rewritingUrl->getViewId()]
