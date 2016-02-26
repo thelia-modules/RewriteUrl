@@ -13,6 +13,7 @@
 namespace RewriteUrl;
 
 use Propel\Runtime\Connection\ConnectionInterface;
+use Thelia\Model\ConfigQuery;
 use Thelia\Model\Map\RewritingUrlTableMap;
 use Thelia\Model\RewritingUrl;
 use Thelia\Model\RewritingUrlQuery;
@@ -31,6 +32,9 @@ class RewriteUrl extends BaseModule
 
     /** @var string  */
     const MODULE_NAME = "rewriteurl";
+
+    /** @static null|array */
+    static protected $unknownSources;
 
     /**
      * @param string $currentVersion
@@ -60,5 +64,19 @@ class RewriteUrl extends BaseModule
 
             $url->setRedirected(($parent === null) ? null : $parent->getId())->save();
         }
+    }
+
+    /**
+     * @return array|null
+     */
+    public static function getUnknownSources()
+    {
+        if (static::$unknownSources === null) {
+            static::$unknownSources = [];
+            if (null !== $config = ConfigQuery::read('obsolete_rewriten_url_view', null)) {
+                static::$unknownSources[] = $config;
+            }
+        }
+        return static::$unknownSources;
     }
 }

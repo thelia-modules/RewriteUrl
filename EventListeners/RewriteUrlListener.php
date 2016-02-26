@@ -14,6 +14,7 @@ namespace RewriteUrl\EventListeners;
 
 use RewriteUrl\Event\RewriteUrlEvent;
 use RewriteUrl\Event\RewriteUrlEvents;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Thelia\Model\RewritingUrlQuery;
 
@@ -24,6 +25,17 @@ use Thelia\Model\RewritingUrlQuery;
  */
 class RewriteUrlListener implements EventSubscriberInterface
 {
+    protected $dispatcher;
+
+    /**
+     * RewriteUrlListener constructor.
+     * @param EventDispatcherInterface $dispatcher
+     */
+    public function __construct(EventDispatcherInterface $dispatcher)
+    {
+        $this->dispatcher = $dispatcher;
+    }
+
     /**
      * @return array
      */
@@ -50,7 +62,7 @@ class RewriteUrlListener implements EventSubscriberInterface
         if ($event->getRewritingUrl()->getRedirected() === null) {
             // add new default url
             if (null !== $newDefault = RewritingUrlQuery::create()->findOneByRedirected($rewritingUrl->getId())) {
-                $event->getDispatcher()->dispatch(
+                $this->dispatcher->dispatch(
                     RewriteUrlEvents::REWRITEURL_UPDATE,
                     new RewriteUrlEvent(
                         $newDefault->setRedirected(null)
@@ -64,7 +76,7 @@ class RewriteUrlListener implements EventSubscriberInterface
         //Update urls who redirected to deleted URL
         /** @var \Thelia\Model\RewritingUrl $redirected */
         foreach ($isRedirection as $redirected) {
-            $event->getDispatcher()->dispatch(
+            $this->dispatcher->dispatch(
                 RewriteUrlEvents::REWRITEURL_UPDATE,
                 new RewriteUrlEvent(
                     $redirected->setRedirected(

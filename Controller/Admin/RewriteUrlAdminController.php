@@ -12,12 +12,14 @@
 
 namespace RewriteUrl\Controller\Admin;
 
+use Propel\Runtime\ActiveQuery\Criteria;
 use RewriteUrl\Model\RewritingUrlOverride;
 use RewriteUrl\Event\RewriteUrlEvent;
 use RewriteUrl\Event\RewriteUrlEvents;
 use RewriteUrl\Form\AddUrlForm;
 use RewriteUrl\Form\ReassignForm;
 use RewriteUrl\Form\SetDefaultForm;
+use RewriteUrl\RewriteUrl;
 use Thelia\Controller\Admin\BaseAdminController;
 use Thelia\Core\Security\AccessManager;
 use Thelia\Core\Security\Resource\AdminResources;
@@ -112,12 +114,14 @@ class RewriteUrlAdminController extends BaseAdminController
             $form = $this->validateForm($addForm);
             $data = $form->getData($form);
 
-            if (RewritingUrlQuery::create()->findOneByUrl(($data['url'])) !== null) {
+            $findExist = RewritingUrlQuery::create()->findOneByUrl(($data['url']));
+
+            if ($findExist !== null && in_array($findExist->getView(), RewriteUrl::getUnknownSources()) && !empty($findExist->getView())) {
                 throw new \Exception("Url already exist");
             }
 
-            $rewriting = (new RewritingUrlOverride())
-            ->setUrl($data['url'])
+            $rewriting = $findExist !== null ? $findExist : new RewritingUrlOverride();
+            $rewriting->setUrl($data['url'])
             ->setView($data['view'])
             ->setViewId($data['view-id'])
             ->setViewLocale($data['locale']);
@@ -242,7 +246,6 @@ class RewriteUrlAdminController extends BaseAdminController
             $rewriteId = $data['rewrite-id'];
             $newView = $newRewrite[1];
             $newViewId = $newRewrite[0];
-
 
             if ($all === 1) {
                 self::allReassign($rewriteId, $newView, $newViewId);
@@ -373,9 +376,15 @@ class RewriteUrlAdminController extends BaseAdminController
 
         $search = $this->getRequest()->query->get('q');
 
-        $rewritingUrl = RewritingUrlQuery::create()->findOneByUrl($search);
+        $rewritingUrl = RewritingUrlQuery::create()
+            ->filterByView(RewriteUrl::getUnknownSources(), Criteria::NOT_IN)
+            ->findOneByUrl($search);
 
         if ($rewritingUrl !== null) {
+            if (!in_array($rewritingUrl->getView(), $this->correspondence)) {
+                return $this->jsonResponse(json_encode(false));
+            }
+
             $route = $this->getRoute(
                 "admin.".$this->correspondence[$rewritingUrl->getView()].".update",
                 [$rewritingUrl->getView().'_id'=>$rewritingUrl->getViewId()]
