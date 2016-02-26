@@ -16,6 +16,7 @@
 
     <services>
         <service id="rewriteurl.action" class="RewriteUrl\EventListeners\RewriteUrlListener">
+            <argument type="service" id="event_dispatcher" />
             <tag name="kernel.event_subscriber"/>
         </service>
     </services>

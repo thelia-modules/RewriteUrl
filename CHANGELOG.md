@@ -1,3 +1,11 @@
+# 1.3.1
+
+- #11 Fix bug when the urls have the view `obsolete_rewriten_url_view`, replace deprecated method getDispatcher, remove useless files, add logo
+
+# 1.3.0
+
+- #9 Fix compatibility whit Thelia 2.3
+
 # 1.2.3
 
 - #8 Fix add url that redirect on itself, add screenshot
