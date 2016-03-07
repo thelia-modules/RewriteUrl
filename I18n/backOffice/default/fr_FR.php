@@ -19,7 +19,7 @@ return array(
     'Please wait ...' => 'Veuillez patienter ...',
     'Product' => 'Produit',
     'Reassign this redirect' => 'Réassigner cette redirection',
-    'Redirect all urls' => 'Rediriger touts les urls',
+    'Redirect all urls' => 'Rediriger toutes les urls',
     'Redirect all urls on a (category, product, folder, content, brand).' => 'Rediriger touts les urls sur un/une (catégorie, produit, dossier, contenu, marque).',
     'Redirect to default' => 'Rediriger sur l\'url par défaut',
     'Redirected' => 'Redirigé vers',
