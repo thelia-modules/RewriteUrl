@@ -55,6 +55,10 @@
                                             <caption class="clearfix">
                                                 {intl l='Categories' d="rewriteurl.bo.default"}
                                                 ({count type="list-notrewritenurls" name="list-notrewritenurls-category" lang=$edit_language_id categorie="category"})
+                                                <button type="button" class="btn btn-default pull-right js-popover" data-html="true" data-container="body" data-toggle="popover" data-placement="left"
+                                                        data-content="{intl l='For questions or bug reporting, thank you to use %url.' url='<a href=\'https://github.com/thelia-modules/RewriteUrl\' target=\'_blank\'>GitHub</a>' d="rewriteurl.bo.default"}">
+                                                    <i class="glyphicon glyphicon-info-sign"></i>
+                                                </button>
                                             </caption>
 
                                             <thead>
@@ -124,6 +128,10 @@
                                             <caption class="clearfix">
                                                 {intl l='Products' d="rewriteurl.bo.default"}
                                                 ({count type="list-notrewritenurls" name="list-notrewritenurls-product" lang=$edit_language_id categorie="product"})
+                                                <button type="button" class="btn btn-default pull-right js-popover" data-html="true" data-container="body" data-toggle="popover" data-placement="left"
+                                                data-content="{intl l='For questions or bug reporting, thank you to use %url.' url='<a href=\'https://github.com/thelia-modules/RewriteUrl\' target=\'_blank\'>GitHub</a>' d="rewriteurl.bo.default"}">
+                                                    <i class="glyphicon glyphicon-info-sign"></i>
+                                                </button>
                                             </caption>
 
                                             <thead>
@@ -200,6 +208,10 @@
                                         <caption class="clearfix">
                                             {intl l='Brands' d="rewriteurl.bo.default"}
                                             ({count type="list-notrewritenurls" name="list-notrewritenurls-brand" lang=$edit_language_id categorie="brand"})
+                                            <button type="button" class="btn btn-default pull-right js-popover" data-html="true" data-container="body" data-toggle="popover" data-placement="left"
+                                            data-content="{intl l='For questions or bug reporting, thank you to use %url.' url='<a href=\'https://github.com/thelia-modules/RewriteUrl\' target=\'_blank\'>GitHub</a>' d="rewriteurl.bo.default"}">
+                                                    <i class="glyphicon glyphicon-info-sign"></i>
+                                            </button>
                                         </caption>
 
                                         <thead>
@@ -269,6 +281,10 @@
                                             <caption class="clearfix">
                                                 {intl l='Folders' d="rewriteurl.bo.default"}
                                                 ({count type="list-notrewritenurls" name="list-notrewritenurls-folder" lang=$edit_language_id categorie="folder"})
+                                                <button type="button" class="btn btn-default pull-right js-popover" data-html="true" data-container="body" data-toggle="popover" data-placement="left"
+                                                data-content="{intl l='For questions or bug reporting, thank you to use %url.' url='<a href=\'https://github.com/thelia-modules/RewriteUrl\' target=\'_blank\'>GitHub</a>' d="rewriteurl.bo.default"}">
+                                                    <i class="glyphicon glyphicon-info-sign"></i>
+                                                </button>
                                             </caption>
 
                                             <thead>
@@ -338,6 +354,10 @@
                                             <caption class="clearfix">
                                                 {intl l='Contents' d="rewriteurl.bo.default"}
                                                 ({count type="list-notrewritenurls" name="list-notrewritenurls-content" lang=$edit_language_id categorie="content"})
+                                                <button type="button" class="btn btn-default pull-right js-popover" data-html="true" data-container="body" data-toggle="popover" data-placement="left"
+                                                data-content="{intl l='For questions or bug reporting, thank you to use %url.' url='<a href=\'https://github.com/thelia-modules/RewriteUrl\' target=\'_blank\'>GitHub</a>' d="rewriteurl.bo.default"}">
+                                                    <i class="glyphicon glyphicon-info-sign"></i>
+                                                </button>
                                             </caption>
 
                                             <thead>
@@ -409,6 +429,7 @@
 {block name="javascript-initialization"}
     <script>
     $(function() {
+        $('.js-popover').popover();
         {if ! empty($current_tab)}
             $('.nav-tabs a[href="#{$current_tab}"]').trigger("click");
         {/if}
