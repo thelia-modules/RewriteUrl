@@ -451,7 +451,7 @@ class RewriteUrlAdminController extends BaseAdminController
         /** @var \Thelia\Model\ProductI18n $productI18n */
         foreach ($productsI18n as $productI18n) {
             $product = $productI18n->getProduct();
-            $resultArray['product'][$product->getId()] = $productI18n->getTitle();
+            $resultArray['product'][$product->getId()] = $product->getRef().' : '.$productI18n->getTitle();
         }
 
         /** @var \Thelia\Model\Product $product */

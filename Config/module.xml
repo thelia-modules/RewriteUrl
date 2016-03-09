@@ -7,7 +7,7 @@
     <descriptive locale="fr_FR">
         <title>Gérer la réécriture d'url</title>
     </descriptive>
-    <version>1.4</version>
+    <version>1.4.1</version>
     <author>
         <name>Vincent Lopes, Gilles Bourgeat, Tom Pradat</name>
         <email>vlopes@openstudio.fr, gbourgeat@openstudio.fr, tpradat@openstudio.fr</email>

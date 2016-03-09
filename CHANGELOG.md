@@ -1,3 +1,7 @@
+# 1.4.1
+
+- #13 Add ref in the product reassign url search
+
 # 1.4
 
 - #12 Add link in the back office (configuration) to display not rewriten urls in products, brands, categories, folders and contents
