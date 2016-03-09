@@ -22,5 +22,9 @@
     <route id="rewrite.url.reassign" path="/admin/module/rewriteurl/reassign">
         <default key="_controller">RewriteUrl\Controller\Admin\RewriteUrlAdminController::reassignAction</default>
     </route>
+    <route id="rewrite.url.list-notrewritenurls" path="/admin/list-notrewritenurls">
+        <default key="_controller">RewriteUrl\Controller\Admin\NotRewritenUrlsAdminController::defaultAction</default>
+    </route>
+
 
 </routes>

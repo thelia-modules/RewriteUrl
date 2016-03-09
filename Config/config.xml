@@ -6,6 +6,7 @@
 
     <loops>
         <loop name="rewrite_url" class="RewriteUrl\Loop\RewriteUrlLoop" />
+        <loop name="list-notrewritenurls" class="RewriteUrl\Loop\NotRewritenUrlCategoryLoop"/>
     </loops>
 
     <forms>
@@ -20,5 +21,11 @@
             <tag name="kernel.event_subscriber"/>
         </service>
     </services>
+
+    <hooks>
+        <hook id="notrewritenurls.hook.back" class="RewriteUrl\Hook\ConfigurationHook">
+            <tag name="hook.event_listener" event="configuration.catalog-top" type="back" method="onConfigurationCatalogTop"/>
+        </hook>
+    </hooks>
 
 </config>
