@@ -45,3 +45,4 @@ BackOffice :
 ## Screenshot
 
 ![RewriteUrl](https://github.com/thelia-modules/RewriteUrl/blob/master/screenshot/screenshot-1.jpeg)
+![RewriteUrl](https://github.com/thelia-modules/RewriteUrl/blob/master/screenshot/screenshot-2.jpeg)
