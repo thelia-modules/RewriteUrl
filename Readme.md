@@ -29,7 +29,7 @@ Thelia > 2.0
 Add it in your main thelia composer.json file
 
 ```
-composer require thelia/rewrite-url-module:~1.2
+composer require thelia/rewrite-url-module:~1.4.0
 ```
 
 ## Usage
