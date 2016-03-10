@@ -1,3 +1,7 @@
+# 1.4
+
+- #12 Add link in the back office (configuration) to display not rewriten urls in products, brands, categories, folders and contents
+
 # 1.3.1
 
 - #11 Fix bug when the urls have the view `obsolete_rewriten_url_view`, replace deprecated method getDispatcher, remove useless files, add logo
