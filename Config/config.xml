@@ -23,7 +23,7 @@
     </services>
 
     <hooks>
-        <hook id="notrewritenurls.hook.back" class="RewriteUrl\Hook\ConfigurationHook">
+        <hook id="notrewritenurls.hook.back" class="RewriteUrl\Hook\ConfigurationHook" scope="request">
             <tag name="hook.event_listener" event="configuration.catalog-top" type="back" method="onConfigurationCatalogTop"/>
         </hook>
     </hooks>

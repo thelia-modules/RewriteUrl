@@ -1,3 +1,8 @@
+# 1.4.2
+
+- #14 Fix, missing scope request for Thelia < 2.3
+- #14 Change the minimal required version of Thelia to 2.1
+
 # 1.4.1
 
 - #13 Add ref in the product reassign url search
