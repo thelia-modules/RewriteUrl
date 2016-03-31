@@ -1,3 +1,7 @@
+# 1.4.3
+
+- #15 UX improvements
+
 # 1.4.2
 
 - #14 Fix, missing scope request for Thelia < 2.3

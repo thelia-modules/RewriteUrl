@@ -15,7 +15,7 @@ This module manage rewritten urls for products, categories, folders, contents, b
 
 ## Compatibility
 
-Thelia > 2.0
+Thelia > 2.1
 
 ## Installation
 
