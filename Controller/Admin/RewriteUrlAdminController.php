@@ -23,6 +23,7 @@ use RewriteUrl\RewriteUrl;
 use Thelia\Controller\Admin\BaseAdminController;
 use Thelia\Core\Security\AccessManager;
 use Thelia\Core\Security\Resource\AdminResources;
+use Thelia\Core\Translation\Translator;
 use Thelia\Form\Exception\FormValidationException;
 use Thelia\Model\BrandI18nQuery;
 use Thelia\Model\CategoryI18nQuery;
@@ -116,8 +117,16 @@ class RewriteUrlAdminController extends BaseAdminController
 
             $findExist = RewritingUrlQuery::create()->findOneByUrl(($data['url']));
 
-            if ($findExist !== null && in_array($findExist->getView(), RewriteUrl::getUnknownSources()) && !empty($findExist->getView())) {
-                throw new \Exception("Url already exist");
+            if ($findExist !== null && !in_array($findExist->getView(), RewriteUrl::getUnknownSources()) && $findExist->getView() !== '') {
+                $url = $this->generateUrlByRewritingUrl($findExist);
+
+                throw new \Exception(
+                    Translator::getInstance()->trans(
+                        "This url is already used here %url.",
+                        ['%url' => '<a href="' . $url . '">' . $url . '</a>'],
+                        RewriteUrl::MODULE_DOMAIN
+                    )
+                );
             }
 
             $rewriting = $findExist !== null ? $findExist : new RewritingUrlOverride();
@@ -385,16 +394,7 @@ class RewriteUrlAdminController extends BaseAdminController
                 return $this->jsonResponse(json_encode(false));
             }
 
-            $route = $this->getRoute(
-                "admin.".$this->correspondence[$rewritingUrl->getView()].".update",
-                [$rewritingUrl->getView().'_id'=>$rewritingUrl->getViewId()]
-            );
-            $url = URL::getInstance()->absoluteUrl(
-                $route,
-                [$rewritingUrl->getView().'_id'=>$rewritingUrl->getViewId()]
-            );
-
-            $rewritingUrlArray = ["reassignUrl" => $url];
+            $rewritingUrlArray = ["reassignUrl" => $this->generateUrlByRewritingUrl($rewritingUrl)];
 
             return $this->jsonResponse(json_encode($rewritingUrlArray));
         } else {
@@ -461,5 +461,25 @@ class RewriteUrlAdminController extends BaseAdminController
         }
 
         return $this->jsonResponse(json_encode($resultArray));
+    }
+
+    /**
+     * @param RewritingUrl $rewritingUrl
+     * @return null|string url
+     */
+    protected function generateUrlByRewritingUrl(RewritingUrl $rewritingUrl)
+    {
+        if (isset($this->correspondence[$rewritingUrl->getView()])) {
+            $route = $this->getRoute(
+                "admin.".$this->correspondence[$rewritingUrl->getView()] . ".update",
+                [$rewritingUrl->getView().'_id' => $rewritingUrl->getViewId()]
+            );
+            return URL::getInstance()->absoluteUrl(
+                $route,
+                [$rewritingUrl->getView().'_id' => $rewritingUrl->getViewId(), 'current_tab' => 'modules']
+            );
+        }
+
+        return null;
     }
 }

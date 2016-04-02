@@ -57,4 +57,5 @@ return array(
     'Reassign the url' => 'Ré-attribuer l\'url',
     'Reassign all urls' => 'Ré-attribuer toutes les urls',
     'Redirect the url %html on :' => 'Rediriger l\'url %html sur :',
+    'This url is already used here %url.' => 'Cette url est déjà utilisée ici %url.',
 );

@@ -1,3 +1,8 @@
+# 1.4.4
+
+- #16 The return of the UX improvements ;)
+- #16 Fix bug, it was possible to create an existing url
+
 # 1.4.3
 
 - #15 UX improvements

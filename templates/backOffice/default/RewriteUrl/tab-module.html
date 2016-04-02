@@ -139,7 +139,7 @@
                         {form_hidden_fields form=$form}
 
                         {if $form_error}
-                            <div class="alert alert-danger">{$form_error_message}</div>
+                            <div class="alert alert-danger">{$form_error_message nofilter}</div>
                         {/if}
 
                         <div class="alert alert-danger js-alert-error hide"></div>
@@ -162,7 +162,7 @@
                                 {form_field form=$form field="locale"}
                                     <select class="form-control" name="{$name}" id="">
                                         {loop type="lang" name="lang_loop"}
-                                            <option value="{$LOCALE}"{if $IS_DEFAULT}selected{/if} >
+                                            <option value="{$LOCALE}"{if $LOCALE == $data}selected{/if} >
                                                 {$TITLE}
                                             </option>
                                         {/loop}
@@ -175,7 +175,7 @@
                                 {form_field form=$form field="url"}
                                     <div class="input-group">
                                         <span class="input-group-addon">{$url_language|default:{config key="url_site"}}/</span>
-                                        <input type="text" name="{$name}" class="form-control js-input-url-add" placeholder="Url" required>
+                                        <input type="text" name="{$name}" value="{$data}" class="form-control js-input-url-add" placeholder="Url" required>
                                     </div>
                                 {/form_field}
                                 </div>
@@ -184,8 +184,8 @@
                                 <div class="form-group ">
                                 {form_field form=$form field="default"}
                                     <select class="form-control" name="{$name}">
-                                        <option value="0">{intl l="Redirect to default" d="rewriteurl.bo.default"}</option>
-                                        <option value="1">{intl l="Default" d="rewriteurl.bo.default"}</option>
+                                        <option value="0" {if !$data}selected{/if}>{intl l="Redirect to default" d="rewriteurl.bo.default"}</option>
+                                        <option value="1" {if $data}selected{/if}>{intl l="Default" d="rewriteurl.bo.default"}</option>
                                     </select>
                                 {/form_field}
                                 </div>
