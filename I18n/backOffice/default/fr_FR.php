@@ -22,7 +22,7 @@ return array(
     'Default url' => 'Url par défaut',
     'Delete Url' => 'Supprimer une Url',
     'Delete this redirect' => 'Supprimer cette redirection',
-    'Do you really want to delete this Url ?' => 'Voulez-vous vraiment supprimer cette Url ?',
+    'Do you really want to delete the url %html ?' => 'Voulez-vous vraiment supprimer l\'url %html ?',
     'Error this url already exist you can reassign by follow this ' => 'Erreur cette url existe déjà, vous pouvez la réassigner en suivant ce ',
     'Folder' => 'Dossier',
     'Folders' => 'Dossiers',
@@ -54,4 +54,7 @@ return array(
     'View locale' => 'Langue',
     'content' => 'Contenu',
     'link' => 'lien',
+    'Reassign the url' => 'Ré-attribuer l\'url',
+    'Reassign all urls' => 'Ré-attribuer toutes les urls',
+    'Redirect the url %html on :' => 'Rediriger l\'url %html sur :',
 );

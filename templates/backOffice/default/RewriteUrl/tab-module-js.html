@@ -7,7 +7,9 @@
       product: "{intl l="Product"}",
       brand: "{intl l="Brand"}",
       folder: "{intl l="Folder"}",
-      content: "{intl l="content"}"
+      content: "{intl l="content"}",
+      modalTitleReassign: "{intl l="Reassign the url" d="rewriteurl.bo.default"}",
+      modalTitleReassignAll: "{intl l="Reassign all urls" d="rewriteurl.bo.default"}"
     };
 
     $module.find('.js-popover').popover();
@@ -20,7 +22,10 @@
     $module.on('click', '.js-action-reassign', function(event){
       event.preventDefault();
       $modalSearch.find('.js-input-url-id').val($(this).data('id'));
+      $modalSearch.find('.js-target-url').text('/' + $(this).data('url'));
       $modalSearch.find('.js-input-all').val(0);
+      $modalSearch.find('.modal-header h3').text(i18n.modalTitleReassign);
+      $modalSearch.find('.js-info-redirected').show();
       $modalSearch.modal('show');
     });
 
@@ -91,6 +96,7 @@
 
     $module.on('click', '.js-action-delete', function(){
       $module.find('.js-input-delete').val($(this).data('id'));
+      $module.find('.js-target-url').text('/' + $(this).data('url'));
     });
 
     /*****************************************/
@@ -126,8 +132,17 @@
       event.preventDefault();
       $modalSearch.find('.js-input-url-id').val($(this).data('id'));
       $modalSearch.find('.js-input-all').val(1);
+      $modalSearch.find('.modal-header h3').text(i18n.modalTitleReassignAll);
+      $modalSearch.find('.js-info-redirected').hide();
       $modalSearch.modal('show');
     });
 
+    $module.on('mouseover', '.js-action-view-redirected', function(event){
+      $module.find('tr[data-id="' + $(this).text() + '"]').addClass('info');
+      $(this).addClass('info');
+    });
+    $module.on('mouseleave', '.js-action-view-redirected', function(event){
+      $module.find('tr[data-id="' + $(this).text() + '"]').removeClass('info');
+    });
   }(jQuery, jQuery("#module-RewriteUrl")));
 </script>

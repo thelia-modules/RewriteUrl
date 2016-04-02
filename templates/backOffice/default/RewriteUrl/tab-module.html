@@ -10,8 +10,13 @@
 /*      file that was distributed with this source code.                             */
 /*************************************************************************************/
 *}
-
-<div class="general-block-decorator" id="module-RewriteUrl">
+<style>
+    #module-RewriteUrl .js-target-url {
+        background-color: #f9f9f9;
+        font-weight: bold;
+    }
+</style>
+<div id="module-RewriteUrl">
     <div class="row">
         <div class="col-md-12">
             <div class="table-responsive">
@@ -30,26 +35,26 @@
                             <th>#</th>
                             <th>{intl l='View locale' d="rewriteurl.bo.default"}</th>
                             <th>{intl l='Url' d="rewriteurl.bo.default"}</th>
-                            <th>{intl l='Actions' d="rewriteurl.bo.default"}</th>
+                            <th class="actions">{intl l='Actions' d="rewriteurl.bo.default"}</th>
                         </tr>
                         </thead>
 
                         <tbody>
                         {loop type="rewrite_url" name="rewriteUrl" view_id="{$ID}" view="{$viewName}" redirect="0"}
-                            <tr>
+                            <tr data-id="{$ID_URL}">
                                 <td>
                                     {$ID_URL}
                                 </td>
                                 <td>
                                     {$code = "_"|explode:$VIEW_LOCALE}
-                                    <img src="{image file="assets/img/flags/{$code[0]}.png"}" alt="{$VIEW_LOCALE}"/>
+                                    <img src="{image file="assets/img/flags/{$code[0]}.png"}" alt="{$VIEW_LOCALE}" title="{$VIEW_LOCALE}"/>
                                 </td>
                                 <td>
                                     {$URL}
                                 </td>
-                                <td>
-                                    <a class="btn btn-default btn-danger btn-xs js-action-delete" title="{intl l='Delete this redirect' d="rewriteurl.bo.default"}"  href="#rewrite_delete_dialog" data-id="{$ID_URL}" data-is_default="{$IS_DEFAULT}" data-toggle="modal"><i class="glyphicon glyphicon-trash"></i></a>
-                                    <a class="btn btn-default btn-info btn-xs js-action-reassign" title="{intl l='Reassign this redirect' d="rewriteurl.bo.default"}"  data-id="{$ID_URL}" data-is_default="{$IS_DEFAULT}"><i class="glyphicon glyphicon-refresh"></i></a>
+                                <td class="actions">
+                                    <a class="btn btn-default btn-danger btn-xs js-action-delete" title="{intl l='Delete this redirect' d="rewriteurl.bo.default"}"  href="#rewrite_delete_dialog" data-url="{$URL}" data-id="{$ID_URL}" data-is_default="{$IS_DEFAULT}" data-toggle="modal"><i class="glyphicon glyphicon-trash"></i></a>
+                                    <a class="btn btn-default btn-info btn-xs js-action-reassign" title="{intl l='Reassign this redirect' d="rewriteurl.bo.default"}"  data-url="{$URL}" data-id="{$ID_URL}" data-is_default="{$IS_DEFAULT}"><i class="glyphicon glyphicon-refresh"></i></a>
                                 </td>
                             </tr>
                         {/loop}
@@ -76,19 +81,19 @@
 
                         <tbody>
                         {loop type="rewrite_url" name="rewriteUrl" view_id="{$ID}" view="{$viewName}" redirect="1"}
-                            <tr>
+                            <tr data-id="{$ID_URL}">
                                 <td>
                                     {$ID_URL}
                                 </td>
                                 <td>
                                     {$code = "_"|explode:$VIEW_LOCALE}
-                                    <img src="{image file="assets/img/flags/{$code[0]}.png"}" alt="{$VIEW_LOCALE}"/>
+                                    <img src="{image file="assets/img/flags/{$code[0]}.png"}" alt="{$VIEW_LOCALE}" title="{$VIEW_LOCALE}"/>
                                 </td>
                                 <td>
                                     {$URL}
                                 </td>
                                 <td class="object-title">
-                                    {$REDIRECTED}
+                                    <span class="js-action-view-redirected">{$REDIRECTED}</span>
                                 </td>
                                 <td class="actions">
                                     <div class="btn-group">
@@ -106,8 +111,8 @@
                                                 {/form_field}
 
                                                 <button title="{intl l='Set this redirect to default' d="rewriteurl.bo.default"}" class="btn btn-default btn-primary btn-xs js-action-default" type="submit"><i class="glyphicon glyphicon-home"></i></button>
-                                                <a class="btn btn-default btn-danger btn-xs js-action-delete" title="{intl l='Delete this redirect' d="rewriteurl.bo.default"}"  href="#rewrite_delete_dialog" data-id="{$ID_URL}" data-is_default="{$IS_DEFAULT}" data-toggle="modal"><i class="glyphicon glyphicon-trash"></i></a>
-                                                <a class="btn btn-default btn-info btn-xs js-action-reassign" title="{intl l='Reassign this redirect' d="rewriteurl.bo.default"}"  data-id="{$ID_URL}" data-is_default="{$IS_DEFAULT}"><i class="glyphicon glyphicon-refresh"></i></a>
+                                                <a class="btn btn-default btn-danger btn-xs js-action-delete" title="{intl l='Delete this redirect' d="rewriteurl.bo.default"}"  href="#rewrite_delete_dialog" data-url="{$URL}" data-id="{$ID_URL}" data-is_default="{$IS_DEFAULT}" data-toggle="modal"><i class="glyphicon glyphicon-trash"></i></a>
+                                                <a class="btn btn-default btn-info btn-xs js-action-reassign" title="{intl l='Reassign this redirect' d="rewriteurl.bo.default"}"  data-url="{$URL}" data-id="{$ID_URL}" data-is_default="{$IS_DEFAULT}"><i class="glyphicon glyphicon-refresh"></i></a>
                                             </form>
                                         {/form}
 
@@ -220,7 +225,15 @@
     <div class="modal fade js-modal-search" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h3></h3>
+                </div>
                 <div class="modal-body align-center">
+                    <span class="js-info-redirected">
+                        {intl l="Redirect the url %html on :" d="rewriteurl.bo.default" html="<span class=\"js-target-url\"></span>"}
+                    </span>
+                    <br/><br/>
                     <form class="js-form-search">
                         <div class="form-group">
                             <div class="input-group">
@@ -282,7 +295,7 @@
 
     dialog_id       = "rewrite_delete_dialog"
     dialog_title    = {intl l="Delete Url" d="rewriteurl.bo.default"}
-    dialog_message  = {intl l="Do you really want to delete this Url ?" d="rewriteurl.bo.default"}
+    dialog_message  = {intl l="Do you really want to delete the url %html ?" d="rewriteurl.bo.default" html="<span class=\"js-target-url\"></span>"}
 
     form_action         = {url path='/admin/module/rewriteurl/delete'}
     form_content        = {$smarty.capture.rewrite_delete_dialog nofilter}
