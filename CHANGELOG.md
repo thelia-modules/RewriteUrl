@@ -1,3 +1,7 @@
+# 1.4.5
+
+- #17 Performance improvement for the page which lists the urls not rewriten.
+
 # 1.4.4
 
 - #16 The return of the UX improvements ;)
