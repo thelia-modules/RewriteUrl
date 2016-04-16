@@ -13,7 +13,6 @@
 namespace RewriteUrl\Loop;
 
 use Propel\Runtime\ActiveQuery\Criteria;
-use Propel\Runtime\ActiveQuery\Join;
 use Thelia\Core\Template\Element\BaseI18nLoop;
 use Thelia\Core\Template\Element\LoopResult;
 use Thelia\Core\Template\Element\LoopResultRow;
@@ -21,91 +20,75 @@ use Thelia\Core\Template\Element\PropelSearchLoopInterface;
 use Thelia\Core\Template\Loop\Argument\Argument;
 use Thelia\Core\Template\Loop\Argument\ArgumentCollection;
 use Thelia\Model\Base\BrandQuery;
+use Thelia\Model\Brand;
+use Thelia\Model\Category;
 use Thelia\Model\CategoryQuery;
+use Thelia\Model\Content;
 use Thelia\Model\ContentQuery;
+use Thelia\Model\Folder;
 use Thelia\Model\FolderQuery;
-use Thelia\Model\LangQuery;
-use Thelia\Model\Map\BrandTableMap;
-use Thelia\Model\Map\CategoryTableMap;
-use Thelia\Model\Map\ContentTableMap;
-use Thelia\Model\Map\FolderTableMap;
-use Thelia\Model\Map\ProductTableMap;
 use Thelia\Model\Map\RewritingUrlTableMap;
+use Thelia\Model\Product;
 use Thelia\Model\ProductQuery;
+use Thelia\Model\RewritingUrlQuery;
 
 /**
  * Class NotRewritenUrlCategoryLoop
  * @package RewriteUrl\Loop
  * @author Tom Pradat <tpradat@openstudio.fr>
+ * @author Gilles Bourgeat <gilles@thelia.net>
+ *
+ * @method string getView()
  */
 class NotRewritenUrlCategoryLoop extends BaseI18nLoop implements PropelSearchLoopInterface
 {
+    protected static $cacheRewritingUrl = [];
+
     protected function getArgDefinitions()
     {
         return new ArgumentCollection(
-            Argument::createAnyTypeArgument('categorie')
+            Argument::createEnumListTypeArgument(
+                'view',
+                ['product', 'category', 'folder', 'content', 'brand']
+            )
         );
     }
 
     public function buildModelCriteria()
     {
-        $localequery = LangQuery::create()->findOneById($this->getLang());
-        $locale = $localequery->getLocale();
-        $cat = ucfirst($this->getCategorie());
-        $objectQuery = null;
-        $urlJoin = null;
+        $view = $this->getView()[0];
 
-        switch ($cat) {
-            case 'Product':
-                $objectQuery = ProductQuery::create();
-                $urlJoin = new Join(ProductTableMap::ID, RewritingUrlTableMap::VIEW_ID, Criteria::LEFT_JOIN);
-                break;
-            case 'Brand':
-                $objectQuery = BrandQuery::create();
-                $urlJoin = new Join(BrandTableMap::ID, RewritingUrlTableMap::VIEW_ID, Criteria::LEFT_JOIN);
-                break;
-            case 'Category':
-                $objectQuery = CategoryQuery::create();
-                $urlJoin = new Join(CategoryTableMap::ID, RewritingUrlTableMap::VIEW_ID, Criteria::LEFT_JOIN);
-                break;
-            case 'Folder':
-                $objectQuery = FolderQuery::create();
-                $urlJoin = new Join(FolderTableMap::ID, RewritingUrlTableMap::VIEW_ID, Criteria::LEFT_JOIN);
-                break;
-            case 'Content':
-                $objectQuery = ContentQuery::create();
-                $urlJoin = new Join(ContentTableMap::ID, RewritingUrlTableMap::VIEW_ID, Criteria::LEFT_JOIN);
-                break;
+        $rewritingUrlQuery = RewritingUrlQuery::create();
+
+        $class = 'Thelia\Model\\' . ucfirst($view) . 'Query';
+        /** @var CategoryQuery|ProductQuery|FolderQuery|ContentQuery|BrandQuery $objectQuery */
+        $objectQuery = $class::create();
+
+        $rewritingUrlQuery->filterByView($view);
+
+        if (!isset(static::$cacheRewritingUrl[$view])) {
+            static::$cacheRewritingUrl[$view] = $rewritingUrlQuery
+                ->select([RewritingUrlTableMap::VIEW_ID])
+                ->groupBy(RewritingUrlTableMap::VIEW_ID)
+                ->find();
         }
 
         $query = $objectQuery
-            ->joinWithI18n($locale)
-            ->addJoinObject($urlJoin, 'url_rewriting_join')
-            ->addJoinCondition(
-                'url_rewriting_join',
-                RewritingUrlTableMap::VIEW . ' = ?',
-                strtolower($cat),
-                null,
-                \PDO::PARAM_STR
-            )
-            ->addJoinCondition(
-                'url_rewriting_join',
-                RewritingUrlTableMap::VIEW_LOCALE . ' = ?',
-                $locale,
-                null,
-                \PDO::PARAM_STR
-            )
-            ->where('ISNULL(rewriting_url.id)')
-        ;
+            ->filterById(static::$cacheRewritingUrl[$view]->getData(), Criteria::NOT_IN);
+
+        /* manage translations */
+        $this->configureI18nProcessing($query, ['TITLE']);
+
         return $query;
     }
 
     public function parseResults(LoopResult $loopResult)
     {
+        /** @var Category|Product|Folder|Content|Brand $category */
         foreach ($loopResult->getResultDataCollection() as $category) {
             $loopResultRow = (new LoopResultRow($category))
                 ->set('ID', $category->getId())
-                ->set('NAME', $category->getTitle());
+                ->set('NAME', $category->getVirtualColumn('i18n_TITLE'));
 
             if (property_exists($category, 'ref')) {
                 $loopResultRow->set('REF', $category->getRef());

@@ -57,31 +57,31 @@
                                 <li role="presentation" class="active">
                                     <a href="#categories" aria-controls="categories" role="tab" data-toggle="tab">
                                         {intl l="Categories" d="rewriteurl.bo.default"}
-                                        <span class="label label-warning">({count type="list-notrewritenurls" name="list-notrewritenurls-category" lang=$edit_language_id categorie="category"})</span>
+                                        <span class="label label-warning">({count type="list-notrewritenurls" name="list-notrewritenurls-category" lang=$edit_language_id view="category"})</span>
                                     </a>
                                 </li>
                                 <li role="presentation">
                                     <a href="#products" aria-controls="products" role="tab" data-toggle="tab">
                                         {intl l="Products" d="rewriteurl.bo.default"}
-                                        <span class="label label-warning">({count type="list-notrewritenurls" name="list-notrewritenurls-product" lang=$edit_language_id categorie="product"})</span>
+                                        <span class="label label-warning">({count type="list-notrewritenurls" name="list-notrewritenurls-product" lang=$edit_language_id view="product"})</span>
                                     </a>
                                 </li>
                                 <li role="presentation">
                                     <a href="#brands" aria-controls="brands" role="tab" data-toggle="tab">
                                         {intl l="Brands" d="rewriteurl.bo.default"}
-                                        <span class="label label-warning">({count type="list-notrewritenurls" name="list-notrewritenurls-brand" lang=$edit_language_id categorie="brand"})</span>
+                                        <span class="label label-warning">({count type="list-notrewritenurls" name="list-notrewritenurls-brand" lang=$edit_language_id view="brand"})</span>
                                     </a>
                                 </li>
                                 <li role="presentation">
                                     <a href="#folders" aria-controls="folders" role="tab" data-toggle="tab">
                                         {intl l="Folders" d="rewriteurl.bo.default"}
-                                        <span class="label label-warning">({count type="list-notrewritenurls" name="list-notrewritenurls-folder" lang=$edit_language_id categorie="folder"})</span>
+                                        <span class="label label-warning">({count type="list-notrewritenurls" name="list-notrewritenurls-folder" lang=$edit_language_id view="folder"})</span>
                                     </a>
                                 </li>
                                 <li role="presentation">
                                     <a href="#contents" aria-controls="contents" role="tab" data-toggle="tab">
                                         {intl l="Contents" d="rewriteurl.bo.default"}
-                                        <span class="label label-warning">({count type="list-notrewritenurls" name="list-notrewritenurls-content" lang=$edit_language_id categorie="content"})</span>
+                                        <span class="label label-warning">({count type="list-notrewritenurls" name="list-notrewritenurls-content" lang=$edit_language_id view="content"})</span>
                                     </a>
                                 </li>
                             </ul>
@@ -108,7 +108,7 @@
                                                 </tr>
                                                 </thead>
                                                 <tbody>
-                                                {loop type="list-notrewritenurls" name="list-notrewritenurls-category" page=$page_category backend_context="on" lang=$edit_language_id categorie="category" limit="10"}
+                                                {loop type="list-notrewritenurls" name="list-notrewritenurls-category" page=$page_category backend_context="on" lang=$edit_language_id view="category" limit="10"}
                                                     <tr>
                                                         <td>
                                                             {$ID}
@@ -174,7 +174,7 @@
                                                 </tr>
                                                 </thead>
                                                 <tbody>
-                                                {loop type="list-notrewritenurls" name="list-notrewritenurls-product" lang=$edit_language_id categorie='product' page=$page_product limit="10" backend_context="on"}
+                                                {loop type="list-notrewritenurls" name="list-notrewritenurls-product" lang=$edit_language_id view='product' page=$page_product limit="10" backend_context="on"}
                                                     <tr>
                                                         <td>
                                                             {$ID}
@@ -240,7 +240,7 @@
                                                 </tr>
                                                 </thead>
                                                 <tbody>
-                                                {loop type="list-notrewritenurls" name="list-notrewritenurls-brand" lang=$edit_language_id categorie='brand' page=$page_brand limit="10" backend_context="on"}
+                                                {loop type="list-notrewritenurls" name="list-notrewritenurls-brand" lang=$edit_language_id view='brand' page=$page_brand limit="10" backend_context="on"}
                                                     <tr>
                                                         <td>
                                                             {$ID}
@@ -302,7 +302,7 @@
                                                 </tr>
                                                 </thead>
                                                 <tbody>
-                                                {loop type="list-notrewritenurls" name="list-notrewritenurls-folder" lang=$edit_language_id categorie='folder' page=$page_folder limit="10" backend_context="on"}
+                                                {loop type="list-notrewritenurls" name="list-notrewritenurls-folder" lang=$edit_language_id view='folder' page=$page_folder limit="10" backend_context="on"}
                                                     <tr>
                                                         <td>
                                                             {$ID}
@@ -364,7 +364,7 @@
                                                 </tr>
                                                 </thead>
                                                 <tbody>
-                                                {loop type="list-notrewritenurls" name="list-notrewritenurls-content" lang=$edit_language_id categorie='content' page=$page_content limit="10" backend_context="on"}
+                                                {loop type="list-notrewritenurls" name="list-notrewritenurls-content" lang=$edit_language_id view='content' page=$page_content limit="10" backend_context="on"}
                                                     <tr>
                                                         <td>
                                                             {$ID}
