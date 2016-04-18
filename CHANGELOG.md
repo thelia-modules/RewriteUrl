@@ -1,6 +1,10 @@
+# 1.4.6
+
+- #18 Fix bug, Following the pull request #17, the list of non rewritten urls was not sort by language
+
 # 1.4.5
 
-- #17 Performance improvement for the page which lists the urls not rewriten.
+- #17 Performance improvement for the page which lists the urls not rewriten
 
 # 1.4.4
 

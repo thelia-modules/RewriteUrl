@@ -27,6 +27,7 @@ use Thelia\Model\Content;
 use Thelia\Model\ContentQuery;
 use Thelia\Model\Folder;
 use Thelia\Model\FolderQuery;
+use Thelia\Model\LangQuery;
 use Thelia\Model\Map\RewritingUrlTableMap;
 use Thelia\Model\Product;
 use Thelia\Model\ProductQuery;
@@ -64,7 +65,11 @@ class NotRewritenUrlCategoryLoop extends BaseI18nLoop implements PropelSearchLoo
         /** @var CategoryQuery|ProductQuery|FolderQuery|ContentQuery|BrandQuery $objectQuery */
         $objectQuery = $class::create();
 
-        $rewritingUrlQuery->filterByView($view);
+        $localeSearch = LangQuery::create()->findByIdOrLocale($this->getLang());
+
+        $rewritingUrlQuery->filterByView($view)->filterByViewLocale(
+            $localeSearch !== null ? $localeSearch->getLocale() : 'en_US'
+        );
 
         if (!isset(static::$cacheRewritingUrl[$view])) {
             static::$cacheRewritingUrl[$view] = $rewritingUrlQuery
