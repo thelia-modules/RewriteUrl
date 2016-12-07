@@ -1,3 +1,7 @@
+# 1.4.7
+
+- #20 Fix UI missing tbody and tr
+
 # 1.4.6
 
 - #18 Fix bug, Following the pull request #17, the list of non rewritten urls was not sort by language

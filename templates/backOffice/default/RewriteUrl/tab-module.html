@@ -123,11 +123,15 @@
                         </tbody>
                     {/ifloop}
                     {elseloop rel="rewriteUrl"}
-                        <td>
-                            <div class="alert alert-info">
-                                {intl l="No redirected url." d="rewriteurl.bo.default"}
-                            </div>
-                        </td>
+                        <tbody>
+                            <tr>
+                                <td colspan="5">
+                                    <div class="alert alert-info">
+                                        {intl l="No redirected url." d="rewriteurl.bo.default"}
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
                     {/elseloop}
                 </table>
                 <div class="title title-without-tabs clearfix">
