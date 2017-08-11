@@ -75,6 +75,7 @@
                             <th>{intl l='View locale' d="rewriteurl.bo.default"}</th>
                             <th>{intl l='Url' d="rewriteurl.bo.default"}</th>
                             <th>{intl l='Redirected' d="rewriteurl.bo.default"}</th>
+                            <th>{intl l='Type' d="rewriteurl.bo.default"}</th>
                             <th class="actions">{intl l='Actions' d="rewriteurl.bo.default"}</th>
                         </tr>
                         </thead>
@@ -94,6 +95,12 @@
                                 </td>
                                 <td class="object-title">
                                     <span class="js-action-view-redirected">{$REDIRECTED}</span>
+                                </td>
+                                <td>
+                                    <select class="js-select-redirect-type" data-idurl="{$ID_URL}" data-httpcode="{$HTTPCODE}">
+                                        <option value="301" {if $HTTPCODE == 301}selected{/if}>{intl l="Temporary redirect" d="rewriteurl.bo.default"}</option>
+                                        <option value="302" {if $HTTPCODE == 302}selected{/if}>{intl l="Permanent redirect" d="rewriteurl.bo.default"}</option>
+                                    </select>
                                 </td>
                                 <td class="actions">
                                     <div class="btn-group">
@@ -174,7 +181,7 @@
                                 {/form_field}
                                 </div>
                             </div>
-                            <div class="col-md-5">
+                            <div class="col-md-4">
                                 <div class="form-group">
                                 {form_field form=$form field="url"}
                                     <div class="input-group">
@@ -184,7 +191,7 @@
                                 {/form_field}
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <div class="form-group ">
                                 {form_field form=$form field="default"}
                                     <select class="form-control" name="{$name}">
@@ -192,6 +199,16 @@
                                         <option value="1" {if $data}selected{/if}>{intl l="Default" d="rewriteurl.bo.default"}</option>
                                     </select>
                                 {/form_field}
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group ">
+                                    {form_field form=$form field="httpcode"}
+                                    <select class="form-control" name="{$name}">
+                                        <option value="301" {if !$data}selected{/if}>{intl l="Temporary redirect" d="rewriteurl.bo.default"}</option>
+                                        <option value="302" {if $data}selected{/if}>{intl l="Permanent redirect" d="rewriteurl.bo.default"}</option>
+                                    </select>
+                                    {/form_field}
                                 </div>
                             </div>
                             <div class="col-md-2">

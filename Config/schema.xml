@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<database defaultIdMethod="native" name="thelia">
+    <!--
+    See propel documentation on http://propelorm.org for all information about schema file
+    -->
+
+    <table name="rewriting_redirect_type" namespace="RewriteUrl\Model">
+        <column name="id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="httpcode" type="INTEGER" />
+
+        <foreign-key foreignTable="rewriting_url" name="rewriting_redirect_type_FK_1" onDelete="CASCADE">
+            <reference foreign="id" local="id" />
+        </foreign-key>
+    </table>
+
+    <external-schema filename="local/config/schema.xml" referenceOnly="true" />
+</database>

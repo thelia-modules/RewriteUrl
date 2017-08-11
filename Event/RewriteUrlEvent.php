@@ -12,6 +12,7 @@
 
 namespace RewriteUrl\Event;
 
+use RewriteUrl\Model\RewritingRedirectType;
 use Thelia\Core\Event\ActionEvent;
 use Thelia\Model\RewritingUrl;
 
@@ -41,10 +42,14 @@ class RewriteUrlEvent extends ActionEvent
     /** @var RewritingUrl */
     private $rewritingUrl;
 
+    /** @var RewritingRedirectType */
+    private $redirectType;
+
     /**
      * @param RewritingUrl $rewritingUrl
+     * @param RewritingRedirectType $redirectType
      */
-    public function __construct(RewritingUrl $rewritingUrl)
+    public function __construct(RewritingUrl $rewritingUrl, RewritingRedirectType $redirectType = null)
     {
         $this->id = $rewritingUrl->getId();
         $this->url = $rewritingUrl->getUrl();
@@ -52,6 +57,7 @@ class RewriteUrlEvent extends ActionEvent
         $this->viewLocale = $rewritingUrl->getViewLocale();
         $this->redirected = $rewritingUrl->getRedirected();
         $this->rewritingUrl = $rewritingUrl;
+        $this->redirectType = $redirectType;
     }
 
     /**
@@ -60,6 +66,14 @@ class RewriteUrlEvent extends ActionEvent
     public function getRewritingUrl()
     {
         return $this->rewritingUrl;
+    }
+
+    /**
+     * @return RewritingRedirectType
+     */
+    public function getRedirectType()
+    {
+        return $this->redirectType;
     }
 
     /**

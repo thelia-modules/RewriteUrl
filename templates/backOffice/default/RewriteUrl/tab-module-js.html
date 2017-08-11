@@ -13,6 +13,8 @@
     };
 
     $module.find('.js-popover').popover();
+
+
     /*****************************************/
     /*********** Action reassign *************/
     /*****************************************/
@@ -144,5 +146,34 @@
     $module.on('mouseleave', '.js-action-view-redirected', function(event){
       $module.find('tr[data-id="' + $(this).text() + '"]').removeClass('info');
     });
+
+
+      /******************************************************************************/
+      /*********** Action "Change redirect type" (Temporary or permanent) *************/
+      /******************************************************************************/
+
+      var $loader = $('<div class="loader"></div>');
+      $('body').append($loader);
+
+
+      $module.find('.js-select-redirect-type').on("change",function () {
+          $loader.show();
+          $.ajax({
+              url: '{url path="/admin/module/rewriteurl/change-redirect-type"}',
+              data: {
+                  id_url: $(this).data('idurl'),
+                  httpcode: $(this).val()
+              },
+              dataType: 'json',
+              method: 'POST',
+              success: function(){
+                  $loader.hide();
+              },
+              error: function(){
+                  $loader.hide();
+              }
+          });
+      });
+
   }(jQuery, jQuery("#module-RewriteUrl")));
 </script>

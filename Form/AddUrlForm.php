@@ -73,6 +73,14 @@ class AddUrlForm extends BaseForm
                     'required'     => true
                 )
             )
+            ->add(
+                'httpcode',
+                'text',
+                array(
+                    'constraints'  => array(new NotBlank()),
+                    'required'     => true
+                )
+            )
         ;
     }
 }

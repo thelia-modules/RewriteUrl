@@ -13,7 +13,9 @@
 namespace RewriteUrl\Model;
 
 use Propel\Runtime\Connection\ConnectionInterface;
+use Propel\Runtime\Exception\PropelException;
 use Thelia\Model\RewritingUrl;
+use RewriteUrl\Model\RewritingRedirectType as ChildRewritingRedirectType;
 
 /**
  * Class RewritingUrlOverride
