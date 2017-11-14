@@ -13,6 +13,8 @@
 namespace RewriteUrl\Controller\Admin;
 
 use Propel\Runtime\ActiveQuery\Criteria;
+use RewriteUrl\Model\RewritingRedirectType;
+use RewriteUrl\Model\RewritingRedirectTypeQuery;
 use RewriteUrl\Model\RewritingUrlOverride;
 use RewriteUrl\Event\RewriteUrlEvent;
 use RewriteUrl\Event\RewriteUrlEvents;
@@ -21,6 +23,7 @@ use RewriteUrl\Form\ReassignForm;
 use RewriteUrl\Form\SetDefaultForm;
 use RewriteUrl\RewriteUrl;
 use Thelia\Controller\Admin\BaseAdminController;
+use Thelia\Core\HttpFoundation\Response;
 use Thelia\Core\Security\AccessManager;
 use Thelia\Core\Security\Resource\AdminResources;
 use Thelia\Core\Translation\Translator;
@@ -141,11 +144,17 @@ class RewriteUrlAdminController extends BaseAdminController
                 ->filterByViewLocale($rewriting->getViewLocale())
                 ->findOneByRedirected(null);
 
+            $redirectType = null;
+
             if ($data['default'] == 1) {
                 $rewriting->setRedirected(null);
             } else {
                 if ($rewriteDefault !== null) {
                     $rewriting->setRedirected($rewriteDefault->getId());
+                    $redirectType = RewritingRedirectTypeQuery::create()
+                        ->filterById($rewriting->getId())
+                        ->findOneOrCreate();
+                    $redirectType->setHttpcode($data['httpcode']);
                 } else {
                     $rewriting->setRedirected(null);
                 }
@@ -153,7 +162,7 @@ class RewriteUrlAdminController extends BaseAdminController
 
             $this->getDispatcher()->dispatch(
                 RewriteUrlEvents::REWRITEURL_ADD,
-                new RewriteUrlEvent($rewriting)
+                new RewriteUrlEvent($rewriting, $redirectType)
             );
 
             if (method_exists($this, 'generateSuccessRedirect')) {
@@ -163,7 +172,6 @@ class RewriteUrlAdminController extends BaseAdminController
                 //for 2.0
                 $this->redirectSuccess($addForm);
             }
-
         } catch (FormValidationException $exception) {
             $message = $this->createStandardFormValidationErrorMessage($exception);
         } catch (\Exception $exception) {
@@ -232,6 +240,31 @@ class RewriteUrlAdminController extends BaseAdminController
             //for 2.0
             $this->redirectSuccess($setDefaultForm);
         }
+    }
+
+
+    public function changeRedirectTypeAction()
+    {
+        if (null !== $response = $this->checkAuth(AdminResources::MODULE, 'RewriteUrl', AccessManager::UPDATE)) {
+            return $response;
+        }
+
+        $request = $this->getRequest()->request;
+        $id_url = $request->get('id_url');
+        $httpcode = $request->get('httpcode');
+        $rewritingUrl = RewritingUrlQuery::create()->findOneById($id_url);
+
+        if ($rewritingUrl !== null) {
+            $rewritingRedirectType = RewritingRedirectTypeQuery::create()
+                ->filterById($id_url)
+                ->findOneOrCreate();
+            $rewritingRedirectType->setHttpcode($httpcode);
+
+            $event = new RewriteUrlEvent($rewritingUrl, $rewritingRedirectType);
+            $this->getDispatcher()->dispatch(RewriteUrlEvents::REWRITEURL_UPDATE, $event);
+        }
+
+        return new Response("", Response::HTTP_OK);
     }
 
     /**

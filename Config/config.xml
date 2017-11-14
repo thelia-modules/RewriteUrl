@@ -20,6 +20,10 @@
             <argument type="service" id="event_dispatcher" />
             <tag name="kernel.event_subscriber"/>
         </service>
+
+        <service id="router.rewrite" class="RewriteUrl\Service\RewritingRouterOverride">
+            <tag name="router.register" priority="256"/>
+        </service>
     </services>
 
     <hooks>

@@ -13,6 +13,8 @@
 namespace RewriteUrl\Loop;
 
 use Propel\Runtime\ActiveQuery\Criteria;
+use RewriteUrl\Model\RewritingRedirectType;
+use RewriteUrl\Model\RewritingRedirectTypeQuery;
 use Thelia\Core\Template\Element\BaseLoop;
 use Thelia\Core\Template\Element\LoopResult;
 use Thelia\Core\Template\Element\LoopResultRow;
@@ -73,6 +75,7 @@ class RewriteUrlLoop extends BaseLoop implements PropelSearchLoopInterface
      */
     public function parseResults(LoopResult $loopResult)
     {
+        $redirectTypeSearch = RewritingRedirectTypeQuery::create();
         foreach ($loopResult->getResultDataCollection() as $rewriteURl) {
             $loopResultRow = (new LoopResultRow($rewriteURl))
                 ->set('ID_URL', $rewriteURl->getID())
@@ -81,6 +84,17 @@ class RewriteUrlLoop extends BaseLoop implements PropelSearchLoopInterface
                 ->set('VIEW_LOCALE', $rewriteURl->getViewLocale())
                 ->set('REDIRECTED', $rewriteURl->getRedirected())
                 ->set('VIEW_ID', $rewriteURl->getViewId());
+
+
+            if ($rewriteURl->getRedirected()) {
+                $redirectType = $redirectTypeSearch->findPk($rewriteURl->getID());
+                if ($redirectType == null) {
+                    $httpcode = RewritingRedirectType::DEFAULT_REDIRECT_TYPE;
+                } else {
+                    $httpcode = $redirectType->getHttpcode();
+                }
+                $loopResultRow->set('HTTPCODE', $httpcode);
+            }
 
             $loopResult->addRow($loopResultRow);
         }

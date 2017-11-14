@@ -113,6 +113,12 @@ class RewriteUrlListener implements EventSubscriberInterface
             $rewritingDefault = RewritingUrlQuery::create()->findOneById($rewritingUrl->getId());
             $rewritingDefault->setRedirected(null);
             $rewritingDefault->save();
+        } else {
+            $redirectType = $event->getRedirectType();
+            if ($redirectType !== null) {
+                $redirectType->setId($rewritingUrl->getId());
+                $redirectType->save();
+            }
         }
     }
 
@@ -147,5 +153,9 @@ class RewriteUrlListener implements EventSubscriberInterface
     public function updateRewrite(RewriteUrlEvent $event)
     {
         $event->getRewritingUrl()->save();
+        $redirectType = $event->getRedirectType();
+        if ($redirectType !== null) {
+            $redirectType->save();
+        }
     }
 }

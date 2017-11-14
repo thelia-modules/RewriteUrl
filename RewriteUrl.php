@@ -13,11 +13,13 @@
 namespace RewriteUrl;
 
 use Propel\Runtime\Connection\ConnectionInterface;
+use Symfony\Component\Finder\Finder;
 use Thelia\Model\ConfigQuery;
 use Thelia\Model\Map\RewritingUrlTableMap;
 use Thelia\Model\RewritingUrl;
 use Thelia\Model\RewritingUrlQuery;
 use Thelia\Module\BaseModule;
+use Thelia\Install\Database;
 
 /**
  * Class RewriteUrl
@@ -33,8 +35,26 @@ class RewriteUrl extends BaseModule
     /** @var string  */
     const MODULE_NAME = "rewriteurl";
 
+    /* @var string */
+    const UPDATE_PATH = __DIR__ . DS . 'Config' . DS . 'update';
+
     /** @static null|array */
     static protected $unknownSources;
+
+
+
+    public function preActivation(ConnectionInterface $con = null)
+    {
+        if (!$this->getConfigValue('is_initialized', false)) {
+            $database = new Database($con);
+
+            $database->insertSql(null, array(__DIR__ . '/Config/thelia.sql'));
+
+            $this->setConfigValue('is_initialized', true);
+        }
+
+        return true;
+    }
 
     /**
      * @param string $currentVersion
@@ -46,6 +66,21 @@ class RewriteUrl extends BaseModule
      */
     public function update($currentVersion, $newVersion, ConnectionInterface $con = null)
     {
+        $finder = (new Finder())->files()->name('#.*?\.sql#')->sortByName()->in(self::UPDATE_PATH);
+
+        if ($finder->count() === 0) {
+            return;
+        }
+
+        $database = new Database($con);
+
+        /** @var \Symfony\Component\Finder\SplFileInfo $updateSQLFile */
+        foreach ($finder as $updateSQLFile) {
+            if (version_compare($currentVersion, str_replace('.sql', '', $updateSQLFile->getFilename()), '<')) {
+                $database->insertSql(null, [$updateSQLFile->getPathname()]);
+            }
+        }
+
         /*
          * Fix for urls that redirect on itself
          */
