@@ -2,6 +2,8 @@
 
 namespace RewriteUrl\Service;
 
+use RewriteUrl\Model\RewriteurlRule;
+use RewriteUrl\Model\RewriteurlRuleQuery;
 use RewriteUrl\Model\RewritingRedirectType;
 use RewriteUrl\Model\RewritingRedirectTypeQuery;
 use Thelia\Core\Routing\RewritingRouter;
@@ -16,10 +18,9 @@ use Thelia\Model\RewritingUrlQuery;
 use Thelia\Tools\URL;
 
 /**
- * This class RewritingRouterOverride is overriding the base class RewritingRouter use by Thelia.
- * It provides a way of choosing the type of redirection (301 ou 302) rather than the hard-coded 301 redirection of Thelia.
+ * This router is intended to be the very first checked by the ChainRouter on a request.
  */
-class RewritingRouterOverride extends RewritingRouter
+class RewritingRouterFirst extends RewritingRouter
 {
     /**
      * @inheritdoc
@@ -30,6 +31,24 @@ class RewritingRouterOverride extends RewritingRouter
             $urlTool = URL::getInstance();
 
             $pathInfo = $request instanceof TheliaRequest ? $request->getRealPathInfo() : $request->getPathInfo();
+
+
+
+            // Check RewriteUrl rules
+
+            $ruleCollection = RewriteurlRuleQuery::create()
+                ->filterByOnly404(0)
+                ->orderByPosition()
+                ->find();
+
+            /** @var RewriteurlRule $rule */
+            foreach ($ruleCollection as $rule) {
+                if ($rule->isMatching($pathInfo, $request->query->all())) {
+                    $this->redirect($urlTool->absoluteUrl($rule->getRedirectUrl()), 301);
+                }
+            }
+
+
 
             try {
                 $rewrittenUrlData = $urlTool->resolve($pathInfo);

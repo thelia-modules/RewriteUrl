@@ -73,7 +73,7 @@ class RewriteUrlAdminController extends BaseAdminController
             $this->getDispatcher()->dispatch(RewriteUrlEvents::REWRITEURL_DELETE, $event);
         }
 
-        if (method_exists($this, 'generateSuccessRedirect')) {
+        if (method_exists($this, 'generateRedirectFromRoute')) {
             //for 2.1
             return $this->generateRedirectFromRoute(
                 'admin.'.$this->correspondence[$rewritingUrl->getView()].'.update',
