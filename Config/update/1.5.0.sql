@@ -4,23 +4,6 @@
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- ---------------------------------------------------------------------
--- rewriting_redirect_type
--- ---------------------------------------------------------------------
-
-DROP TABLE IF EXISTS `rewriting_redirect_type`;
-
-CREATE TABLE `rewriting_redirect_type`
-(
-    `id` INTEGER NOT NULL,
-    `httpcode` INTEGER,
-    PRIMARY KEY (`id`),
-    CONSTRAINT `rewriting_redirect_type_FK_1`
-        FOREIGN KEY (`id`)
-        REFERENCES `rewriting_url` (`id`)
-        ON DELETE CASCADE
-) ENGINE=InnoDB;
-
--- ---------------------------------------------------------------------
 -- rewriteurl_rule
 -- ---------------------------------------------------------------------
 

@@ -4,6 +4,28 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://symfony.com/schema/routing http://symfony.com/schema/routing/routing-1.0.xsd">
 
+    <route id="rewrite.url.config" path="/admin/module/RewriteUrl">
+        <default key="_controller">RewriteUrl\Controller\Admin\ModuleConfigController::viewConfigAction</default>
+    </route>
+    <route id="rewrite.url.config.set-rewriting_enable" path="/admin/module/RewriteUrl/config/setRewritingEnable">
+        <default key="_controller">RewriteUrl\Controller\Admin\ModuleConfigController::setRewritingEnableAction</default>
+    </route>
+    <route id="rewrite.url.rule.add" path="/admin/module/RewriteUrl/rule/add">
+        <default key="_controller">RewriteUrl\Controller\Admin\ModuleConfigController::addRuleAction</default>
+    </route>
+    <route id="rewrite.url.rule.update" path="/admin/module/RewriteUrl/rule/update">
+        <default key="_controller">RewriteUrl\Controller\Admin\ModuleConfigController::updateRuleAction</default>
+    </route>
+    <route id="rewrite.url.rule.remove" path="/admin/module/RewriteUrl/rule/remove">
+        <default key="_controller">RewriteUrl\Controller\Admin\ModuleConfigController::removeRuleAction</default>
+    </route>
+    <route id="rewrite.url.rule.move-position" path="/admin/module/RewriteUrl/rule/movePosition">
+        <default key="_controller">RewriteUrl\Controller\Admin\ModuleConfigController::moveRulePositionAction</default>
+    </route>
+
+
+
+
     <route id="rewrite.url.delete" path="/admin/module/rewriteurl/delete">
         <default key="_controller">RewriteUrl\Controller\Admin\RewriteUrlAdminController::deleteAction</default>
     </route>

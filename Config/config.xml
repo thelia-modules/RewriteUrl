@@ -21,8 +21,16 @@
             <tag name="kernel.event_subscriber"/>
         </service>
 
-        <service id="router.rewrite" class="RewriteUrl\Service\RewritingRouterOverride">
-            <tag name="router.register" priority="256"/>
+        <service id="rewriteurl.kernel.exception" class="RewriteUrl\EventListeners\KernelExceptionListener">
+            <argument type="service" id="request_stack" />
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <service id="rewriteurl.router.first" class="RewriteUrl\Service\RewritingRouterFirst">
+            <tag name="router.register" priority="300"/>
+        </service>
+        <service id="rewriteurl.router.last" class="RewriteUrl\Service\RewritingRouterLast">
+            <tag name="router.register" priority="-300"/>
         </service>
     </services>
 

@@ -1,0 +1,225 @@
+{extends file="admin-layout.tpl"}
+
+{block name="no-return-functions"}
+{$admin_current_location = 'modules'}
+{/block}
+
+{block name="page-title"}{intl l='RewriteUrl'}{/block}
+
+{block name="check-auth"}
+{check_auth role="ADMIN" module=$module_code access="view" login_tpl="/admin/login"}
+{/block}
+
+{block name="main-content"}
+{default_translation_domain domain='rewriteurl.bo.default'}
+
+<div class="modules-configure">
+    <div id="wrapper" class="container">
+        <div class="clearfix">
+            <ul class="breadcrumb pull-left">
+                <li><a href="{url path='/admin/home'}">{intl l="Home"}</a></li>
+                <li><a href="{url path='/admin/modules'}">{intl l="Modules"}</a></li>
+                <li><a href="#">{intl l="Configure"} : RewriteUrl</a></li>
+            </ul>
+        </div>
+
+        {hook name="module.configuration" location="module_configuration" modulecode="$module_code"}
+
+        <div class="general-block-decorator">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <div>
+                                <label>{intl l="Enable URL rewriting"}</label>
+                                <div class="make-switch switch-small js_switch_rewrite_url" data-on="success" data-off="danger" data-on-label="<i class='glyphicon glyphicon-ok'></i>" data-off-label="<i class='glyphicon glyphicon-remove'></i>">
+                                    <input type="checkbox" {if $isRewritingEnabled}checked="checked"{/if}>
+                                </div>
+                            </div>
+                            <span class="help-block">{intl l="Set the config variable 'rewriting_enable'"}</span>
+                        </div>
+                    </div>
+
+
+
+                    <div class="panel panel-default">
+                        <div class="panel-heading clearfix">
+                            <div class="panel-title">
+                                {intl l="Rule management"}
+                            </div>
+                        </div>
+                        <div class="panel-body">
+
+                            <div class="js_error_rule_management alert alert-danger">
+                            </div>
+
+                            <table class="table table-condensed table-striped">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center"><label class="control-label">{intl l="Rule type"}</label></th>
+                                        <th class="text-center"><label class="control-label">{intl l="Condition"} <a href="#" data-toggle="tooltip" title="{intl l="For the regex, your input is compare to URL without the domain name and without any GET params. Ex : for 'www.mysite.com/one/two?three=four', your regex will be compare to '/one/two'."}"><span class="glyphicon glyphicon-question-sign"></span></a></label></th>
+                                        <th class="text-center"><label class="control-label">{intl l="404 only"}</label></th>
+                                        <th class="text-center"><label class="control-label">{intl l="Redirect to"} <a href="#" data-toggle="tooltip" title="{intl l="Enter a URL with a leading '/' and no domain name. Ex : for 'www.mysite.com/one/two', enter '/one/two'."}"><span class="glyphicon glyphicon-question-sign"></span></a></label></th>
+                                        <th class="text-center"><label class="control-label">{intl l="Position"}</label></th>
+                                        <th class="text-center"><label class="control-label">{intl l="Actions"}</label></th>
+                                    </tr>
+                                </thead>
+
+
+                                <tbody>
+                                    <tr data-idrule="new">
+                                        <td class="text-center">
+                                            <select class="js_rule_type form-control" data-idrule="new" required>
+                                                <option value="regex">{intl l="Regex"}</option>
+                                                <option value="params">{intl l="GET params"}</option>
+                                            </select>
+                                        </td>
+                                        <td class="text-center">
+                                            <div class="js_regex_group input-group">
+                                                <span class="input-group-addon">/</span>
+                                                <input class="js_regex form-control" type="text" placeholder="{literal}^[a-z0-9_-]{3,16}${/literal}"/>
+                                                <span class="input-group-addon">/</span>
+                                            </div>
+
+                                            <div class="js_param_rule_group">
+
+                                            </div>
+                                        </td>
+                                        <td class="text-center">
+                                            <input class="js_only404 form-control" type="checkbox" checked="checked"/>
+                                        </td>
+                                        <td class="text-center">
+                                            <input class="js_url_to_redirect form-control" type="text" placeholder="/path/mypage.html"/>
+                                        </td>
+                                        <td class="text-center">
+                                        </td>
+                                        <td class="text-center">
+                                            <a href="#" class="js_btn_add_rule btn btn-primary"><span class="glyphicon glyphicon-plus-sign"></span></a>
+                                        </td>
+                                    </tr>
+
+
+                                    <tr>
+                                        <td colspan="6" class="text-center"><hr><h2 class="text-center">{intl l="Currently enabled rules"}</h2><hr></td>
+                                    </tr>
+                                    
+
+                                    {foreach from=$rewritingRules item=rule}
+                                    <tr data-idrule="{$rule->getId()}">
+                                        <td class="text-center">
+                                            <select class="js_rule_type form-control" data-idrule="{$rule->getId()}" required>
+                                                <option value="regex" {if $rule->getRuleType() == "regex"}selected{/if}>{intl l="Regex"}</option>
+                                                <option value="params" {if $rule->getRuleType() == "params"}selected{/if}>{intl l="GET params"}</option>
+                                            </select>
+                                        </td>
+                                        <td class="text-center">
+                                            <div class="js_regex_group input-group">
+                                                <span class="input-group-addon">/</span>
+                                                <input class="js_regex form-control" type="text" placeholder="{literal}^[a-z0-9_-]{3,16}${/literal}" value="{$rule->getValue()}"/>
+                                                <span class="input-group-addon">/</span>
+                                            </div>
+
+                                            <div class="js_param_rule_group">
+                                                {foreach from=$rule->getRewriteUrlParamCollection() item=ruleParam}
+                                                <div class="js_param_rule" data-idparamrule="{$ruleParam->getId()}" data-idrule="{$rule->getId()}">
+                                                    <form class="form-inline">
+                                                        <div class="form-group text-center">
+                                                            <input class="js_param_name form-control" type="text" placeholder="Param name" value="{$ruleParam->getParamName()}"/>
+                                                        </div>
+
+                                                        <div class="form-group text-center">
+                                                            <select class="js_param_condition form-control" data-idparamrule="{$ruleParam->getId()}" data-idrule="{$rule->getId()}">
+                                                                <option value="equals" {if $ruleParam->getParamCondition() == "equals"}selected{/if}>=</option>
+                                                                <option value="not_equals" {if $ruleParam->getParamCondition() == "not_equals"}selected{/if}>≠</option>
+                                                                <option value="exists" {if $ruleParam->getParamCondition() == "exists"}selected{/if}>{intl l="exists"}</option>
+                                                                <option value="missing" {if $ruleParam->getParamCondition() == "missing"}selected{/if}>{intl l="is missing"}</option>
+                                                                <option value="empty" {if $ruleParam->getParamCondition() == "empty"}selected{/if}>{intl l="is empty"}</option>
+                                                                <option value="not_empty" {if $ruleParam->getParamCondition() == "not_empty"}selected{/if}>{intl l="is not empty"}</option>
+                                                            </select>
+                                                        </div>
+
+                                                        <div class="form-group text-center">
+                                                            <input class="js_param_value form-control" type="text" placeholder="Param value" value="{$ruleParam->getParamValue()}"/>
+                                                        </div>
+                                                        <a href="#" class="js_btn_remove_param_rule btn btn-default" data-idparamrule="{$ruleParam->getId()}" data-idrule="{$rule->getId()}">
+                                                            <span class="glyphicon glyphicon-remove"></span>
+                                                        </a>
+                                                        <a href="#" class="js_btn_add_param_rule btn btn-primary" data-idrule="{$rule->getId()}">
+                                                            <span class="glyphicon glyphicon-plus"></span>
+                                                        </a>
+                                                    </form>
+                                                </div>
+                                                {/foreach}
+
+                                            </div>
+                                        </td>
+                                        <td class="text-center">
+                                            <input class="js_only404 form-control" type="checkbox" {if $rule->getOnly404()}checked{/if}/>
+                                        </td>
+                                        <td class="text-center">
+                                            <input class="js_url_to_redirect form-control" type="text" placeholder="/path/mypage.html" value="{$rule->getRedirectUrl()}"/>
+                                        </td>
+                                        <td class="text-center">
+                                            <a href="#" class="u-position-up js_move_rule_position_up" data-idrule="{$rule->getId()}"><i class="glyphicon glyphicon-arrow-up"></i></a>
+                                            <span class="js_editable_rule_position editable editable-click" data-idrule="{$rule->getId()}">{$rule->getPosition()}</span>
+                                            <a href="#" class="u-position-down js_move_rule_position_down" data-idrule="{$rule->getId()}"><i class="glyphicon glyphicon-arrow-down"></i></a>
+                                        </td>
+                                        <td class="text-center">
+                                            <a href="#" class="js_btn_update_rule btn btn-success" data-idrule="{$rule->getId()}"><span class="glyphicon glyphicon-check"></span></a>
+                                            <a href="#" class="js_btn_remove_rule btn btn-danger" data-idrule="{$rule->getId()}"><span class="glyphicon glyphicon-remove"></span></a>
+                                        </td>
+                                    </tr>
+                                    {/foreach}
+
+                                </tbody>
+                            </table>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="js_param_rule" data-idparamrule="new_hidden" data-idrule="new_hidden" style="display:none">
+        <form class="form-inline">
+            <div class="form-group text-center">
+                <input class="js_param_name form-control" type="text" placeholder="Param name"/>
+            </div>
+
+            <div class="form-group text-center">
+                <select class="js_param_condition form-control" data-idparamrule="1" data-idrule="new">
+                    <option value="equals">=</option>
+                    <option value="not_equals">≠</option>
+                    <option value="exists">{intl l="exists"}</option>
+                    <option value="missing">{intl l="is missing"}</option>
+                    <option value="empty">{intl l="is empty"}</option>
+                    <option value="not_empty">{intl l="is not empty"}</option>
+                </select>
+            </div>
+
+            <div class="form-group text-center">
+                <input class="js_param_value form-control" type="text" placeholder="Param value"/>
+            </div>
+            <a href="#" class="js_btn_remove_param_rule btn btn-default" data-idparamrule="1" data-idrule="new">
+                <span class="glyphicon glyphicon-remove"></span>
+            </a>
+            <a href="#" class="js_btn_add_param_rule btn btn-primary" data-idrule="new">
+                <span class="glyphicon glyphicon-plus"></span>
+            </a>
+        </form>
+    </div>
+</div>
+
+{/block}
+
+{block name="javascript-initialization"}
+
+{include file="RewriteUrl/module-configuration-js.html"}
+{/block}
+
+
+{block name="javascript-last-call"}
+
+{/block}

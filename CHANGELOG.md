@@ -1,3 +1,11 @@
+# 1.5.0
+
+- #22 Allow custom global redirect rules with Regex or GET params
+
+# 1.4.8
+
+- #21 Allow change redirect type (301 or 302)
+
 # 1.4.7
 
 - #20 Fix UI missing tbody and tr

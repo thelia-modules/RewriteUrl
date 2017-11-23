@@ -1,0 +1,357 @@
+{default_translation_domain domain='googleshoppingxml.bo.default'}
+
+{javascripts file="assets/js/bootstrap-switch/bootstrap-switch.js"}
+<script src="{$asset_url}"></script>
+{/javascripts}
+
+{javascripts file='assets/js/bootstrap-editable/bootstrap-editable.js'}
+<script src="{$asset_url}"></script>
+{/javascripts}
+
+<script>
+
+    $(function () {
+
+        $('[data-toggle="tooltip"]').tooltip();
+
+        var $loader = $('<div class="loader"></div>');
+        $('body').append($loader);
+
+
+        $(".js_switch_rewrite_url").on("switch-change", function (event, data) {
+            $loader.show();
+            var checkbox = $(this);
+
+            $.ajax({
+                url      : '{url path="/admin/module/RewriteUrl/config/setRewritingEnable"}',
+                data     : { rewriting_enable : (data.value ? 1 : 0) },
+                type     : 'post',
+                success  : function(){
+                    $loader.hide();
+                },
+                error : function(jqXHR, textStatus, errorThrown) {
+                    $alertError.html(jqXHR.responseText);
+                    checkbox.bootstrapSwitch('toggleState', true);
+                    $loader.hide();
+                }
+            });
+        });
+
+
+
+        $('.js_editable_rule_position').editable({
+            type        : 'text',
+            title       : '{intl l="Enter new rule position"}',
+            mode        : 'popup',
+            inputclass  : 'input-mini',
+            placement   : 'left',
+            url         : function(params){
+                var idrule = this.dataset.idrule;
+                var newPosition = params.value;
+                moveRulePosition(idrule, "absolute", newPosition);
+            }
+        });
+
+
+        $(".js_rule_type").on("change", function (e) {
+            var id_rule = this.dataset.idrule;
+            var selectedRuleType = $(this).val();
+
+            var $container = $("tr[data-idrule=\""+id_rule+"\"]");
+
+            if(selectedRuleType == "regex"){
+                $container.find(".js_regex_group").show();
+                $container.find(".js_param_rule_group").hide();
+            }else if(selectedRuleType == "params"){
+                $container.find(".js_regex_group").hide();
+                $container.find(".js_param_rule_group").show();
+            }
+        });
+
+        $(".js_param_condition").on("change", function (e) {
+            onChangeParamCondition(this);
+        });
+
+        $(".js_btn_add_param_rule").on("click", function (e) {
+            e.preventDefault();
+            onClickBtnAddParamRule(this);
+        });
+
+        $(".js_btn_remove_param_rule").on("click", function (e) {
+            e.preventDefault();
+            onClickBtnRemoveParamRule(this);
+        });
+
+
+        $(".js_move_rule_position_up").on("click", function (e) {
+            e.preventDefault();
+            var id_rule = this.dataset.idrule;
+            moveRulePosition(id_rule, "up");
+        });
+
+        $(".js_move_rule_position_down").on("click", function (e) {
+            e.preventDefault();
+            var id_rule = this.dataset.idrule;
+            moveRulePosition(id_rule, "down");
+        });
+
+
+
+        function onChangeParamCondition(element){
+            var selectedParamCondition = $(element).val();
+
+            var $container = $(".js_param_rule[data-idrule=\"" + element.dataset.idrule + "\"][data-idparamrule=\"" + element.dataset.idparamrule + "\"]")
+
+            var $paramValue = $container.find(".js_param_value");
+            if (selectedParamCondition == "equals" || selectedParamCondition == "not_equals") {
+                $container.find(".js_param_value").prop('disabled', false);
+            } else {
+                $container.find(".js_param_value").prop('disabled', true);
+            }
+        }
+
+
+        function onClickBtnAddParamRule(element){
+            var idrule = element.dataset.idrule;
+            addEmptyParamRule(idrule);
+        }
+
+
+
+        function addEmptyParamRule(idrule){
+            var htmlToCopy = document.querySelector(".js_param_rule[data-idrule=\"new_hidden\"][data-idparamrule=\"new_hidden\"]").innerHTML;
+
+            var maxId = 1;
+
+            var items = document.querySelectorAll("tr[data-idrule=\""+idrule+"\"] .js_param_rule");
+            for(var i=0; i<items.length; i++){
+                var idparamrule = parseInt(items[i].dataset.idparamrule);
+                if(idparamrule > maxId){
+                    maxId = idparamrule;
+                }
+            }
+
+            maxId++;
+
+            var newlyCreatedParamRule = document.createElement("div");
+            newlyCreatedParamRule.classList.add("js_param_rule");
+            newlyCreatedParamRule.dataset.idrule = idrule;
+            newlyCreatedParamRule.dataset.idparamrule = maxId;
+            newlyCreatedParamRule.innerHTML = htmlToCopy;
+
+
+            document.querySelector("tr[data-idrule=\"" + idrule + "\"] .js_param_rule_group").appendChild(newlyCreatedParamRule);
+
+
+            newlyCreatedParamRule.querySelector(".js_btn_remove_param_rule").dataset.idrule = idrule;
+            newlyCreatedParamRule.querySelector(".js_btn_add_param_rule").dataset.idrule = idrule;
+            newlyCreatedParamRule.querySelector(".js_param_condition").dataset.idrule = idrule;
+
+            newlyCreatedParamRule.querySelector(".js_param_condition").dataset.idparamrule = maxId;
+            newlyCreatedParamRule.querySelector(".js_btn_remove_param_rule").dataset.idparamrule = maxId;
+
+
+            var $newlyCreatedParamRule = $(newlyCreatedParamRule);
+
+            $newlyCreatedParamRule.find(".js_param_condition").on("change", function (e) {
+                onChangeParamCondition(this);
+            });
+            $newlyCreatedParamRule.find(".js_btn_remove_param_rule").on("click", function (e) {
+                e.preventDefault();
+                onClickBtnRemoveParamRule(this);
+            });
+            $newlyCreatedParamRule.find(".js_btn_add_param_rule").on("click", function (e) {
+                e.preventDefault();
+                onClickBtnAddParamRule(this);
+            });
+
+            $newlyCreatedParamRule.find("input").val("");
+
+            showOrHideParamRulesButtons();
+        }
+
+
+        function onClickBtnRemoveParamRule(element){
+            var idparamrule = element.dataset.idparamrule;
+            var idrule = element.dataset.idrule;
+            if ($(".js_param_rule[data-idrule=\"" + idrule + "\"]").length > 1) {
+                $(".js_param_rule[data-idrule=\"" + idrule + "\"][data-idparamrule=\"" + idparamrule + "\"]").remove();
+            }
+            showOrHideParamRulesButtons();
+        }
+
+
+
+        function addEmptyParamRuleIfNoneIsFound(){
+            $("tr[data-idrule]").each(function(){
+                var idrule = this.dataset.idrule;
+                if ($(this).find(".js_param_rule").length == 0) {
+                    addEmptyParamRule(idrule);
+                }
+            });
+        }
+
+        function moveRulePosition(id, type, position){
+            $loader.show();
+            var dataToSend =
+            {
+                id : id,
+                type : type
+            };
+
+            if (type == "absolute") {
+                dataToSend.position = position;
+            }
+
+            $.ajax({
+                url      : '{url path="/admin/module/RewriteUrl/rule/movePosition"}',
+                data     : dataToSend,
+                type     : 'post',
+                success  : function(){
+                    window.location.reload(true);
+                },
+                error : function(jqXHR, textStatus, errorThrown) {
+                    $alertError.html(jqXHR.responseText);
+                    $alertError.show();
+                    $loader.hide();
+                }
+            });
+        }
+
+
+
+        function getPackedData(ruleid){
+            var data = {};
+            var $tr = $("tr[data-idrule=\""+ruleid+"\"]");
+            data.id = ruleid;
+            data.ruleType = $tr.find(".js_rule_type").val();
+            data.value = $tr.find(".js_regex").val();
+            data.only404 = $tr.find(".js_only404").prop("checked") ? 1 : 0;
+            data.redirectUrl = $tr.find(".js_url_to_redirect").val();
+
+            data.paramRules = [];
+            $tr.find(".js_param_rule").each(function(){
+                var idParamRule = this.dataset.idparamrule;
+                //if (idParamRule != "new") {
+                    $this = $(this);
+                    $paramRule = {};
+                    $paramRule.id = idParamRule;
+                    $paramRule.paramName = $this.find(".js_param_name").val();
+                    $paramRule.condition = $this.find(".js_param_condition").val();
+                    $paramRule.paramValue = $this.find(".js_param_value").val();
+                    data.paramRules.push($paramRule);
+                //}
+            });
+
+            console.log(data);
+            return data;
+        }
+
+        $(".js_btn_add_rule").on("click", function(e){
+            e.preventDefault();
+            var dataToSend = getPackedData("new");
+            $loader.show();
+            $alertError.hide();
+            $.ajax({
+                url      : '{url path="/admin/module/RewriteUrl/rule/add"}',
+                data     : dataToSend,
+                type     : 'post',
+                success  : function(){
+                    window.location.reload(true);
+                },
+                error : function(jqXHR, textStatus, errorThrown) {
+                    $alertError.html(jqXHR.responseText);
+                    $alertError.show();
+                    $loader.hide();
+                }
+            });
+        });
+
+        $(".js_btn_update_rule").on("click", function(e){
+            e.preventDefault();
+            var ruleid = this.dataset.idrule;
+            var dataToSend = getPackedData(ruleid);
+            $loader.show();
+            $alertError.hide();
+            $.ajax({
+                url      : '{url path="/admin/module/RewriteUrl/rule/update"}',
+                data     : dataToSend,
+                type     : 'post',
+                success  : function(){
+                    console.log("success");
+                    $loader.hide();
+                },
+                error : function(jqXHR, textStatus, errorThrown) {
+                    $alertError.html(jqXHR.responseText);
+                    $alertError.show();
+                    $loader.hide();
+                }
+            });
+        });
+
+        $(".js_btn_remove_rule").on("click", function(e){
+            e.preventDefault();
+            var ruleid = this.dataset.idrule;
+            var dataToSend = getPackedData(ruleid);
+            $loader.show();
+            $alertError.hide();
+            $.ajax({
+                url      : '{url path="/admin/module/RewriteUrl/rule/remove"}',
+                data     : { id : ruleid },
+                type     : 'post',
+                success  : function(){
+                    $("tr[data-idrule=\""+ruleid+"\"]").remove();
+                    $loader.hide();
+                },
+                error : function(jqXHR, textStatus, errorThrown) {
+                    $alertError.html(jqXHR.responseText);
+                    $alertError.show();
+                    $loader.hide();
+                }
+            });
+        });
+
+
+
+
+
+
+
+        function showOrHideParamRulesButtons(){
+            $(".js_param_rule_group").each(function(){
+                var last;
+                var count = 0;
+                $(this).find(".js_param_rule").each(function(){
+                    count++;
+                    last = this;
+                    var $this = $(this);
+                    $this.find(".js_btn_remove_param_rule").css('visibility', 'visible');
+                    $this.find(".js_btn_add_param_rule").css('visibility', 'hidden');
+                });
+                if(count > 0) {
+                    var $last = $(last);
+                    if(count == 1) {
+                        $last.find(".js_btn_remove_param_rule").css('visibility', 'hidden');
+                    }
+                    $last.find(".js_btn_add_param_rule").css('visibility', 'visible');
+                }
+
+            });
+        }
+
+
+
+        addEmptyParamRuleIfNoneIsFound();
+
+        showOrHideParamRulesButtons();
+
+        $(".js_rule_type").trigger("change");
+        $(".js_param_condition").trigger("change");
+
+
+        var $alertError = $(".js_error_rule_management");
+        $alertError.hide();
+
+    });
+
+</script>

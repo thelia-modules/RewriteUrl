@@ -13,5 +13,26 @@
         </foreign-key>
     </table>
 
+    <table name="rewriteurl_rule" namespace="RewriteUrl\Model">
+        <column name="id" type="INTEGER" primaryKey="true" required="true" autoIncrement="true" />
+        <column name="rule_type" type="VARCHAR" size="64" required="true" />
+        <column name="value" type="VARCHAR" size="255"/>
+        <column name="only404" type="BOOLEAN" required="true" />
+        <column name="redirect_url" type="VARCHAR" size="255" required="true" />
+        <column name="position" type="INTEGER" size="255" required="true" />
+    </table>
+
+    <table name="rewriteurl_rule_param" namespace="RewriteUrl\Model">
+        <column name="id" type="INTEGER" primaryKey="true" required="true" autoIncrement="true" />
+        <column name="id_rule" type="INTEGER" required="true" />
+        <column name="param_name" type="VARCHAR" size="255" required="true" />
+        <column name="param_condition" type="VARCHAR" size="64" required="true" />
+        <column name="param_value" type="VARCHAR" size="255"/>
+
+        <foreign-key foreignTable="rewriteurl_rule" name="rewriteurl_rule_rule_param_FK_id" onDelete="CASCADE">
+            <reference foreign="id" local="id_rule" />
+        </foreign-key>
+    </table>
+
     <external-schema filename="local/config/schema.xml" referenceOnly="true" />
 </database>
