@@ -205,8 +205,8 @@
                                 <div class="form-group ">
                                     {form_field form=$form field="httpcode"}
                                     <select class="form-control" name="{$name}">
-                                        <option value="301" {if !$data}selected{/if}>{intl l="Temporary redirect" d="rewriteurl.bo.default"}</option>
-                                        <option value="302" {if $data}selected{/if}>{intl l="Permanent redirect" d="rewriteurl.bo.default"}</option>
+                                        <option value="301" {if !$data}selected{/if}>{intl l="Permanent redirect" d="rewriteurl.bo.default"}</option>
+                                        <option value="302" {if $data}selected{/if}>{intl l="Temporary redirect" d="rewriteurl.bo.default"}</option>
                                     </select>
                                     {/form_field}
                                 </div>
