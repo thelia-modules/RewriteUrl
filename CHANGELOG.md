@@ -1,3 +1,7 @@
+# 1.5.1
+
+- #24 Change the select default in new url (Permanent redirect is the first select default)
+
 # 1.5.0
 
 - #22 Allow custom global redirect rules with Regex or GET params
