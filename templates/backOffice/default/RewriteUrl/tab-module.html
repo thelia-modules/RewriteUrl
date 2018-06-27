@@ -98,8 +98,8 @@
                                 </td>
                                 <td>
                                     <select class="js-select-redirect-type" data-idurl="{$ID_URL}" data-httpcode="{$HTTPCODE}">
-                                        <option value="301" {if $HTTPCODE == 301}selected{/if}>{intl l="Temporary redirect" d="rewriteurl.bo.default"}</option>
-                                        <option value="302" {if $HTTPCODE == 302}selected{/if}>{intl l="Permanent redirect" d="rewriteurl.bo.default"}</option>
+                                        <option value="301" {if $HTTPCODE == 301}selected{/if}>{intl l="Permanent redirect" d="rewriteurl.bo.default"}</option>
+                                        <option value="302" {if $HTTPCODE == 302}selected{/if}>{intl l="Temporary redirect" d="rewriteurl.bo.default"}</option>
                                     </select>
                                 </td>
                                 <td class="actions">
