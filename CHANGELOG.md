@@ -1,3 +1,7 @@
+# 1.5.2
+
+- #25 Fixed v1.5.1 which didn't fulfill its intended purpose. The default redirection type is now really the permanent one, and the type names aren't switched anymore. 
+
 # 1.5.1
 
 - #24 Change the select default in new url (Permanent redirect is the first select default)
