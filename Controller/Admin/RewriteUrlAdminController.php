@@ -203,42 +203,42 @@ class RewriteUrlAdminController extends BaseAdminController
      */
     public function setDefaultAction()
     {
-        $message = false;
-
         if (null !== $response = $this->checkAuth(AdminResources::MODULE, 'RewriteUrl', AccessManager::UPDATE)) {
             return $response;
         }
 
-        $setDefaultForm = new SetDefaultForm($this->getRequest());
+        $id_url = $this->getRequest()->request->get('id_url');
+        $rewritingUrl = RewritingUrlQuery::create()->findOneById($id_url);
 
-        try {
-            $form = $this->validateForm($setDefaultForm);
-            $data = $form->getData($form);
-
-            $rewritingUrl = RewritingUrlQuery::create()->findOneById($data['rewrite-id']);
-            $newEvent = new RewriteUrlEvent($rewritingUrl);
-            $this->getDispatcher()->dispatch(RewriteUrlEvents::REWRITEURL_SET_DEFAULT, $newEvent);
-        } catch (FormValidationException $e) {
-            $message = $this->createStandardFormValidationErrorMessage($e);
-        } catch (\Exception $e) {
-            $message = $e->getMessage();
+        if ($rewritingUrl !== null) {
+            $event = new RewriteUrlEvent($rewritingUrl);
+            $this->getDispatcher()->dispatch(RewriteUrlEvents::REWRITEURL_SET_DEFAULT, $event);
         }
 
-        if ($message !== false) {
-            $setDefaultForm->setErrorMessage($message);
-
-            $this->getParserContext()
-                ->addForm($setDefaultForm)
-                ->setGeneralError($message)
-            ;
-        }
-
-        if (method_exists($this, 'generateSuccessRedirect')) {
+        if (method_exists($this, 'generateRedirectFromRoute')) {
             //for 2.1
-            return $this->generateSuccessRedirect($setDefaultForm);
+            return $this->generateRedirectFromRoute(
+                'admin.'.$this->correspondence[$rewritingUrl->getView()].'.update',
+                [
+                    $rewritingUrl->getView().'_id'=>$rewritingUrl->getViewId(),
+                    'current_tab' => 'modules'
+                ],
+                [
+                    $rewritingUrl->getView().'_id'=>$rewritingUrl->getViewId()
+                ]
+            );
         } else {
             //for 2.0
-            $this->redirectSuccess($setDefaultForm);
+            $this->redirectToRoute(
+                'admin.'.$this->correspondence[$rewritingUrl->getView()].'.update',
+                [
+                    $rewritingUrl->getView().'_id'=>$rewritingUrl->getViewId(),
+                    'current_tab' => 'modules'
+                ],
+                [
+                    $rewritingUrl->getView().'_id'=>$rewritingUrl->getViewId()
+                ]
+            );
         }
     }
 

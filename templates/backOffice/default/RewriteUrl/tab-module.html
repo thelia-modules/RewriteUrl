@@ -104,25 +104,9 @@
                                 </td>
                                 <td class="actions">
                                     <div class="btn-group">
-
-                                        {form name="rewriteurl.setdefault.form"}
-                                            <form class="form-horizontal" action="{url path='/admin/module/rewriteurl/setdefault'}" method="post">
-                                                {form_hidden_fields form=$form}
-
-                                                {form_field form=$form field='success_url'}
-                                                    <input type="hidden" name="{$name}" value="{url path={navigate to="current"} current_tab="modules"}" />
-                                                {/form_field}
-
-                                                {form_field form=$form field="rewrite-id"}
-                                                    <input type="hidden" name="{$name}" value="{$ID_URL}"/>
-                                                {/form_field}
-
-                                                <button title="{intl l='Set this redirect to default' d="rewriteurl.bo.default"}" class="btn btn-default btn-primary btn-xs js-action-default" type="submit"><i class="glyphicon glyphicon-home"></i></button>
-                                                <a class="btn btn-default btn-danger btn-xs js-action-delete" title="{intl l='Delete this redirect' d="rewriteurl.bo.default"}"  href="#rewrite_delete_dialog" data-url="{$URL}" data-id="{$ID_URL}" data-is_default="{$IS_DEFAULT}" data-toggle="modal"><i class="glyphicon glyphicon-trash"></i></a>
-                                                <a class="btn btn-default btn-info btn-xs js-action-reassign" title="{intl l='Reassign this redirect' d="rewriteurl.bo.default"}"  data-url="{$URL}" data-id="{$ID_URL}" data-is_default="{$IS_DEFAULT}"><i class="glyphicon glyphicon-refresh"></i></a>
-                                            </form>
-                                        {/form}
-
+                                        <a class="btn btn-default btn-primary btn-xs js-action-default" title="{intl l='Set this redirect to default' d="rewriteurl.bo.default"}"  href="#rewrite_default_dialog" data-url="{$URL}" data-id="{$ID_URL}" data-toggle="modal"><i class="glyphicon glyphicon-home"></i></a>
+                                        <a class="btn btn-default btn-danger btn-xs js-action-delete" title="{intl l='Delete this redirect' d="rewriteurl.bo.default"}"  href="#rewrite_delete_dialog" data-url="{$URL}" data-id="{$ID_URL}" data-is_default="{$IS_DEFAULT}" data-toggle="modal"><i class="glyphicon glyphicon-trash"></i></a>
+                                        <a class="btn btn-default btn-info btn-xs js-action-reassign" title="{intl l='Reassign this redirect' d="rewriteurl.bo.default"}"  data-url="{$URL}" data-id="{$ID_URL}" data-is_default="{$IS_DEFAULT}"><i class="glyphicon glyphicon-refresh"></i></a>
                                     </div>
                                 </td>
                             </tr>
@@ -320,6 +304,24 @@
 
     form_action         = {url path='/admin/module/rewriteurl/delete'}
     form_content        = {$smarty.capture.rewrite_delete_dialog nofilter}
+    }
+
+
+    {* -- Default RewriteUrl confirmation dialog ----------------------------------- *}
+
+    {capture "rewrite_default_dialog"}
+        <input type="hidden" name="id_url" class="js-input-default" value="" />
+    {/capture}
+
+    {include
+    file = "includes/generic-confirm-dialog.html"
+
+    dialog_id       = "rewrite_default_dialog"
+    dialog_title    = {intl l="Default Url" d="rewriteurl.bo.default"}
+    dialog_message  = {intl l="Do you really want to set the url %html as default ?" d="rewriteurl.bo.default" html="<span class=\"js-target-url\"></span>"}
+
+    form_action         = {url path='/admin/module/rewriteurl/setdefault'}
+    form_content        = {$smarty.capture.rewrite_default_dialog nofilter}
     }
 
 </div>
