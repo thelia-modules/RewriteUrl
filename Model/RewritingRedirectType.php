@@ -6,8 +6,8 @@ use RewriteUrl\Model\Base\RewritingRedirectType as BaseRewritingRedirectType;
 
 class RewritingRedirectType extends BaseRewritingRedirectType
 {
-    const TEMPORARY = 301;
-    const PERMANENT = 302;
+    const TEMPORARY = 302;
+    const PERMANENT = 301;
 
     /**
      * Default redirect type for a URL if there is no matching row in the RewritingRedirectType table
