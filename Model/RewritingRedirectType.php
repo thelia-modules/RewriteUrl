@@ -12,5 +12,5 @@ class RewritingRedirectType extends BaseRewritingRedirectType
     /**
      * Default redirect type for a URL if there is no matching row in the RewritingRedirectType table
      */
-    const DEFAULT_REDIRECT_TYPE = RewritingRedirectType::TEMPORARY;
+    const DEFAULT_REDIRECT_TYPE = RewritingRedirectType::PERMANENT;
 }
