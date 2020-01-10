@@ -454,7 +454,8 @@ class RewriteUrlAdminController extends BaseAdminController
         $foldersI18n = FolderI18nQuery::create()->filterByTitle($search, Criteria::LIKE)->limit(10);
         $brandsI18n = BrandI18nQuery::create()->filterByTitle($search, Criteria::LIKE)->limit(10);
 
-        $productsI18n = ProductI18nQuery::create()->filterByTitle($search, Criteria::LIKE)->limit(10);
+        // Search the product translation and check existance in product table
+        $productsI18n = ProductI18nQuery::create()->where(' title LIKE "'. $search .'" AND EXISTS (SELECT 1 FROM product WHERE product_i18n.id = product.id)')->limit(10);
         $productsRef = ProductQuery::create()->filterByRef($search, Criteria::LIKE)->limit(10);
 
         /** @var \Thelia\Model\CategoryI18n $categoryI18n */
