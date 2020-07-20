@@ -21,13 +21,11 @@ class ModuleConfigController extends BaseAdminController
         }
 
         $isRewritingEnabled = ConfigQuery::isRewritingEnable();
-        $rewritingRules = RewriteurlRuleQuery::create()->orderByPosition()->find();
 
         return $this->render(
             "RewriteUrl/module-configuration",
             [
-                "isRewritingEnabled" => $isRewritingEnabled,
-                "rewritingRules" => $rewritingRules,
+                "isRewritingEnabled" => $isRewritingEnabled
             ]
         );
     }
