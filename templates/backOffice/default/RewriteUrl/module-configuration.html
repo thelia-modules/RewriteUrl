@@ -13,6 +13,9 @@
 {block name="main-content"}
 {default_translation_domain domain='rewriteurl.bo.default'}
 
+{$loop_limit={$smarty.get.loop_limit|default:20}}
+{$loop_page={$smarty.get.page|default:1}}
+
 <div class="modules-configure">
     <div id="wrapper" class="container">
         <div class="clearfix">
@@ -102,33 +105,32 @@
                                     <tr>
                                         <td colspan="6" class="text-center"><hr><h2 class="text-center">{intl l="Currently enabled rules"}</h2><hr></td>
                                     </tr>
-                                    
 
-                                    {foreach from=$rewritingRules item=rule}
-                                    <tr data-idrule="{$rule->getId()}">
+                                    {loop type="rewrite_url_rule" name="rewrite_url_rule_loop" page=$loop_page limit=$loop_limit}
+                                    <tr data-idrule="{$ID}">
                                         <td class="text-center">
-                                            <select class="js_rule_type form-control" data-idrule="{$rule->getId()}" required>
-                                                <option value="regex" {if $rule->getRuleType() == "regex"}selected{/if}>{intl l="Regex"}</option>
-                                                <option value="params" {if $rule->getRuleType() == "params"}selected{/if}>{intl l="GET params"}</option>
+                                            <select class="js_rule_type form-control" data-idrule="{$ID}" required>
+                                                <option value="regex" {if $RULE_TYPE == "regex"}selected{/if}>{intl l="Regex"}</option>
+                                                <option value="params" {if $RULE_TYPE == "params"}selected{/if}>{intl l="GET params"}</option>
                                             </select>
                                         </td>
                                         <td class="text-center">
                                             <div class="js_regex_group input-group">
                                                 <span class="input-group-addon">/</span>
-                                                <input class="js_regex form-control" type="text" placeholder="{literal}^[a-z0-9_-]{3,16}${/literal}" value="{$rule->getValue()}"/>
+                                                <input class="js_regex form-control" type="text" placeholder="{literal}^[a-z0-9_-]{3,16}${/literal}" value="{$VALUE}"/>
                                                 <span class="input-group-addon">/</span>
                                             </div>
 
                                             <div class="js_param_rule_group">
-                                                {foreach from=$rule->getRewriteUrlParamCollection() item=ruleParam}
-                                                <div class="js_param_rule" data-idparamrule="{$ruleParam->getId()}" data-idrule="{$rule->getId()}">
+                                                {foreach from=$REWRITE_URL_PARAMS item=ruleParam}
+                                                <div class="js_param_rule" data-idparamrule="{$ruleParam->getId()}" data-idrule="{$ID}">
                                                     <form class="form-inline">
                                                         <div class="form-group text-center">
                                                             <input class="js_param_name form-control" type="text" placeholder="Param name" value="{$ruleParam->getParamName()}"/>
                                                         </div>
 
                                                         <div class="form-group text-center">
-                                                            <select class="js_param_condition form-control" data-idparamrule="{$ruleParam->getId()}" data-idrule="{$rule->getId()}">
+                                                            <select class="js_param_condition form-control" data-idparamrule="{$ruleParam->getId()}" data-idrule="{$ID}">
                                                                 <option value="equals" {if $ruleParam->getParamCondition() == "equals"}selected{/if}>=</option>
                                                                 <option value="not_equals" {if $ruleParam->getParamCondition() == "not_equals"}selected{/if}>≠</option>
                                                                 <option value="exists" {if $ruleParam->getParamCondition() == "exists"}selected{/if}>{intl l="exists"}</option>
@@ -141,10 +143,10 @@
                                                         <div class="form-group text-center">
                                                             <input class="js_param_value form-control" type="text" placeholder="Param value" value="{$ruleParam->getParamValue()}"/>
                                                         </div>
-                                                        <a href="#" class="js_btn_remove_param_rule btn btn-default" data-idparamrule="{$ruleParam->getId()}" data-idrule="{$rule->getId()}">
+                                                        <a href="#" class="js_btn_remove_param_rule btn btn-default" data-idparamrule="{$ruleParam->getId()}" data-idrule="{$ID}">
                                                             <span class="glyphicon glyphicon-remove"></span>
                                                         </a>
-                                                        <a href="#" class="js_btn_add_param_rule btn btn-primary" data-idrule="{$rule->getId()}">
+                                                        <a href="#" class="js_btn_add_param_rule btn btn-primary" data-idrule="{$ID}">
                                                             <span class="glyphicon glyphicon-plus"></span>
                                                         </a>
                                                     </form>
@@ -154,24 +156,36 @@
                                             </div>
                                         </td>
                                         <td class="text-center">
-                                            <input class="js_only404 form-control" type="checkbox" {if $rule->getOnly404()}checked{/if}/>
+                                            <input class="js_only404 form-control" type="checkbox" {if $ONLY404}checked{/if}/>
                                         </td>
                                         <td class="text-center">
-                                            <input class="js_url_to_redirect form-control" type="text" placeholder="/path/mypage.html" value="{$rule->getRedirectUrl()}"/>
+                                            <input class="js_url_to_redirect form-control" type="text" placeholder="/path/mypage.html" value="{$REDIRECT_URL}"/>
                                         </td>
                                         <td class="text-center">
-                                            <a href="#" class="u-position-up js_move_rule_position_up" data-idrule="{$rule->getId()}"><i class="glyphicon glyphicon-arrow-up"></i></a>
-                                            <span class="js_editable_rule_position editable editable-click" data-idrule="{$rule->getId()}">{$rule->getPosition()}</span>
-                                            <a href="#" class="u-position-down js_move_rule_position_down" data-idrule="{$rule->getId()}"><i class="glyphicon glyphicon-arrow-down"></i></a>
+                                            <a href="#" class="u-position-up js_move_rule_position_up" data-idrule="{$ID}"><i class="glyphicon glyphicon-arrow-up"></i></a>
+                                            <span class="js_editable_rule_position editable editable-click" data-idrule="{$ID}">{$POSITION}</span>
+                                            <a href="#" class="u-position-down js_move_rule_position_down" data-idrule="{$ID}"><i class="glyphicon glyphicon-arrow-down"></i></a>
                                         </td>
                                         <td class="text-center">
-                                            <a href="#" class="js_btn_update_rule btn btn-success" data-idrule="{$rule->getId()}"><span class="glyphicon glyphicon-check"></span></a>
-                                            <a href="#" class="js_btn_remove_rule btn btn-danger" data-idrule="{$rule->getId()}"><span class="glyphicon glyphicon-remove"></span></a>
+                                            <a href="#" class="js_btn_update_rule btn btn-success" data-idrule="{$ID}"><span class="glyphicon glyphicon-check"></span></a>
+                                            <a href="#" class="js_btn_remove_rule btn btn-danger" data-idrule="{$ID}"><span class="glyphicon glyphicon-remove"></span></a>
                                         </td>
                                     </tr>
-                                    {/foreach}
-
+                                    {/loop}
                                 </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="100">
+                                            {include
+                                            file = "includes/pagination.html"
+
+                                            loop_ref = "rewrite_url_rule_loop"
+                                            max_page_count = $loop_limit
+                                            page_url = {url path="/admin/module/RewriteUrl" isRewritingEnabled=$isRewritingEnabled}
+                                            }
+                                        </td>
+                                    </tr>
+                                </tfoot>
                             </table>
 
                         </div>
