@@ -8,6 +8,9 @@
 <script src="{$asset_url}"></script>
 {/javascripts}
 
+<script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap.min.js"></script>
+
 <script>
 
     $(function () {
@@ -312,11 +315,6 @@
         });
 
 
-
-
-
-
-
         function showOrHideParamRulesButtons(){
             $(".js_param_rule_group").each(function(){
                 var last;
@@ -340,7 +338,6 @@
         }
 
 
-
         addEmptyParamRuleIfNoneIsFound();
 
         showOrHideParamRulesButtons();
@@ -348,6 +345,32 @@
         $(".js_rule_type").trigger("change");
         $(".js_param_condition").trigger("change");
 
+
+
+        $("#redirection-table").DataTable({
+            'order': [[4, "asc"]],
+            "columns":[
+                {
+                    "width": "15%",
+                    "searchable": false
+                },
+                { "width": "40%" },
+                {
+                    "width": "5%",
+                    "searchable": false
+                },
+                { "width": "25%" },
+                {
+                    "width": "5",
+                    "searchable": false
+                },
+                {
+                    "width": "10%",
+                    "orderable": false,
+                    "searchable": false
+                }
+            ]
+        });
 
         var $alertError = $(".js_error_rule_management");
         $alertError.hide();

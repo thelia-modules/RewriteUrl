@@ -101,30 +101,44 @@
                                         </td>
                                     </tr>
 
-
                                     <tr>
                                         <td colspan="6" class="text-center"><hr><h2 class="text-center">{intl l="Currently enabled rules"}</h2><hr></td>
                                     </tr>
+                                </tbody>
+                            </table>
 
+                            <table class="table table-condensed table-striped" id="redirection-table">
+                                <thead>
+                                <tr>
+                                    <th class="text-center"><label class="control-label">{intl l="Rule type"}</label></th>
+                                    <th class="text-center"><label class="control-label">{intl l="Condition"} <a href="#" data-toggle="tooltip" title="{intl l="For the regex, your input is compare to URL without the domain name and without any GET params. Ex : for 'www.mysite.com/one/two?three=four', your regex will be compare to '/one/two'."}"><span class="glyphicon glyphicon-question-sign"></span></a></label></th>
+                                    <th class="text-center"><label class="control-label">{intl l="404 only"}</label></th>
+                                    <th class="text-center"><label class="control-label">{intl l="Redirect to"} <a href="#" data-toggle="tooltip" title="{intl l="Enter a URL with a leading '/' and no domain name. Ex : for 'www.mysite.com/one/two', enter '/one/two'."}"><span class="glyphicon glyphicon-question-sign"></span></a></label></th>
+                                    <th class="text-center"><label class="control-label">{intl l="Position"}</label></th>
+                                    <th class="text-center"><label class="control-label">{intl l="Actions"}</label></th>
+                                </tr>
+                                </thead>
+
+                                <tbody>
                                     {loop type="rewrite_url_rule" name="rewrite_url_rule_loop" page=$loop_page limit=$loop_limit}
                                     <tr data-idrule="{$ID}">
-                                        <td class="text-center">
+                                        <td class="text-center input-group col-md-12" data-sort="{$RULE_TYPE}">
                                             <select class="js_rule_type form-control" data-idrule="{$ID}" required>
                                                 <option value="regex" {if $RULE_TYPE == "regex"}selected{/if}>{intl l="Regex"}</option>
                                                 <option value="params" {if $RULE_TYPE == "params"}selected{/if}>{intl l="GET params"}</option>
                                             </select>
                                         </td>
-                                        <td class="text-center">
-                                            <div class="js_regex_group input-group">
-                                                <span class="input-group-addon">/</span>
+                                        <td class="text-center" data-sort="{$VALUE}" data-search="{$VALUE}">
+                                            <div class="js_regex_group input-group col-md-12">
+                                                <span class="input-group-addon" style="width: 1%;">/</span>
                                                 <input class="js_regex form-control" type="text" placeholder="{literal}^[a-z0-9_-]{3,16}${/literal}" value="{$VALUE}"/>
-                                                <span class="input-group-addon">/</span>
+                                                <span class="input-group-addon" style="width: 1%;">/</span>
                                             </div>
 
-                                            <div class="js_param_rule_group">
+                                           <div class="js_param_rule_group">
                                                 {foreach from=$REWRITE_URL_PARAMS item=ruleParam}
                                                 <div class="js_param_rule" data-idparamrule="{$ruleParam->getId()}" data-idrule="{$ID}">
-                                                    <form class="form-inline">
+                                                    <form class="">
                                                         <div class="form-group text-center">
                                                             <input class="js_param_name form-control" type="text" placeholder="Param name" value="{$ruleParam->getParamName()}"/>
                                                         </div>
@@ -155,13 +169,15 @@
 
                                             </div>
                                         </td>
-                                        <td class="text-center">
-                                            <input class="js_only404 form-control" type="checkbox" {if $ONLY404}checked{/if}/>
+                                        <td class="text-center" data-sort="{$ONLY404}">
+                                            <input class="js_only404 form-control" type="checkbox" style="width: 100%!important;" {if $ONLY404}checked{/if}/>
                                         </td>
-                                        <td class="text-center">
-                                            <input class="js_url_to_redirect form-control" type="text" placeholder="/path/mypage.html" value="{$REDIRECT_URL}"/>
+                                        <td class="text-center" data-sort="{$REDIRECT_URL}" data-search="{$REDIRECT_URL}">
+                                            <div class="col-md-12 input-group">
+                                                <input class="js_url_to_redirect form-control" type="text" placeholder="/path/mypage.html" value="{$REDIRECT_URL}"/>
+                                            </div>
                                         </td>
-                                        <td class="text-center">
+                                        <td class="text-center" data-sort="{$POSITION}">
                                             <a href="#" class="u-position-up js_move_rule_position_up" data-idrule="{$ID}"><i class="glyphicon glyphicon-arrow-up"></i></a>
                                             <span class="js_editable_rule_position editable editable-click" data-idrule="{$ID}">{$POSITION}</span>
                                             <a href="#" class="u-position-down js_move_rule_position_down" data-idrule="{$ID}"><i class="glyphicon glyphicon-arrow-down"></i></a>
@@ -173,19 +189,6 @@
                                     </tr>
                                     {/loop}
                                 </tbody>
-                                <tfoot>
-                                    <tr>
-                                        <td colspan="100">
-                                            {include
-                                            file = "includes/pagination.html"
-
-                                            loop_ref = "rewrite_url_rule_loop"
-                                            max_page_count = $loop_limit
-                                            page_url = {url path="/admin/module/RewriteUrl" isRewritingEnabled=$isRewritingEnabled}
-                                            }
-                                        </td>
-                                    </tr>
-                                </tfoot>
                             </table>
 
                         </div>
