@@ -30,7 +30,7 @@ Thelia > 2.1
 Add it in your main thelia composer.json file
 
 ```
-composer require thelia/rewrite-url-module:~1.5.3
+composer require thelia/rewrite-url-module:~1.5.8
 ```
 
 ## Usage
