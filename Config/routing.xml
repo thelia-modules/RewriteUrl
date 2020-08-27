@@ -7,6 +7,9 @@
     <route id="rewrite.url.config" path="/admin/module/RewriteUrl">
         <default key="_controller">RewriteUrl\Controller\Admin\ModuleConfigController::viewConfigAction</default>
     </route>
+    <route id="rewrite.url.config.get.rules" path="/admin/module/RewriteUrl/get-rules">
+        <default key="_controller">RewriteUrl\Controller\Admin\ModuleConfigController::getDatatableRules</default>
+    </route>
     <route id="rewrite.url.config.set-rewriting_enable" path="/admin/module/RewriteUrl/config/setRewritingEnable">
         <default key="_controller">RewriteUrl\Controller\Admin\ModuleConfigController::setRewritingEnableAction</default>
     </route>
@@ -22,9 +25,6 @@
     <route id="rewrite.url.rule.move-position" path="/admin/module/RewriteUrl/rule/movePosition">
         <default key="_controller">RewriteUrl\Controller\Admin\ModuleConfigController::moveRulePositionAction</default>
     </route>
-
-
-
 
     <route id="rewrite.url.delete" path="/admin/module/rewriteurl/delete">
         <default key="_controller">RewriteUrl\Controller\Admin\RewriteUrlAdminController::deleteAction</default>
