@@ -32,7 +32,7 @@ class RewriteurlRule extends BaseRewriteurlRule
     {
         if ($this->getRuleType() == self::TYPE_REGEX) {
             if (!empty($this->getValue())) {
-                return preg_match("/" . $this->getValue() . "/", $url) === 1;
+                return preg_match("/" . str_replace('/', '.', $this->getValue()) . "/", $url) === 1;
             }
         } elseif ($this->getRuleType() == self::TYPE_GET_PARAMS) {
             if ($this->getRewriteUrlParamCollection()->count() > 0) {
