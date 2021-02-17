@@ -32,6 +32,15 @@ class RewritingRouterFirst extends RewritingRouter
 
             $pathInfo = $request instanceof TheliaRequest ? $request->getRealPathInfo() : $request->getPathInfo();
 
+            $redirectByUrl = RewriteurlRuleQuery::create()
+                ->filterByRuleType('url')
+                ->filterByOnly404(0)
+                ->filterByValue(substr($pathInfo, 1))
+                ->findOne();
+
+            if (null !== $redirectByUrl){
+                $this->redirect($urlTool->absoluteUrl($redirectByUrl->getRedirectUrl()), 301);
+            }
 
 
             // Check RewriteUrl rules

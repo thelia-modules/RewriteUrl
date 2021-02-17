@@ -4,6 +4,10 @@
     <span class="input-group-addon" style="width: 1%;">/</span>
 </div>
 
+<div class="js_url_group input-group col-md-12">
+    <input class="js_url form-control" type="text" value="{$VALUE}"/>
+</div>
+
 <div class="js_param_rule_group">
     {foreach from=$REWRITE_URL_PARAMS item=ruleParam}
     <div class="js_param_rule" data-idparamrule="{$ruleParam->getId()}" data-idrule="{$ID}">

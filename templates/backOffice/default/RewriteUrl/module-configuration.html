@@ -71,6 +71,7 @@
                                         <td class="text-center">
                                             <select class="js_rule_type form-control" data-idrule="new" required>
                                                 <option value="regex">{intl l="Regex"}</option>
+                                                <option value="url">{intl l="URL"}</option>
                                                 <option value="params">{intl l="GET params"}</option>
                                             </select>
                                         </td>
@@ -79,6 +80,10 @@
                                                 <span class="input-group-addon">/</span>
                                                 <input class="js_regex form-control" type="text" placeholder="{literal}^[a-z0-9_-]{3,16}${/literal}"/>
                                                 <span class="input-group-addon">/</span>
+                                            </div>
+
+                                            <div class="js_url_group input-group col-md-12">
+                                                <input class="js_url form-control" type="text"/>
                                             </div>
 
                                             <div class="js_param_rule_group">
