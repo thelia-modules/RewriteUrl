@@ -12,6 +12,7 @@
 
 namespace RewriteUrl\Form;
 
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Thelia\Form\BaseForm;
 
@@ -25,7 +26,7 @@ class SetDefaultForm extends BaseForm
     /**
      * @return string
      */
-    public function getName()
+    public static function getName()
     {
         return "rewriteurl_setdefault_form";
     }
@@ -35,7 +36,7 @@ class SetDefaultForm extends BaseForm
         $this->formBuilder
             ->add(
                 'rewrite-id',
-                'text',
+                TextType::class,
                 array(
                     'constraints' => array(new NotBlank()),
                     'required' => true

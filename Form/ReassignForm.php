@@ -12,6 +12,8 @@
 
 namespace RewriteUrl\Form;
 
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Thelia\Form\BaseForm;
 
@@ -25,7 +27,7 @@ class ReassignForm extends BaseForm
     /**
      * @return string
      */
-    public function getName()
+    public static function getName()
     {
         return "rewriteurl_reassign_form";
     }
@@ -35,14 +37,14 @@ class ReassignForm extends BaseForm
         $this->formBuilder
             ->add(
                 'rewrite-id',
-                'integer',
+                IntegerType::class,
                 array(
                     'required'      => true
                 )
             )
             ->add(
                 'select-reassign',
-                'text',
+                TextType::class,
                 array(
                     'constraints'   => array(new NotBlank()),
                     'required'      => true
@@ -50,7 +52,7 @@ class ReassignForm extends BaseForm
             )
             ->add(
                 'all',
-                'integer',
+                IntegerType::class,
                 array(
                     'required' => true
                 )

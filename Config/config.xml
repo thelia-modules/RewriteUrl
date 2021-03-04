@@ -17,16 +17,6 @@
     </forms>
 
     <services>
-        <service id="rewriteurl.action" class="RewriteUrl\EventListeners\RewriteUrlListener">
-            <argument type="service" id="event_dispatcher" />
-            <tag name="kernel.event_subscriber"/>
-        </service>
-
-        <service id="rewriteurl.kernel.exception" class="RewriteUrl\EventListeners\KernelExceptionListener">
-            <argument type="service" id="request_stack" />
-            <tag name="kernel.event_subscriber"/>
-        </service>
-
         <service id="rewriteurl.router.first" class="RewriteUrl\Service\RewritingRouterFirst">
             <tag name="router.register" priority="300"/>
         </service>

@@ -63,10 +63,10 @@ class RewriteUrlListener implements EventSubscriberInterface
             // add new default url
             if (null !== $newDefault = RewritingUrlQuery::create()->findOneByRedirected($rewritingUrl->getId())) {
                 $this->dispatcher->dispatch(
-                    RewriteUrlEvents::REWRITEURL_UPDATE,
                     new RewriteUrlEvent(
                         $newDefault->setRedirected(null)
-                    )
+                    ),
+                    RewriteUrlEvents::REWRITEURL_UPDATE
                 );
             }
         }
@@ -77,12 +77,12 @@ class RewriteUrlListener implements EventSubscriberInterface
         /** @var \Thelia\Model\RewritingUrl $redirected */
         foreach ($isRedirection as $redirected) {
             $this->dispatcher->dispatch(
-                RewriteUrlEvents::REWRITEURL_UPDATE,
                 new RewriteUrlEvent(
                     $redirected->setRedirected(
                         ($newDefault !== null) ? $newDefault->getId() : $rewritingUrl->getRedirected()
                     )
-                )
+                ),
+                RewriteUrlEvents::REWRITEURL_UPDATE
             );
         }
 

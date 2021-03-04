@@ -29,7 +29,7 @@ class RewritingUrlOverride extends RewritingUrl
      *
      * @param ConnectionInterface $con
      */
-    public function postInsert(ConnectionInterface $con = null)
+    public function postInsert(ConnectionInterface $con = null): void
     {
     }
 }

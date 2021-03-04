@@ -6,6 +6,7 @@ use RewriteUrl\Model\RewriteurlRule;
 use RewriteUrl\Model\RewriteurlRuleQuery;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\KernelEvents;
@@ -31,9 +32,9 @@ class KernelExceptionListener implements EventSubscriberInterface
         ];
     }
 
-    public function onKernelHttpNotFoundException(GetResponseForExceptionEvent $event)
+    public function onKernelHttpNotFoundException(ExceptionEvent $event)
     {
-        if ($event->getException() instanceof NotFoundHttpException) {
+        if ($event->getThrowable() instanceof NotFoundHttpException) {
             $urlTool = URL::getInstance();
 
             $ruleCollection = RewriteurlRuleQuery::create()
@@ -47,7 +48,7 @@ class KernelExceptionListener implements EventSubscriberInterface
             /** @var RewriteurlRule $rule */
             foreach ($ruleCollection as $rule) {
                 if ($rule->isMatching($pathInfo, $request->query->all())) {
-                    $event->setException(new RedirectException($urlTool->absoluteUrl($rule->getRedirectUrl()), 301));
+                    $event->setThrowable(new RedirectException($urlTool->absoluteUrl($rule->getRedirectUrl()), 301));
                     return;
                 }
             }

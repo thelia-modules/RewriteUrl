@@ -13,6 +13,7 @@
 namespace RewriteUrl\Controller\Admin;
 
 use Thelia\Controller\Admin\AdminController;
+use Thelia\Core\HttpFoundation\Request;
 
 /**
  * Class NotRewrittenUrlsAdminController
@@ -21,17 +22,17 @@ use Thelia\Controller\Admin\AdminController;
  */
 class NotRewritenUrlsAdminController extends AdminController
 {
-    public function defaultAction()
+    public function defaultAction(Request $request)
     {
         return $this->render(
             'list-notrewritenurls',
             array(
-                'current_tab' => $this->getRequest()->get('current_tab', 'categories'),
-                'page_category' => $this->getRequest()->get('page_category', 1),
-                'page_product' => $this->getRequest()->get('page_product', 1),
-                'page_brand' => $this->getRequest()->get('page_brand', 1),
-                'page_folder' => $this->getRequest()->get('page_folder', 1),
-                'page_content' => $this->getRequest()->get('page_content', 1),
+                'current_tab' => $request->get('current_tab', 'categories'),
+                'page_category' => $request->get('page_category', 1),
+                'page_product' => $request->get('page_product', 1),
+                'page_brand' => $request->get('page_brand', 1),
+                'page_folder' => $request->get('page_folder', 1),
+                'page_content' => $request->get('page_content', 1),
                 )
         );
     }

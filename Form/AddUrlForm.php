@@ -12,6 +12,7 @@
 
 namespace RewriteUrl\Form;
 
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Thelia\Form\BaseForm;
 
@@ -25,7 +26,7 @@ class AddUrlForm extends BaseForm
     /**
      * @return string
      */
-    public function getName()
+    public static function getName()
     {
         return "rewriteurl_add_form";
     }
@@ -35,7 +36,7 @@ class AddUrlForm extends BaseForm
         $this->formBuilder
             ->add(
                 'view',
-                'text',
+                TextType::class,
                 array(
                     'constraints'   => array(new NotBlank()),
                     'required'      => true
@@ -43,7 +44,7 @@ class AddUrlForm extends BaseForm
             )
             ->add(
                 'view-id',
-                'text',
+                TextType::class,
                 array(
                     'constraints'   => array(new NotBlank()),
                     'required'      => true
@@ -51,7 +52,7 @@ class AddUrlForm extends BaseForm
             )
             ->add(
                 'url',
-                'text',
+                TextType::class,
                 array(
                     'constraints'  => array(new NotBlank()),
                     'required'     => true
@@ -59,7 +60,7 @@ class AddUrlForm extends BaseForm
             )
             ->add(
                 'default',
-                'text',
+                TextType::class,
                 array(
                     'constraints'  => array(new NotBlank()),
                     'required'     => true
@@ -67,7 +68,7 @@ class AddUrlForm extends BaseForm
             )
             ->add(
                 'locale',
-                'text',
+                TextType::class,
                 array(
                     'constraints'  => array(new NotBlank()),
                     'required'     => true
@@ -75,7 +76,7 @@ class AddUrlForm extends BaseForm
             )
             ->add(
                 'httpcode',
-                'text',
+                TextType::class,
                 array(
                     'constraints'  => array(new NotBlank()),
                     'required'     => true

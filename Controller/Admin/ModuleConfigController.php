@@ -9,6 +9,7 @@ use RewriteUrl\Model\RewriteurlRuleQuery;
 use RewriteUrl\RewriteUrl;
 use Thelia\Controller\Admin\BaseAdminController;
 use Thelia\Core\HttpFoundation\JsonResponse;
+use Thelia\Core\HttpFoundation\Request;
 use Thelia\Core\Security\AccessManager;
 use Thelia\Core\Security\Resource\AdminResources;
 use Thelia\Core\Translation\Translator;
@@ -16,9 +17,9 @@ use Thelia\Model\ConfigQuery;
 
 class ModuleConfigController extends BaseAdminController
 {
-    public function viewConfigAction($params = array())
+    public function viewConfigAction()
     {
-        if (null !== $response = $this->checkAuth(array(AdminResources::MODULE), 'GoogleShoppingXml', AccessManager::VIEW)) {
+        if (null !== $response = $this->checkAuth(array(AdminResources::MODULE), 'RewriteUrl', AccessManager::VIEW)) {
             return $response;
         }
 
@@ -32,10 +33,8 @@ class ModuleConfigController extends BaseAdminController
         );
     }
 
-    public function getDatatableRules()
+    public function getDatatableRules(Request $request)
     {
-        $request = $this->getRequest();
-
         $requestSearchValue = $request->get('search') ? '%' . $request->get('search')['value'] . '%' : "";
         $recordsTotal = RewriteurlRuleQuery::create()->count();
         $search = RewriteurlRuleQuery::create();
@@ -119,9 +118,8 @@ class ModuleConfigController extends BaseAdminController
         ]);
     }
 
-    public function setRewritingEnableAction()
+    public function setRewritingEnableAction(Request $request)
     {
-        $request = $this->getRequest()->request;
         $isRewritingEnable = $request->get("rewriting_enable", null);
 
         if ($isRewritingEnable !== null) {
@@ -136,11 +134,9 @@ class ModuleConfigController extends BaseAdminController
         }
     }
 
-    public function addRuleAction()
+    public function addRuleAction(Request $request)
     {
         try {
-            $request = $this->getRequest()->request;
-
             $rule = new RewriteurlRule();
 
             $this->fillRuleObjectFields($rule, $request);
@@ -150,11 +146,9 @@ class ModuleConfigController extends BaseAdminController
         return $this->jsonResponse(json_encode(["state" => "Success"]), 200);
     }
 
-    public function updateRuleAction()
+    public function updateRuleAction(Request $request)
     {
         try {
-            $request = $this->getRequest()->request;
-
             $rule = RewriteurlRuleQuery::create()->findOneById($request->get("id"));
             if ($rule == null) {
                 throw new \Exception(Translator::getInstance()->trans(
@@ -172,11 +166,9 @@ class ModuleConfigController extends BaseAdminController
     }
 
 
-    public function removeRuleAction()
+    public function removeRuleAction(Request $request)
     {
         try {
-            $request = $this->getRequest()->request;
-
             $rule = RewriteurlRuleQuery::create()->findOneById($request->get("id"));
             if ($rule == null) {
                 throw new \Exception(Translator::getInstance()->trans(
@@ -193,11 +185,9 @@ class ModuleConfigController extends BaseAdminController
         return $this->jsonResponse(json_encode(["state" => "Success"]), 200);
     }
 
-    public function moveRulePositionAction()
+    public function moveRulePositionAction(Request $request)
     {
         try {
-            $request = $this->getRequest()->request;
-
             $rule = RewriteurlRuleQuery::create()->findOneById($request->get("id"));
             if ($rule == null) {
                 throw new \Exception(Translator::getInstance()->trans(
@@ -224,7 +214,7 @@ class ModuleConfigController extends BaseAdminController
         return $this->jsonResponse(json_encode(["state" => "Success"]), 200);
     }
 
-    protected function fillRuleObjectFields(RewriteurlRule $rule, $request)
+    protected function fillRuleObjectFields(RewriteurlRule $rule, Request $request)
     {
         $ruleType = $request->get("ruleType", null);
         if ($ruleType !== "regex" && $ruleType !== "params") {
