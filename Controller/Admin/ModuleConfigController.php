@@ -23,11 +23,13 @@ class ModuleConfigController extends BaseAdminController
         }
 
         $isRewritingEnabled = ConfigQuery::isRewritingEnable();
+        $isRedirectionEnabled = ConfigQuery::isRedirectionEnable();
 
         return $this->render(
             "RewriteUrl/module-configuration",
             [
-                "isRewritingEnabled" => $isRewritingEnabled
+                "isRewritingEnabled" => $isRewritingEnabled,
+                "isRedirectionEnabled" => $isRedirectionEnabled,
             ]
         );
     }
@@ -135,6 +137,26 @@ class ModuleConfigController extends BaseAdminController
             ), 500);
         }
     }
+
+    // check redirection_enable status & write an entry if there is none //
+    
+    public function setRedirectionEnableAction()
+    {
+        $request = $this->getRequest()->request;
+        $isRedirectionEnable = $request->get("redirection_enable", null);
+
+        if ($isRedirectionEnable !== null) {
+            ConfigQuery::write("redirection_enable", $isRedirectionEnable ? 1 : 0);
+            return $this->jsonResponse(json_encode(["state" => "Success"]), 200);
+        } else {
+            return $this->jsonResponse(Translator::getInstance()->trans(
+                "Unable to change the configuration variable.",
+                [],
+                RewriteUrl::MODULE_DOMAIN
+            ), 500);
+        }
+    }
+    // ############################## //
 
     public function addRuleAction()
     {

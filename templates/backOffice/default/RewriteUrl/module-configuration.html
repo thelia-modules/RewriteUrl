@@ -39,8 +39,22 @@
                             <span class="help-block">{intl l="Set the config variable 'rewriting_enable'"}</span>
                         </div>
                     </div>
-
-
+               
+            <!-- index.php redirection switch -->
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <div>
+                                <label>{intl l="Enable index.php redirection"}</label>
+                                <div class="make-switch switch-small js_switch_redirection" data-on="success" data-off="danger" data-on-label="<i class='glyphicon glyphicon-ok'></i>" data-off-label="<i class='glyphicon glyphicon-remove'></i>">
+                                    <input type="checkbox" {if $isRedirectionEnabled}checked="checked"{/if}>
+                                </div>
+                            </div>
+                            <span class="help-block">{intl l="URL which contain index.php will be erased"}</span>
+                        </div>
+                    </div>
+            <!-- ################################-->
 
                     <div class="panel panel-default">
                         <div class="panel-heading clearfix">

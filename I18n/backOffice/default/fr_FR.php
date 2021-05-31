@@ -29,6 +29,8 @@ return array(
     'Do you really want to delete the url %html ?' => 'Voulez-vous vraiment supprimer l\'url %html ?',
     'Edit information in %lng' => 'Modifier l\'information en %lng',
     'Enable URL rewriting' => 'Activer la réécriture d\'URL',
+    'Enable index.php redirection' => 'Activer la redirection des URL contenant index.php',
+    'URL which contain index.php will be erased' => 'Les url contenants "index.php" seront supprimées et redirigées automatiquement',
     'Enter a URL with a leading \'/\' and no domain name. Ex : for \'www.mysite.com/one/two\', enter \'/one/two\'.' => 'Saisissez une URL commençant par un \'/\' et sans nom de domaine. Ex : pour \'www.monsite.com/un/deux\', saisissez \'/un/deux\'.',
     'Enter new rule position' => 'Saisir une nouvelle position de règle',
     'Error this url already exist you can reassign by follow this ' => 'Erreur cette url existe déjà, vous pouvez la réassigner en suivant ce ',

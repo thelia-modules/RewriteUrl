@@ -22,6 +22,12 @@
             <tag name="kernel.event_subscriber"/>
         </service>
 
+    <!-- index.php redirection action -->
+        <service id="redirection.action" class="RewriteUrl\EventListeners\RequestListener">
+            <tag name="kernel.event_subscriber"/>
+        </service>
+    <!-- ##################### -->
+
         <service id="rewriteurl.kernel.exception" class="RewriteUrl\EventListeners\KernelExceptionListener">
             <argument type="service" id="request_stack" />
             <tag name="kernel.event_subscriber"/>

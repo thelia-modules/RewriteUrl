@@ -13,6 +13,13 @@
     <route id="rewrite.url.config.set-rewriting_enable" path="/admin/module/RewriteUrl/config/setRewritingEnable">
         <default key="_controller">RewriteUrl\Controller\Admin\ModuleConfigController::setRewritingEnableAction</default>
     </route>
+
+    <!-- REDIRECTION-ENABLE ROUTE -->
+    <route id="rewrite.url.config.set-redirection_enable" path="/admin/module/RewriteUrl/config/setRedirectionEnable">
+        <default key="_controller">RewriteUrl\Controller\Admin\ModuleConfigController::setRedirectionEnableAction</default>
+    </route>
+    <!-- ############################# -->
+
     <route id="rewrite.url.rule.add" path="/admin/module/RewriteUrl/rule/add">
         <default key="_controller">RewriteUrl\Controller\Admin\ModuleConfigController::addRuleAction</default>
     </route>
