@@ -23,7 +23,13 @@
         </service>
 
     <!-- index.php redirection action -->
-        <service id="redirection.action" class="RewriteUrl\EventListeners\RequestListener">
+        <service id="index.redirection.action" class="RewriteUrl\EventListeners\RequestListener">
+            <tag name="kernel.event_subscriber"/>
+        </service>
+    <!-- ##################### -->
+
+    <!-- index.php redirection action -->
+        <service id="https.redirection.action" class="RewriteUrl\EventListeners\RequestListener">
             <tag name="kernel.event_subscriber"/>
         </service>
     <!-- ##################### -->

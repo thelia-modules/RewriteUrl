@@ -16,7 +16,7 @@ class RequestListener implements EventSubscriberInterface
 
     public function redirect(GetResponseEvent $event)
     {
-        if (ConfigQuery::isRedirectionEnable())
+        if (ConfigQuery::isIndexRedirectionEnable())
         {
             $request = $event->getRequest();
             $fullPath = $request->getUri();
@@ -31,6 +31,21 @@ class RequestListener implements EventSubscriberInterface
                 ));                
             }
         }
+
+        if (ConfigQuery::isHttpsRedirectionEnable())
+        {
+            $request = $event->getRequest();
+            $fullPath = $request->getUri();
+
+            if (!$request->isSecure()) 
+            {
+                $securePath = str_replace('http', 'https', $fullPath) ;
+                $event->setResponse(new RedirectResponse(
+                    $securePath,
+                    301
+                ));                
+            }
+        }
     }
 
     // event to listen to
@@ -41,5 +56,4 @@ class RequestListener implements EventSubscriberInterface
             KernelEvents::REQUEST => ["redirect"],
         ];    
     }
-
 }

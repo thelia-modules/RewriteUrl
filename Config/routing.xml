@@ -14,9 +14,15 @@
         <default key="_controller">RewriteUrl\Controller\Admin\ModuleConfigController::setRewritingEnableAction</default>
     </route>
 
-    <!-- REDIRECTION-ENABLE ROUTE -->
-    <route id="rewrite.url.config.set-redirection_enable" path="/admin/module/RewriteUrl/config/setRedirectionEnable">
-        <default key="_controller">RewriteUrl\Controller\Admin\ModuleConfigController::setRedirectionEnableAction</default>
+    <!-- INDEX-REDIRECTION-ENABLE ROUTE -->
+    <route id="rewrite.url.config.set-index-redirection_enable" path="/admin/module/RewriteUrl/config/setIndexRedirectionEnable">
+        <default key="_controller">RewriteUrl\Controller\Admin\ModuleConfigController::setIndexRedirectionEnableAction</default>
+    </route>
+    <!-- ############################# -->
+
+    <!-- HTTPS-REDIRECTION-ENABLE ROUTE -->
+    <route id="rewrite.url.config.set-https-redirection_enable" path="/admin/module/RewriteUrl/config/setHttpsRedirectionEnable">
+        <default key="_controller">RewriteUrl\Controller\Admin\ModuleConfigController::setHttpsRedirectionEnableAction</default>
     </route>
     <!-- ############################# -->
 

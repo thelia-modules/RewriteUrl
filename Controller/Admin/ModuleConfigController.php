@@ -23,13 +23,16 @@ class ModuleConfigController extends BaseAdminController
         }
 
         $isRewritingEnabled = ConfigQuery::isRewritingEnable();
-        $isRedirectionEnabled = ConfigQuery::isRedirectionEnable();
+        $isIndexRedirectionEnabled = ConfigQuery::isIndexRedirectionEnable();
+        $isHttpsRedirectionEnabled = ConfigQuery::isHttpsRedirectionEnable();
 
         return $this->render(
             "RewriteUrl/module-configuration",
             [
                 "isRewritingEnabled" => $isRewritingEnabled,
-                "isRedirectionEnabled" => $isRedirectionEnabled,
+                "isIndexRedirectionEnabled" => $isIndexRedirectionEnabled,
+                "isHttpsRedirectionEnabled" => $isHttpsRedirectionEnabled,
+
             ]
         );
     }
@@ -138,15 +141,35 @@ class ModuleConfigController extends BaseAdminController
         }
     }
 
-    // check redirection_enable status & write an entry if there is none //
+    // check index_redirection_enable status & write an entry if there is none //
     
-    public function setRedirectionEnableAction()
+    public function setIndexRedirectionEnableAction()
     {
         $request = $this->getRequest()->request;
-        $isRedirectionEnable = $request->get("redirection_enable", null);
+        $isIndexRedirectionEnable = $request->get("index_redirection_enable", null);
 
-        if ($isRedirectionEnable !== null) {
-            ConfigQuery::write("redirection_enable", $isRedirectionEnable ? 1 : 0);
+        if ($isIndexRedirectionEnable !== null) {
+            ConfigQuery::write("index_redirection_enable", $isIndexRedirectionEnable ? 1 : 0);
+            return $this->jsonResponse(json_encode(["state" => "Success"]), 200);
+        } else {
+            return $this->jsonResponse(Translator::getInstance()->trans(
+                "Unable to change the configuration variable.",
+                [],
+                RewriteUrl::MODULE_DOMAIN
+            ), 500);
+        }
+    }
+    // ############################## //
+
+    // check https_redirection_enable status & write an entry if there is none //
+
+    public function setHttpsRedirectionEnableAction()
+    {
+        $request = $this->getRequest()->request;
+        $isHttpsRedirectionEnable = $request->get("https_redirection_enable", null);
+
+        if ($isHttpsRedirectionEnable !== null) {
+            ConfigQuery::write("https_redirection_enable", $isHttpsRedirectionEnable ? 1 : 0);
             return $this->jsonResponse(json_encode(["state" => "Success"]), 200);
         } else {
             return $this->jsonResponse(Translator::getInstance()->trans(
