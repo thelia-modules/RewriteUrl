@@ -25,105 +25,127 @@
 
         {hook name="module.configuration" location="module_configuration" modulecode="$module_code"}
 
-        <div class="general-block-decorator">
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="panel panel-default">
-                        <div class="panel-body">
-                            <div>
-                                <label>{intl l="Enable URL rewriting"}</label>
-                                <div class="make-switch switch-small js_switch_rewrite_url" data-on="success" data-off="danger" data-on-label="<i class='glyphicon glyphicon-ok'></i>" data-off-label="<i class='glyphicon glyphicon-remove'></i>">
-                                    <input type="checkbox" {if $isRewritingEnabled}checked="checked"{/if}>
-                                </div>
-                            </div>
-                            <span class="help-block">{intl l="Set the config variable 'rewriting_enable'"}</span>
+
+        <div class="row">
+            <div class="panel panel-default col-md-4">
+                <div class="panel-body">
+                    <div>
+                        <label>{intl l="Enable URL rewriting"}</label>
+                        <div class="make-switch switch-small js_switch_rewrite_url" data-on="success" data-off="danger" data-on-label="<i class='glyphicon glyphicon-ok'></i>" data-off-label="<i class='glyphicon glyphicon-remove'></i>">
+                            <input type="checkbox" {if $isRewritingEnabled}checked="checked"{/if}>
                         </div>
                     </div>
-
-
-
-                    <div class="panel panel-default">
-                        <div class="panel-heading clearfix">
-                            <div class="panel-title">
-                                {intl l="Rule management"}
-                            </div>
+                    <span class="help-block">{intl l="Set the config variable 'rewriting_enable'"}</span>
+                </div>
+            </div>
+        
+            {* index.php redirection switch *}  
+            <div class="panel panel-default col-md-4">
+                <div class="panel-body">
+                    <div>
+                        <label>{intl l="Enable index.php redirection"}</label>
+                        <div class="make-switch switch-small js_switch_index_redirection" data-on="success" data-off="danger" data-on-label="<i class='glyphicon glyphicon-ok'></i>" data-off-label="<i class='glyphicon glyphicon-remove'></i>">
+                            <input type="checkbox" {if $isIndexRedirectionEnabled}checked="checked"{/if}>
                         </div>
-                        <div class="panel-body">
+                    </div>
+                    <span class="help-block">{intl l="URL which contain index.php will be erased"}</span>
+                </div>
+            </div>
+            {* end of index.php redirection switch *}
 
-                            <div class="js_error_rule_management alert alert-danger">
-                            </div>
-
-                            <table class="table table-condensed table-striped">
-                                <thead>
-                                    <tr>
-                                        <th class="text-center"><label class="control-label">{intl l="Rule type"}</label></th>
-                                        <th class="text-center"><label class="control-label">{intl l="Condition"} <a href="#" data-toggle="tooltip" title="{intl l="For the regex, your input is compare to URL without the domain name and without any GET params. Ex : for 'www.mysite.com/one/two?three=four', your regex will be compare to '/one/two'."}"><span class="glyphicon glyphicon-question-sign"></span></a></label></th>
-                                        <th class="text-center"><label class="control-label">{intl l="404 only"}</label></th>
-                                        <th class="text-center"><label class="control-label">{intl l="Redirect to"} <a href="#" data-toggle="tooltip" title="{intl l="Enter a URL with a leading '/' and no domain name. Ex : for 'www.mysite.com/one/two', enter '/one/two'."}"><span class="glyphicon glyphicon-question-sign"></span></a></label></th>
-                                        <th class="text-center"><label class="control-label">{intl l="Position"}</label></th>
-                                        <th class="text-center"><label class="control-label">{intl l="Actions"}</label></th>
-                                    </tr>
-                                </thead>
-
-
-                                <tbody>
-                                    <tr data-idrule="new">
-                                        <td class="text-center">
-                                            <select class="js_rule_type form-control" data-idrule="new" required>
-                                                <option value="regex">{intl l="Regex"}</option>
-                                                <option value="params">{intl l="GET params"}</option>
-                                            </select>
-                                        </td>
-                                        <td class="text-center">
-                                            <div class="js_regex_group input-group">
-                                                <span class="input-group-addon">/</span>
-                                                <input class="js_regex form-control" type="text" placeholder="{literal}^[a-z0-9_-]{3,16}${/literal}"/>
-                                                <span class="input-group-addon">/</span>
-                                            </div>
-
-                                            <div class="js_param_rule_group">
-
-                                            </div>
-                                        </td>
-                                        <td class="text-center">
-                                            <input class="js_only404 form-control" type="checkbox" checked="checked"/>
-                                        </td>
-                                        <td class="text-center">
-                                            <input class="js_url_to_redirect form-control" type="text" placeholder="/path/mypage.html"/>
-                                        </td>
-                                        <td class="text-center">
-                                        </td>
-                                        <td class="text-center">
-                                            <a href="#" class="js_btn_add_rule btn btn-primary"><span class="glyphicon glyphicon-plus-sign"></span></a>
-                                        </td>
-                                    </tr>
-
-                                    <tr>
-                                        <td colspan="6" class="text-center"><hr><h2 class="text-center">{intl l="Currently enabled rules"}</h2><hr></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-
-                            <table class="table table-condensed table-striped" id="redirection-table">
-                                <thead>
-                                    <tr>
-                                        <th class="text-center"><label class="control-label">{intl l="Rule type"}</label></th>
-                                        <th class="text-center"><label class="control-label">{intl l="Condition"} <a href="#" data-toggle="tooltip" title="{intl l="For the regex, your input is compare to URL without the domain name and without any GET params. Ex : for 'www.mysite.com/one/two?three=four', your regex will be compare to '/one/two'."}"><span class="glyphicon glyphicon-question-sign"></span></a></label></th>
-                                        <th class="text-center"><label class="control-label">{intl l="404 only"}</label></th>
-                                        <th class="text-center"><label class="control-label">{intl l="Redirect to"} <a href="#" data-toggle="tooltip" title="{intl l="Enter a URL with a leading '/' and no domain name. Ex : for 'www.mysite.com/one/two', enter '/one/two'."}"><span class="glyphicon glyphicon-question-sign"></span></a></label></th>
-                                        <th class="text-center"><label class="control-label">{intl l="Position"}</label></th>
-                                        <th class="text-center"><label class="control-label">{intl l="Actions"}</label></th>
-                                    </tr>
-                                </thead>
-                            </table>
-
+            {* https redirection switch *}
+            <div class="panel panel-default col-md-4">
+                <div class="panel-body">
+                    <div>
+                        <label>{intl l="Enable https redirection"}</label>
+                        <div class="make-switch switch-small js_switch_https_redirection" data-on="success" data-off="danger" data-on-label="<i class='glyphicon glyphicon-ok'></i>" data-off-label="<i class='glyphicon glyphicon-remove'></i>">
+                            <input type="checkbox" {if $isHttpsRedirectionEnabled}checked="checked"{/if}>
                         </div>
+                    </div>
+                    <span class="help-block">{intl l="Auto redirect http to https protocol"}</span>
+                </div>
+            </div>
+            {* end of https redirection switch *}
+
+                <div class="panel panel-default">
+                    <div class="panel-heading clearfix">
+                        <div class="panel-title">
+                            {intl l="Rule management"}
+                        </div>
+                    </div>
+                    <div class="panel-body">
+
+                        <div class="js_error_rule_management alert alert-danger">
+                        </div>
+
+                        <table class="table table-condensed table-striped">
+                            <thead>
+                                <tr>
+                                    <th class="text-center"><label class="control-label">{intl l="Rule type"}</label></th>
+                                    <th class="text-center"><label class="control-label">{intl l="Condition"} <a href="#" data-toggle="tooltip" title="{intl l="For the regex, your input is compare to URL without the domain name and without any GET params. Ex : for 'www.mysite.com/one/two?three=four', your regex will be compare to '/one/two'."}"><span class="glyphicon glyphicon-question-sign"></span></a></label></th>
+                                    <th class="text-center"><label class="control-label">{intl l="404 only"}</label></th>
+                                    <th class="text-center"><label class="control-label">{intl l="Redirect to"} <a href="#" data-toggle="tooltip" title="{intl l="Enter a URL with a leading '/' and no domain name. Ex : for 'www.mysite.com/one/two', enter '/one/two'."}"><span class="glyphicon glyphicon-question-sign"></span></a></label></th>
+                                    <th class="text-center"><label class="control-label">{intl l="Position"}</label></th>
+                                    <th class="text-center"><label class="control-label">{intl l="Actions"}</label></th>
+                                </tr>
+                            </thead>
+
+
+                            <tbody>
+                                <tr data-idrule="new">
+                                    <td class="text-center">
+                                        <select class="js_rule_type form-control" data-idrule="new" required>
+                                            <option value="regex">{intl l="Regex"}</option>
+                                            <option value="params">{intl l="GET params"}</option>
+                                        </select>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="js_regex_group input-group">
+                                            <span class="input-group-addon">/</span>
+                                            <input class="js_regex form-control" type="text" placeholder="{literal}^[a-z0-9_-]{3,16}${/literal}"/>
+                                            <span class="input-group-addon">/</span>
+                                        </div>
+
+                                        <div class="js_param_rule_group">
+
+                                        </div>
+                                    </td>
+                                    <td class="text-center">
+                                        <input class="js_only404 form-control" type="checkbox" checked="checked"/>
+                                    </td>
+                                    <td class="text-center">
+                                        <input class="js_url_to_redirect form-control" type="text" placeholder="/path/mypage.html"/>
+                                    </td>
+                                    <td class="text-center">
+                                    </td>
+                                    <td class="text-center">
+                                        <a href="#" class="js_btn_add_rule btn btn-primary"><span class="glyphicon glyphicon-plus-sign"></span></a>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td colspan="6" class="text-center"><hr><h2 class="text-center">{intl l="Currently enabled rules"}</h2><hr></td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <table class="table table-condensed table-striped" id="redirection-table">
+                            <thead>
+                                <tr>
+                                    <th class="text-center"><label class="control-label">{intl l="Rule type"}</label></th>
+                                    <th class="text-center"><label class="control-label">{intl l="Condition"} <a href="#" data-toggle="tooltip" title="{intl l="For the regex, your input is compare to URL without the domain name and without any GET params. Ex : for 'www.mysite.com/one/two?three=four', your regex will be compare to '/one/two'."}"><span class="glyphicon glyphicon-question-sign"></span></a></label></th>
+                                    <th class="text-center"><label class="control-label">{intl l="404 only"}</label></th>
+                                    <th class="text-center"><label class="control-label">{intl l="Redirect to"} <a href="#" data-toggle="tooltip" title="{intl l="Enter a URL with a leading '/' and no domain name. Ex : for 'www.mysite.com/one/two', enter '/one/two'."}"><span class="glyphicon glyphicon-question-sign"></span></a></label></th>
+                                    <th class="text-center"><label class="control-label">{intl l="Position"}</label></th>
+                                    <th class="text-center"><label class="control-label">{intl l="Actions"}</label></th>
+                                </tr>
+                            </thead>
+                        </table>
+
                     </div>
                 </div>
             </div>
         </div>
-
-    </div>
 
     <div class="js_param_rule" data-idparamrule="new_hidden" data-idrule="new_hidden" style="display:none">
         <form class="form-inline">

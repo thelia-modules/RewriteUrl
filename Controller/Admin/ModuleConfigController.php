@@ -7,6 +7,7 @@ use RewriteUrl\Model\RewriteurlRule;
 use RewriteUrl\Model\RewriteurlRuleParam;
 use RewriteUrl\Model\RewriteurlRuleQuery;
 use RewriteUrl\RewriteUrl;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Thelia\Controller\Admin\BaseAdminController;
 use Thelia\Core\HttpFoundation\JsonResponse;
 use Thelia\Core\Security\AccessManager;
@@ -23,11 +24,16 @@ class ModuleConfigController extends BaseAdminController
         }
 
         $isRewritingEnabled = ConfigQuery::isRewritingEnable();
+        $isIndexRedirectionEnabled = RewriteUrl::getConfigValue("index_redirection_enable");
+        $isHttpsRedirectionEnabled = RewriteUrl::getConfigValue("https_redirection_enable");
 
         return $this->render(
             "RewriteUrl/module-configuration",
             [
-                "isRewritingEnabled" => $isRewritingEnabled
+                "isRewritingEnabled" => $isRewritingEnabled,
+                "isIndexRedirectionEnabled" => $isIndexRedirectionEnabled,
+                "isHttpsRedirectionEnabled" => $isHttpsRedirectionEnabled,
+
             ]
         );
     }
@@ -124,16 +130,41 @@ class ModuleConfigController extends BaseAdminController
         $request = $this->getRequest()->request;
         $isRewritingEnable = $request->get("rewriting_enable", null);
 
-        if ($isRewritingEnable !== null) {
-            ConfigQuery::write("rewriting_enable", $isRewritingEnable ? 1 : 0);
-            return $this->jsonResponse(json_encode(["state" => "Success"]), 200);
-        } else {
-            return $this->jsonResponse(Translator::getInstance()->trans(
-                "Unable to change the configuration variable.",
-                [],
-                RewriteUrl::MODULE_DOMAIN
-            ), 500);
+        if ($isRewritingEnable === null) {
+
+            throw new BadRequestHttpException('Unable to change the configuration variable.');
         }
+        ConfigQuery::write("rewriting_enable", $isRewritingEnable ? 1 : 0);
+        return $this->jsonResponse(json_encode(["state" => "Success"]), 200);
+
+    }
+    
+    public function setIndexRedirectionEnableAction()
+    {
+        $request = $this->getRequest()->request;
+        $isIndexRedirectionEnable = $request->get("index_redirection_enable", null);
+
+        if ($isIndexRedirectionEnable === null) {
+
+            throw new BadRequestHttpException('Missing index_redirection_enable parameter in url');
+        }
+        RewriteUrl::setConfigValue("index_redirection_enable", $isIndexRedirectionEnable);
+        return $this->jsonResponse(json_encode(["state" => "Success"]), 200);
+
+    }
+
+    public function setHttpsRedirectionEnableAction()
+    {
+        $request = $this->getRequest()->request;
+        $isHttpsRedirectionEnable = $request->get("https_redirection_enable", null);
+
+        if ($isHttpsRedirectionEnable === null) {
+
+            throw new BadRequestHttpException('Missing https_redirection_enable parameter in url');
+        }
+        RewriteUrl::setConfigValue("https_redirection_enable", $isHttpsRedirectionEnable);
+        return $this->jsonResponse(json_encode(["state" => "Success"]), 200);
+
     }
 
     public function addRuleAction()

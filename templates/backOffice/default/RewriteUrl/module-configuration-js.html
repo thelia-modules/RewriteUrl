@@ -41,6 +41,47 @@
                 });
             });
 
+            /** index.php redirection ajax request */
+            $(".js_switch_index_redirection").on("switch-change", function (event, data) {
+                $loader.show();
+                var checkbox = $(this);
+
+                $.ajax({
+                    url      : '{url path="/admin/module/RewriteUrl/config/setIndexRedirectionEnable"}',
+                    data     : { index_redirection_enable : (data.value ? 1 : 0) },
+                    type     : 'post',
+                    success  : function(){
+                        $loader.hide();
+                        location.reload()
+                    },                    
+                    error : function(jqXHR, textStatus, errorThrown) {
+                        $alertError.html(jqXHR.responseText);
+                        checkbox.bootstrapSwitch('toggleState', true);
+                        $loader.hide();
+                    }
+                });                
+            });
+
+            /** https redirection ajax request */
+            $(".js_switch_https_redirection").on("switch-change", function (event, data) {
+                $loader.show();
+                var checkbox = $(this);
+
+                $.ajax({
+                    url      : '{url path="/admin/module/RewriteUrl/config/setHttpsRedirectionEnable"}',
+                    data     : { https_redirection_enable : (data.value ? 1 : 0) },
+                    type     : 'post',
+                    success  : function(){
+                        $loader.hide();
+                        location.reload()
+                    },                    
+                    error : function(jqXHR, textStatus, errorThrown) {
+                        $alertError.html(jqXHR.responseText);
+                        checkbox.bootstrapSwitch('toggleState', true);
+                        $loader.hide();
+                    }
+                });                
+            });
 
 
             $('.js_editable_rule_position').editable({
