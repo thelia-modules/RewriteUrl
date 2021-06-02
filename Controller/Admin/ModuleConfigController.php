@@ -7,6 +7,7 @@ use RewriteUrl\Model\RewriteurlRule;
 use RewriteUrl\Model\RewriteurlRuleParam;
 use RewriteUrl\Model\RewriteurlRuleQuery;
 use RewriteUrl\RewriteUrl;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Thelia\Controller\Admin\BaseAdminController;
 use Thelia\Core\HttpFoundation\JsonResponse;
 use Thelia\Core\Security\AccessManager;
@@ -23,8 +24,8 @@ class ModuleConfigController extends BaseAdminController
         }
 
         $isRewritingEnabled = ConfigQuery::isRewritingEnable();
-        $isIndexRedirectionEnabled = ConfigQuery::isIndexRedirectionEnable();
-        $isHttpsRedirectionEnabled = ConfigQuery::isHttpsRedirectionEnable();
+        $isIndexRedirectionEnabled = RewriteUrl::getConfigValue("index_redirection_enable");
+        $isHttpsRedirectionEnabled = RewriteUrl::getConfigValue("https_redirection_enable");
 
         return $this->render(
             "RewriteUrl/module-configuration",
@@ -140,8 +141,6 @@ class ModuleConfigController extends BaseAdminController
             ), 500);
         }
     }
-
-    // check index_redirection_enable status & write an entry if there is none //
     
     public function setIndexRedirectionEnableAction()
     {
@@ -149,19 +148,12 @@ class ModuleConfigController extends BaseAdminController
         $isIndexRedirectionEnable = $request->get("index_redirection_enable", null);
 
         if ($isIndexRedirectionEnable !== null) {
-            ConfigQuery::write("index_redirection_enable", $isIndexRedirectionEnable ? 1 : 0);
+            RewriteUrl::setConfigValue("index_redirection_enable", $isIndexRedirectionEnable);
             return $this->jsonResponse(json_encode(["state" => "Success"]), 200);
         } else {
-            return $this->jsonResponse(Translator::getInstance()->trans(
-                "Unable to change the configuration variable.",
-                [],
-                RewriteUrl::MODULE_DOMAIN
-            ), 500);
+            throw new BadRequestHttpException('Missing index_redirection_enable parameter in url');
         }
     }
-    // ############################## //
-
-    // check https_redirection_enable status & write an entry if there is none //
 
     public function setHttpsRedirectionEnableAction()
     {
@@ -169,17 +161,12 @@ class ModuleConfigController extends BaseAdminController
         $isHttpsRedirectionEnable = $request->get("https_redirection_enable", null);
 
         if ($isHttpsRedirectionEnable !== null) {
-            ConfigQuery::write("https_redirection_enable", $isHttpsRedirectionEnable ? 1 : 0);
+            RewriteUrl::setConfigValue("https_redirection_enable", $isHttpsRedirectionEnable);
             return $this->jsonResponse(json_encode(["state" => "Success"]), 200);
         } else {
-            return $this->jsonResponse(Translator::getInstance()->trans(
-                "Unable to change the configuration variable.",
-                [],
-                RewriteUrl::MODULE_DOMAIN
-            ), 500);
+            throw new BadRequestHttpException('Missing https_redirection_enable parameter in url');
         }
     }
-    // ############################## //
 
     public function addRuleAction()
     {

@@ -2,6 +2,7 @@
 
 namespace RewriteUrl\EventListeners;
 
+use RewriteUrl\RewriteUrl;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
@@ -11,17 +12,15 @@ use Thelia\Model\ConfigQuery;
 
 class RequestListener implements EventSubscriberInterface
 {
-
-    // permanently redirect request if url contain $regexToMatch string
-
     public function redirect(GetResponseEvent $event)
     {
-        if (ConfigQuery::isIndexRedirectionEnable())
-        {
-            $request = $event->getRequest();
-            $fullPath = $request->getUri();
-            $regexToMatch = "^\/index.php^";
+        $fullPath = $event->getRequest()->getUri();
+        $regexToMatch = "^\/index.php^";
 
+        /** permanently redirect request if url contain $regexToMatch string */
+
+        if (RewriteUrl::getConfigValue("index_redirection_enable"))
+        {
             if (preg_match($regexToMatch, $fullPath)) 
             {
                 $newPath = preg_replace($regexToMatch, "", $fullPath) ;
@@ -32,14 +31,13 @@ class RequestListener implements EventSubscriberInterface
             }
         }
 
-        if (ConfigQuery::isHttpsRedirectionEnable())
-        {
-            $request = $event->getRequest();
-            $fullPath = $request->getUri();
+        /** permanently redirect http to https protocol */
 
-            if (!$request->isSecure()) 
+        if (RewriteUrl::getConfigValue("https_redirection_enable"))
+        {
+            if (!$event->getRequest()->isSecure()) 
             {
-                $securePath = str_replace('http', 'https', $fullPath) ;
+                $securePath = preg_replace("/^http:/i", "https:", $fullPath) ;
                 $event->setResponse(new RedirectResponse(
                     $securePath,
                     301
@@ -48,7 +46,6 @@ class RequestListener implements EventSubscriberInterface
         }
     }
 
-    // event to listen to
     public static function getSubscribedEvents()
     {       
         return 

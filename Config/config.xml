@@ -22,17 +22,9 @@
             <tag name="kernel.event_subscriber"/>
         </service>
 
-    <!-- index.php redirection action -->
-        <service id="index.redirection.action" class="RewriteUrl\EventListeners\RequestListener">
+        <service id="rewriteurl.request.listener" class="RewriteUrl\EventListeners\RequestListener">
             <tag name="kernel.event_subscriber"/>
         </service>
-    <!-- ##################### -->
-
-    <!-- index.php redirection action -->
-        <service id="https.redirection.action" class="RewriteUrl\EventListeners\RequestListener">
-            <tag name="kernel.event_subscriber"/>
-        </service>
-    <!-- ##################### -->
 
         <service id="rewriteurl.kernel.exception" class="RewriteUrl\EventListeners\KernelExceptionListener">
             <argument type="service" id="request_stack" />
