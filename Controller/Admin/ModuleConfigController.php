@@ -130,16 +130,13 @@ class ModuleConfigController extends BaseAdminController
         $request = $this->getRequest()->request;
         $isRewritingEnable = $request->get("rewriting_enable", null);
 
-        if ($isRewritingEnable !== null) {
-            ConfigQuery::write("rewriting_enable", $isRewritingEnable ? 1 : 0);
-            return $this->jsonResponse(json_encode(["state" => "Success"]), 200);
-        } else {
-            return $this->jsonResponse(Translator::getInstance()->trans(
-                "Unable to change the configuration variable.",
-                [],
-                RewriteUrl::MODULE_DOMAIN
-            ), 500);
+        if ($isRewritingEnable === null) {
+
+            throw new BadRequestHttpException('Unable to change the configuration variable.');
         }
+        ConfigQuery::write("rewriting_enable", $isRewritingEnable ? 1 : 0);
+        return $this->jsonResponse(json_encode(["state" => "Success"]), 200);
+
     }
     
     public function setIndexRedirectionEnableAction()
@@ -147,12 +144,13 @@ class ModuleConfigController extends BaseAdminController
         $request = $this->getRequest()->request;
         $isIndexRedirectionEnable = $request->get("index_redirection_enable", null);
 
-        if ($isIndexRedirectionEnable !== null) {
-            RewriteUrl::setConfigValue("index_redirection_enable", $isIndexRedirectionEnable);
-            return $this->jsonResponse(json_encode(["state" => "Success"]), 200);
-        } else {
+        if ($isIndexRedirectionEnable === null) {
+
             throw new BadRequestHttpException('Missing index_redirection_enable parameter in url');
         }
+        RewriteUrl::setConfigValue("index_redirection_enable", $isIndexRedirectionEnable);
+        return $this->jsonResponse(json_encode(["state" => "Success"]), 200);
+
     }
 
     public function setHttpsRedirectionEnableAction()
@@ -160,12 +158,13 @@ class ModuleConfigController extends BaseAdminController
         $request = $this->getRequest()->request;
         $isHttpsRedirectionEnable = $request->get("https_redirection_enable", null);
 
-        if ($isHttpsRedirectionEnable !== null) {
-            RewriteUrl::setConfigValue("https_redirection_enable", $isHttpsRedirectionEnable);
-            return $this->jsonResponse(json_encode(["state" => "Success"]), 200);
-        } else {
+        if ($isHttpsRedirectionEnable === null) {
+
             throw new BadRequestHttpException('Missing https_redirection_enable parameter in url');
         }
+        RewriteUrl::setConfigValue("https_redirection_enable", $isHttpsRedirectionEnable);
+        return $this->jsonResponse(json_encode(["state" => "Success"]), 200);
+
     }
 
     public function addRuleAction()
