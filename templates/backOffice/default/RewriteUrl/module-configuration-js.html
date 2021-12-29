@@ -63,12 +63,16 @@
 
                 var $container = $("tr[data-idrule=\""+id_rule+"\"]");
 
+                $container.find(".js_regex_group").hide();
+                $container.find(".js_param_rule_group").hide();
+                $container.find(".js_exact_group").hide();
+
                 if (selectedRuleType == "regex"){
                     $container.find(".js_regex_group").show();
-                    $container.find(".js_param_rule_group").hide();
                 } else if (selectedRuleType == "params"){
-                    $container.find(".js_regex_group").hide();
                     $container.find(".js_param_rule_group").show();
+                } else if (selectedRuleType == "exact"){
+                    $container.find(".js_exact_group").show();
                 }
             });
 
@@ -228,8 +232,9 @@
                 var data = {};
                 var $tr = $("tr[data-idrule=\""+ruleid+"\"]");
                 data.id = ruleid;
-                data.ruleType = $tr.find(".js_rule_type").val();
-                data.value = $tr.find(".js_regex").val();
+                var ruleType = $tr.find(".js_rule_type").val()
+                data.ruleType = ruleType;
+                data.value = ruleType === "regex" ? $tr.find(".js_regex").val() : ruleType === "exact" ? $tr.find(".js_exact").val() : null;
                 data.only404 = $tr.find(".js_only404").prop("checked") ? 1 : 0;
                 data.redirectUrl = $tr.find(".js_url_to_redirect").val();
 

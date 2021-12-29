@@ -16,6 +16,9 @@ class RewriteurlRule extends BaseRewriteurlRule
     /** @var string  */
     const TYPE_GET_PARAMS = "params";
 
+    /** @var string  */
+    const TYPE_EXACT = "exact";
+
 
     protected $rewriteUrlParamCollection = null;
 
@@ -30,21 +33,29 @@ class RewriteurlRule extends BaseRewriteurlRule
 
     public function isMatching($url, $getParamArray)
     {
-        if ($this->getRuleType() == self::TYPE_REGEX) {
-            if (!empty($this->getValue())) {
-                return preg_match("/" . $this->getValue() . "/", $url) === 1;
-            }
-        } elseif ($this->getRuleType() == self::TYPE_GET_PARAMS) {
-            if ($this->getRewriteUrlParamCollection()->count() > 0) {
-                foreach ($this->getRewriteUrlParamCollection() as $rewriteUrlParam) {
-                    if (!$rewriteUrlParam->isMatching($getParamArray)) {
-                        return false;
-                    }
+        try {
+            if ($this->getRuleType() == self::TYPE_EXACT) {
+                if (!empty($this->getValue())) {
+                    return ltrim($this->getValue(), '/') === ltrim($url, '/');
                 }
-                return true;
+            } elseif ($this->getRuleType() == self::TYPE_REGEX) {
+                if (!empty($this->getValue())) {
+                    return preg_match("/" . str_replace('/', '.', $this->getValue()) . "/", $url) === 1;
+                }
+            } elseif ($this->getRuleType() == self::TYPE_GET_PARAMS) {
+                if ($this->getRewriteUrlParamCollection()->count() > 0) {
+                    foreach ($this->getRewriteUrlParamCollection() as $rewriteUrlParam) {
+                        if (!$rewriteUrlParam->isMatching($getParamArray)) {
+                            return false;
+                        }
+                    }
+                    return true;
+                }
             }
+            return false;
+        } catch (\Exception $e) {
+            return false;
         }
-        return false;
     }
 
     public function deleteAllRelatedParam()

@@ -72,6 +72,7 @@
                                             <select class="js_rule_type form-control" data-idrule="new" required>
                                                 <option value="regex">{intl l="Regex"}</option>
                                                 <option value="params">{intl l="GET params"}</option>
+                                                <option value="exact">{intl l="Exact"}</option>
                                             </select>
                                         </td>
                                         <td class="text-center">
@@ -83,6 +84,12 @@
 
                                             <div class="js_param_rule_group">
 
+                                            </div>
+
+
+                                            <div class="js_exact_group input-group">
+                                                <span class="input-group-addon">{intl l="http(s)://yourDomain.com/"}</span>
+                                                <input class="js_exact form-control" type="text" placeholder="url"/>
                                             </div>
                                         </td>
                                         <td class="text-center">

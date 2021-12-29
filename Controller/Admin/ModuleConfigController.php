@@ -83,6 +83,7 @@ class ModuleConfigController extends BaseAdminController
             $id = $row['Id'];
             $isRegexSelected = $row['RuleType'] === 'regex' ? 'selected' : '';
             $isParamsSelected = $row['RuleType'] === 'params' ? 'selected' : '';
+            $isExactSelected = $row['RuleType'] === RewriteurlRule::TYPE_EXACT ? 'selected' : '';
             $isOnly404Checked = $row['Only404'] ? 'checked' : '';
             $rewriteUrlRuleParams = RewriteurlRuleQuery::create()->findPk($row['Id'])->getRewriteUrlParamCollection();
             $resultsArray[] = [
@@ -90,6 +91,7 @@ class ModuleConfigController extends BaseAdminController
                 'RuleType' => '<select class="js_rule_type form-control" data-idrule="' . $id . '" required>
                                 <option value="regex" ' . $isRegexSelected . '>' . Translator::getInstance()->trans("Regex", [], RewriteUrl::MODULE_DOMAIN) . '</option>
                                 <option value="params" ' . $isParamsSelected . '>' . Translator::getInstance()->trans("Get Params", [], RewriteUrl::MODULE_DOMAIN) . '</option>
+                                <option value="exact" ' . $isExactSelected . '>' . Translator::getInstance()->trans("Exact url", [], RewriteUrl::MODULE_DOMAIN) . '</option>
                                </select>',
                 'Value' => $this->renderRaw(
                     "RewriteUrl/tab-value-render",
@@ -227,13 +229,18 @@ class ModuleConfigController extends BaseAdminController
     protected function fillRuleObjectFields(RewriteurlRule $rule, $request)
     {
         $ruleType = $request->get("ruleType", null);
-        if ($ruleType !== "regex" && $ruleType !== "params") {
+        if ($ruleType !== "regex" && $ruleType !== "params" && $ruleType !== RewriteurlRule::TYPE_EXACT) {
             throw new \Exception(Translator::getInstance()->trans("Unknown rule type.", [], RewriteUrl::MODULE_DOMAIN));
         }
 
-        $regexValue = $request->get("value", null);
-        if ($ruleType == "regex" && empty($regexValue)) {
+        $value = $request->get("value", null);
+
+        if ($ruleType == "regex" && empty($value)) {
             throw new \Exception(Translator::getInstance()->trans("Regex value cannot be empty.", [], RewriteUrl::MODULE_DOMAIN));
+        }
+
+        if ($ruleType == RewriteurlRule::TYPE_EXACT && empty($value)) {
+            throw new \Exception(Translator::getInstance()->trans("Exact Url value cannot be empty.", [], RewriteUrl::MODULE_DOMAIN));
         }
 
         $redirectUrl = $request->get("redirectUrl", null);
@@ -250,7 +257,7 @@ class ModuleConfigController extends BaseAdminController
         }
 
         $rule->setRuleType($ruleType);
-        $rule->setValue($regexValue);
+        $rule->setValue($value);
         $rule->setOnly404($request->get("only404", 1));
         $rule->setRedirectUrl($redirectUrl);
         if (empty($rule->getPosition())) {

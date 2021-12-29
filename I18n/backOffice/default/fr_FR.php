@@ -62,6 +62,7 @@ return array(
     'Redirected' => 'Redirigé vers',
     'Reference' => 'Référence',
     'Regex' => 'Regex',
+    'Exact' => 'Exacte',
     'RewriteUrl' => 'RewriteURL',
     'Rule management' => 'Gestion des règles de redirection',
     'Rule type' => 'Type de règle',
