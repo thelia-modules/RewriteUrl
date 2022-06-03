@@ -19,7 +19,7 @@ class RewritingRouterLast extends RewritingRouter
     /**
      * @inheritdoc
      */
-    public function matchRequest(Request $request)
+    public function matchRequest(Request $request) : array
     {
         if (ConfigQuery::isRewritingEnable()) {
             $urlTool = URL::getInstance();
