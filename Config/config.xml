@@ -28,6 +28,8 @@
     <hooks>
         <hook id="notrewritenurls.hook.back" class="RewriteUrl\Hook\ConfigurationHook" scope="request">
             <tag name="hook.event_listener" event="configuration.catalog-top" type="back" method="onConfigurationCatalogTop"/>
+            <tag name="hook.event_listener" event="module.configuration" type="back" method="onModuleConfiguration" />
+            <tag name="hook.event_listener" event="module.config-js" type="back" method="onModuleConfigurationJavascript" />
         </hook>
     </hooks>
 

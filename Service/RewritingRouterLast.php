@@ -31,6 +31,7 @@ class RewritingRouterLast extends RewritingRouter
 
             $pathInfo = $request instanceof TheliaRequest ? $request->getRealPathInfo() : $request->getPathInfo();
 
+
             /** @var RewriteurlRule $rule */
             foreach ($ruleCollection as $rule) {
                 if ($rule->isMatching($pathInfo, $request->query->all())) {

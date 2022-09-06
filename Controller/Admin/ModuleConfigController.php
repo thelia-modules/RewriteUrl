@@ -93,6 +93,7 @@ class ModuleConfigController extends BaseAdminController
                 'Value' => $this->renderRaw(
                     "RewriteUrl/tab-value-render",
                     [
+                        "ID" => $row['Id'],
                         "REWRITE_URL_PARAMS" => $rewriteUrlRuleParams,
                         "VALUE" => $row['Value'],
                     ]

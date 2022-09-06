@@ -14,6 +14,7 @@ namespace RewriteUrl\Hook;
 
 use Thelia\Core\Event\Hook\HookRenderEvent;
 use Thelia\Core\Hook\BaseHook;
+use Thelia\Model\ConfigQuery;
 
 /**
  * Class ConfigurationHook
@@ -22,6 +23,30 @@ use Thelia\Core\Hook\BaseHook;
  */
 class ConfigurationHook extends BaseHook
 {
+    public function onModuleConfiguration(HookRenderEvent $event)
+    {
+        $event->add(
+            $this->render(
+                'RewriteUrl/module-configuration.html',
+                [
+                    "isRewritingEnabled" => ConfigQuery::isRewritingEnable()
+                ]
+            )
+        );
+    }
+
+    public function onModuleConfigurationJavascript(HookRenderEvent $event)
+    {
+        $event->add(
+            $this->render(
+                'RewriteUrl/module-configuration-js.html',
+                [
+                    "isRewritingEnabled" => ConfigQuery::isRewritingEnable()
+                ]
+            )
+        );
+    }
+
     public function onConfigurationCatalogTop(HookRenderEvent $event)
     {
         $event->add($this->render(

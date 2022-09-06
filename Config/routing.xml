@@ -4,9 +4,6 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://symfony.com/schema/routing http://symfony.com/schema/routing/routing-1.0.xsd">
 
-    <route id="rewrite.url.config" path="/admin/module/RewriteUrl">
-        <default key="_controller">RewriteUrl\Controller\Admin\ModuleConfigController::viewConfigAction</default>
-    </route>
     <route id="rewrite.url.config.get.rules" path="/admin/module/RewriteUrl/get-rules">
         <default key="_controller">RewriteUrl\Controller\Admin\ModuleConfigController::getDatatableRules</default>
     </route>
