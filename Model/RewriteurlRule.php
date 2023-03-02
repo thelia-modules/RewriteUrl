@@ -3,6 +3,7 @@
 namespace RewriteUrl\Model;
 
 use RewriteUrl\Model\Base\RewriteurlRule as BaseRewriteurlRule;
+use Thelia\Log\Tlog;
 use Thelia\Model\Tools\PositionManagementTrait;
 
 class RewriteurlRule extends BaseRewriteurlRule
@@ -32,7 +33,18 @@ class RewriteurlRule extends BaseRewriteurlRule
     {
         if ($this->getRuleType() == self::TYPE_REGEX) {
             if (!empty($this->getValue())) {
-                return preg_match("/" . $this->getValue() . "/", $url) === 1;
+                try {
+
+                    $match = @preg_match("/" . $this->getValue() . "/", $url) === 1;
+
+                    if (false === $match) {
+                        Tlog::getInstance()->error("Invalid pattern: " . $this->getValue());
+                    }
+
+                    return $match;
+                } catch (\Exception $ex) {
+                    Tlog::getInstance()->error("Failed to match rule : " . $ex->getMessage());
+                }
             }
         } elseif ($this->getRuleType() == self::TYPE_GET_PARAMS) {
             if ($this->getRewriteUrlParamCollection()->count() > 0) {
@@ -44,6 +56,7 @@ class RewriteurlRule extends BaseRewriteurlRule
                 return true;
             }
         }
+
         return false;
     }
 
