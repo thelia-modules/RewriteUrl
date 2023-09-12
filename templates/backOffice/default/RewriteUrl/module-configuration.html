@@ -1,35 +1,32 @@
+{$d='rewriteurl.bo.default'}
 <div class="modules-configure">
     <div id="wrapper" class="container">
-        <div class="clearfix">
-            <ul class="breadcrumb pull-left">
-                <li><a href="{url path='/admin/home'}">{intl l="Home"}</a></li>
-                <li><a href="{url path='/admin/modules'}">{intl l="Modules"}</a></li>
-                <li><a href="#">{intl l="Configure"} : RewriteUrl</a></li>
-            </ul>
-        </div>
-
         <div class="general-block-decorator">
+            <div class="row">
+                <div class="col-md-12 title title-without-tabs">
+                    {intl d=$d l="Global URL Rewriting"}
+                </div>
+            </div>
+
             <div class="row">
                 <div class="col-md-12">
                     <div class="panel panel-default">
                         <div class="panel-body">
                             <div>
-                                <label>{intl l="Enable URL rewriting"}</label>
+                                <label>{intl d=$d l="Enable URL rewriting"}</label>
                                 <div class="make-switch switch-small js_switch_rewrite_url" data-on="success" data-off="danger" data-on-label="<i class='glyphicon glyphicon-ok'></i>" data-off-label="<i class='glyphicon glyphicon-remove'></i>">
                                     <input type="checkbox" {if $isRewritingEnabled}checked="checked"{/if}>
                                 </div>
                             </div>
-                            <span class="help-block">{intl l="Set the config variable 'rewriting_enable'"}</span>
+                            <span class="help-block">{intl d=$d l="Set the config variable 'rewriting_enable'"}</span>
                         </div>
                     </div>
 
-
-
                     <div class="panel panel-default">
-                        <div class="panel-heading clearfix">
-                            <div class="panel-title">
-                                {intl l="Rule management"}
-                            </div>
+                        <div class="panel-heading">
+                            <h3 class="panel-title">
+                                {intl d=$d l="Rule management"}
+                            </h3>
                         </div>
                         <div class="panel-body">
 
@@ -39,12 +36,12 @@
                             <table class="table table-condensed table-striped">
                                 <thead>
                                     <tr>
-                                        <th class="text-center"><label class="control-label">{intl l="Rule type"}</label></th>
-                                        <th class="text-center"><label class="control-label">{intl l="Condition"} <a href="#" data-toggle="tooltip" title="{intl l="For the regex, your input is compare to URL without the domain name and without any GET params. Ex : for 'www.mysite.com/one/two?three=four', your regex will be compare to '/one/two'."}"><span class="glyphicon glyphicon-question-sign"></span></a></label></th>
-                                        <th class="text-center"><label class="control-label">{intl l="404 only"}</label></th>
-                                        <th class="text-center"><label class="control-label">{intl l="Redirect to"} <a href="#" data-toggle="tooltip" title="{intl l="Enter a URL with a leading '/' and no domain name. Ex : for 'www.mysite.com/one/two', enter '/one/two'."}"><span class="glyphicon glyphicon-question-sign"></span></a></label></th>
-                                        <th class="text-center"><label class="control-label">{intl l="Position"}</label></th>
-                                        <th class="text-center"><label class="control-label">{intl l="Actions"}</label></th>
+                                        <th class="text-center"><label class="control-label">{intl d=$d l="Rule type"}</label></th>
+                                        <th class="text-center"><label class="control-label">{intl d=$d l="Condition"} <a href="#" data-toggle="tooltip" title="{intl d=$d l="For the regex, your input is compare to URL without the domain name and without any GET params. Ex : for 'www.mysite.com/one/two?three=four', your regex will be compare to '/one/two'."}"><span class="glyphicon glyphicon-question-sign"></span></a></label></th>
+                                        <th class="text-center"><label class="control-label">{intl d=$d l="404 only"}</label></th>
+                                        <th class="text-center"><label class="control-label">{intl d=$d l="Redirect to"} <a href="#" data-toggle="tooltip" title="{intl d=$d l="Enter a URL with a leading '/' and no domain name. Ex : for 'www.mysite.com/one/two', enter '/one/two'."}"><span class="glyphicon glyphicon-question-sign"></span></a></label></th>
+                                        <th class="text-center"><label class="control-label">{intl d=$d l="Position"}</label></th>
+                                        <th class="text-center"><label class="control-label">{intl d=$d l="Actions"}</label></th>
                                     </tr>
                                 </thead>
 
@@ -53,8 +50,8 @@
                                     <tr data-idrule="new">
                                         <td class="text-center">
                                             <select class="js_rule_type form-control" data-idrule="new" required>
-                                                <option value="regex">{intl l="Regex"}</option>
-                                                <option value="params">{intl l="GET params"}</option>
+                                                <option value="regex">{intl d=$d l="Regex"}</option>
+                                                <option value="params">{intl d=$d l="GET params"}</option>
                                             </select>
                                         </td>
                                         <td class="text-center">
@@ -82,7 +79,7 @@
                                     </tr>
 
                                     <tr>
-                                        <td colspan="6" class="text-center"><hr><h2 class="text-center">{intl l="Currently enabled rules"}</h2><hr></td>
+                                        <td colspan="6" class="text-center"><hr><h2 class="text-center">{intl d=$d l="Currently enabled rules"}</h2><hr></td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -90,12 +87,12 @@
                             <table class="table table-condensed table-striped" id="redirection-table">
                                 <thead>
                                     <tr>
-                                        <th class="text-center"><label class="control-label">{intl l="Rule type"}</label></th>
-                                        <th class="text-center"><label class="control-label">{intl l="Condition"} <a href="#" data-toggle="tooltip" title="{intl l="For the regex, your input is compare to URL without the domain name and without any GET params. Ex : for 'www.mysite.com/one/two?three=four', your regex will be compare to '/one/two'."}"><span class="glyphicon glyphicon-question-sign"></span></a></label></th>
-                                        <th class="text-center"><label class="control-label">{intl l="404 only"}</label></th>
-                                        <th class="text-center"><label class="control-label">{intl l="Redirect to"} <a href="#" data-toggle="tooltip" title="{intl l="Enter a URL with a leading '/' and no domain name. Ex : for 'www.mysite.com/one/two', enter '/one/two'."}"><span class="glyphicon glyphicon-question-sign"></span></a></label></th>
-                                        <th class="text-center"><label class="control-label">{intl l="Position"}</label></th>
-                                        <th class="text-center"><label class="control-label">{intl l="Actions"}</label></th>
+                                        <th class="text-center"><label class="control-label">{intl d=$d l="Rule type"}</label></th>
+                                        <th class="text-center"><label class="control-label">{intl d=$d l="Condition"} <a href="#" data-toggle="tooltip" title="{intl d=$d l="For the regex, your input is compare to URL without the domain name and without any GET params. Ex : for 'www.mysite.com/one/two?three=four', your regex will be compare to '/one/two'."}"><span class="glyphicon glyphicon-question-sign"></span></a></label></th>
+                                        <th class="text-center"><label class="control-label">{intl d=$d l="404 only"}</label></th>
+                                        <th class="text-center"><label class="control-label">{intl d=$d l="Redirect to"} <a href="#" data-toggle="tooltip" title="{intl d=$d l="Enter a URL with a leading '/' and no domain name. Ex : for 'www.mysite.com/one/two', enter '/one/two'."}"><span class="glyphicon glyphicon-question-sign"></span></a></label></th>
+                                        <th class="text-center"><label class="control-label">{intl d=$d l="Position"}</label></th>
+                                        <th class="text-center"><label class="control-label">{intl d=$d l="Actions"}</label></th>
                                     </tr>
                                 </thead>
                             </table>
@@ -118,10 +115,10 @@
                 <select class="js_param_condition form-control" data-idparamrule="1" data-idrule="new">
                     <option value="equals">=</option>
                     <option value="not_equals">≠</option>
-                    <option value="exists">{intl l="exists"}</option>
-                    <option value="missing">{intl l="is missing"}</option>
-                    <option value="empty">{intl l="is empty"}</option>
-                    <option value="not_empty">{intl l="is not empty"}</option>
+                    <option value="exists">{intl d=$d l="exists"}</option>
+                    <option value="missing">{intl d=$d l="is missing"}</option>
+                    <option value="empty">{intl d=$d l="is empty"}</option>
+                    <option value="not_empty">{intl d=$d l="is not empty"}</option>
                 </select>
             </div>
 
@@ -137,7 +134,6 @@
         </form>
     </div>
 </div>
-
 
 {include file="RewriteUrl/module-configuration-js.html"}
 

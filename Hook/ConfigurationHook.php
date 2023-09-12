@@ -12,9 +12,13 @@
 
 namespace RewriteUrl\Hook;
 
+use Carousel\Carousel;
+use RewriteUrl\RewriteUrl;
+use Thelia\Core\Event\Hook\HookRenderBlockEvent;
 use Thelia\Core\Event\Hook\HookRenderEvent;
 use Thelia\Core\Hook\BaseHook;
 use Thelia\Model\ConfigQuery;
+use Thelia\Tools\URL;
 
 /**
  * Class ConfigurationHook
@@ -52,5 +56,17 @@ class ConfigurationHook extends BaseHook
         $event->add($this->render(
             'configuration-catalog.html'
         ));
+    }
+
+    public function onMainTopMenuTools(HookRenderBlockEvent $event)
+    {
+        $event->add(
+            [
+                'id' => 'tools_menu_rewriteutl',
+                'class' => '',
+                'url' => URL::getInstance()->absoluteUrl('/admin/module/RewriteUrl'),
+                'title' => $this->trans('Global URL Rewriting', [], RewriteUrl::MODULE_DOMAIN),
+            ]
+        );
     }
 }
