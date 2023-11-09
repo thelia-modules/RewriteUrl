@@ -63,11 +63,16 @@
 
                 var $container = $("tr[data-idrule=\""+id_rule+"\"]");
 
-                if (selectedRuleType == "regex"){
+                $container.find(".js_regex_group").css('margin-bottom', '0px');
+
+                if (selectedRuleType === "regex"){
                     $container.find(".js_regex_group").show();
                     $container.find(".js_param_rule_group").hide();
-                } else if (selectedRuleType == "params"){
+                } else if (selectedRuleType === "params"){
                     $container.find(".js_regex_group").hide();
+                    $container.find(".js_param_rule_group").show();
+                } else if (selectedRuleType === "regex-params"){
+                    $container.find(".js_regex_group").css('margin-bottom', '5px').show();
                     $container.find(".js_param_rule_group").show();
                 }
             });
@@ -189,7 +194,7 @@
             function addEmptyParamRuleIfNoneIsFound(){
                 $("tr[data-idrule]").each(function(){
                     var idrule = this.dataset.idrule;
-                    if ($(this).find(".js_param_rule").length == 0) {
+                    if ($(this).find(".js_param_rule").length === 0) {
                         addEmptyParamRule(idrule);
                     }
                 });
@@ -316,26 +321,28 @@
 
             function showOrHideParamRulesButtons(){
                 $(".js_param_rule_group").each(function(){
-                    var last;
-                    var count = 0;
-                    $(this).find(".js_param_rule").each(function(){
-                        count++;
-                        last = this;
+                    var $paramRules = $(this).find(".js_param_rule");
+
+                    var count = $paramRules.length;
+                    var $last;
+
+                    $paramRules.each(function() {
                         var $this = $(this);
-                        $this.find(".js_btn_remove_param_rule").css('visibility', 'visible');
-                        $this.find(".js_btn_add_param_rule").css('visibility', 'hidden');
+
+                        $this.find(".js_btn_remove_param_rule").css('display', 'inline-block');
+                        $this.find(".js_btn_add_param_rule").css('display', 'none');
+
+                        $last = $this;
                     });
-                    if(count > 0) {
-                        var $last = $(last);
-                        if(count == 1) {
-                            $last.find(".js_btn_remove_param_rule").css('visibility', 'hidden');
+
+                    if ($last) {
+                        if (count === 1) {
+                            $last.find(".js_btn_remove_param_rule").css('display', 'none');
                         }
-                        $last.find(".js_btn_add_param_rule").css('visibility', 'visible');
+                        $last.find(".js_btn_add_param_rule").css('display', 'inline-block');
                     }
-
-                });
+                })
             }
-
 
             addEmptyParamRuleIfNoneIsFound();
 
@@ -372,29 +379,29 @@
                     "searchable": false
                 },
                 {
-                    'className': 'text-center',
+                    'className': 'col-md-4',
                     'data': 'Value',
-                    "width": "40%"
+                    "width": "30%"
                 },
                 {
-                    'className': 'text-center',
+                    'className': 'text-center col-md-1',
                     'data': 'Only404',
                     "width": "5%",
                     "searchable": false
                 },
                 {
-                    'className': 'text-center',
+                    'className': 'text-center col-md-4',
                     'data': 'RedirectUrl',
-                    "width": "25%"
+                    "width": "40%"
                 },
                 {
-                    'className': 'text-center',
+                    'className': 'text-center col-md-1',
                     'data': 'Position',
                     "width": "5",
                     "searchable": false
                 },
                 {
-                    'className': 'text-center',
+                    'className': 'text-center text-nowrap col-md-1',
                     'data': 'Actions',
                     "width": "10%",
                     "orderable": false,

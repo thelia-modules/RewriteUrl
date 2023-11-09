@@ -30,8 +30,7 @@
                         </div>
                         <div class="panel-body">
 
-                            <div class="js_error_rule_management alert alert-danger">
-                            </div>
+                            <div class="js_error_rule_management alert alert-danger" style="display:none"></div>
 
                             <table class="table table-condensed table-striped">
                                 <thead>
@@ -52,18 +51,17 @@
                                             <select class="js_rule_type form-control" data-idrule="new" required>
                                                 <option value="regex">{intl d=$d l="Regex"}</option>
                                                 <option value="params">{intl d=$d l="GET params"}</option>
+                                                <option value="regex-params">{intl d=$d l="Regex and GET params"}</option>
                                             </select>
                                         </td>
-                                        <td class="text-center">
+                                        <td>
                                             <div class="js_regex_group input-group">
                                                 <span class="input-group-addon">/</span>
                                                 <input class="js_regex form-control" type="text" placeholder="{literal}^[a-z0-9_-]{3,16}${/literal}"/>
                                                 <span class="input-group-addon">/</span>
                                             </div>
 
-                                            <div class="js_param_rule_group">
-
-                                            </div>
+                                            <div class="js_param_rule_group"></div>
                                         </td>
                                         <td class="text-center">
                                             <input class="js_only404 form-control" type="checkbox" checked="checked"/>
@@ -96,17 +94,15 @@
                                     </tr>
                                 </thead>
                             </table>
-
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-
     </div>
 
     <div class="js_param_rule" data-idparamrule="new_hidden" data-idrule="new_hidden" style="display:none">
-        <form class="form-inline">
+        <form class="form-inline text-nowrap">
             <div class="form-group text-center">
                 <input class="js_param_name form-control" type="text" placeholder="Param name"/>
             </div>

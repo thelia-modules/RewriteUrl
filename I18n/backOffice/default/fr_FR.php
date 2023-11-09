@@ -63,6 +63,7 @@ return array(
     'Redirected' => 'Redirigé vers',
     'Reference' => 'Référence',
     'Regex' => 'Regex',
+    'Regex and GET params' => 'Expr. régulière + Param. GET',
     'Rule management' => 'Gestion des règles de redirection',
     'Rule type' => 'Type de règle',
     'Search' => 'Rechercher',

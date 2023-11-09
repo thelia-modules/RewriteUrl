@@ -1,4 +1,4 @@
-<div class="js_regex_group input-group col-md-12">
+<div class="js_regex_group input-group">
     <span class="input-group-addon" style="width: 1%;">/</span>
     <input class="js_regex form-control" type="text" placeholder="{literal}^[a-z0-9_-]{3,16}${/literal}" value="{$VALUE}"/>
     <span class="input-group-addon" style="width: 1%;">/</span>
@@ -6,34 +6,33 @@
 
 <div class="js_param_rule_group">
     {foreach from=$REWRITE_URL_PARAMS item=ruleParam}
-    <div class="js_param_rule" data-idparamrule="{$ruleParam->getId()}" data-idrule="{$ID}">
-        <form class="">
-            <div class="form-group text-center">
-                <input class="js_param_name form-control" type="text" placeholder="Param name" value="{$ruleParam->getParamName()}"/>
-            </div>
+        <div class="js_param_rule" data-idparamrule="{$ruleParam->getId()}" data-idrule="{$ID}">
+            <form class="form-inline text-nowrap">
+                <div class="form-group text-center">
+                    <input class="js_param_name form-control" type="text" placeholder="Param name" value="{$ruleParam->getParamName()}"/>
+                </div>
 
-            <div class="form-group text-center">
-                <select class="js_param_condition form-control" data-idparamrule="{$ruleParam->getId()}" data-idrule="{$ID}">
-                    <option value="equals" {if $ruleParam->getParamCondition() == "equals"}selected{/if}>=</option>
-                    <option value="not_equals" {if $ruleParam->getParamCondition() == "not_equals"}selected{/if}>≠</option>
-                    <option value="exists" {if $ruleParam->getParamCondition() == "exists"}selected{/if}>{intl l="exists"}</option>
-                    <option value="missing" {if $ruleParam->getParamCondition() == "missing"}selected{/if}>{intl l="is missing"}</option>
-                    <option value="empty" {if $ruleParam->getParamCondition() == "empty"}selected{/if}>{intl l="is empty"}</option>
-                    <option value="not_empty" {if $ruleParam->getParamCondition() == "not_empty"}selected{/if}>{intl l="is not empty"}</option>
-                </select>
-            </div>
+                <div class="form-group text-center">
+                    <select class="js_param_condition form-control" data-idparamrule="{$ruleParam->getId()}" data-idrule="{$ID}">
+                        <option value="equals" {if $ruleParam->getParamCondition() == "equals"}selected{/if}>=</option>
+                        <option value="not_equals" {if $ruleParam->getParamCondition() == "not_equals"}selected{/if}>≠</option>
+                        <option value="exists" {if $ruleParam->getParamCondition() == "exists"}selected{/if}>{intl l="exists"}</option>
+                        <option value="missing" {if $ruleParam->getParamCondition() == "missing"}selected{/if}>{intl l="is missing"}</option>
+                        <option value="empty" {if $ruleParam->getParamCondition() == "empty"}selected{/if}>{intl l="is empty"}</option>
+                        <option value="not_empty" {if $ruleParam->getParamCondition() == "not_empty"}selected{/if}>{intl l="is not empty"}</option>
+                    </select>
+                </div>
 
-            <div class="form-group text-center">
-                <input class="js_param_value form-control" type="text" placeholder="Param value" value="{$ruleParam->getParamValue()}"/>
-            </div>
-            <a href="#" class="js_btn_remove_param_rule btn btn-default" data-idparamrule="{$ruleParam->getId()}" data-idrule="{$ID}">
-                <span class="glyphicon glyphicon-remove"></span>
-            </a>
-            <a href="#" class="js_btn_add_param_rule btn btn-primary" data-idrule="{$ID}">
-                <span class="glyphicon glyphicon-plus"></span>
-            </a>
-        </form>
-    </div>
+                <div class="form-group text-center">
+                    <input class="js_param_value form-control" type="text" placeholder="Param value" value="{$ruleParam->getParamValue()}"/>
+                </div>
+                <a href="#" class="js_btn_remove_param_rule btn btn-default" data-idparamrule="{$ruleParam->getId()}" data-idrule="{$ID}">
+                    <span class="glyphicon glyphicon-remove"></span>
+                </a>
+                <a href="#" class="js_btn_add_param_rule btn btn-primary" data-idrule="{$ID}">
+                    <span class="glyphicon glyphicon-plus"></span>
+                </a>
+            </form>
+        </div>
     {/foreach}
-
 </div>

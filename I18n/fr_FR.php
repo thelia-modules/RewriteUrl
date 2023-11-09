@@ -8,6 +8,7 @@ return array(
     'Param name is empty.' => 'Le nom d\'un paramètre GET est vide.',
     'Redirect url cannot be empty.' => 'L URL redirigée ne peut pas être vide.',
     'Regex' => 'Expression régulière',
+    'Regex and Get Params' => 'Expr. régulière + Param. GET',
     'Regex value cannot be empty.' => 'La valeur de l\'expression régulière ne peut pas être vide.',
     'This url is already used here %url.' => 'L URL est déjà utilisée ici : %url',
     'Unable to change the configuration variable.' => 'Impossible de changer la variable de configuration.',

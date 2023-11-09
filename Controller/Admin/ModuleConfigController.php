@@ -1,5 +1,15 @@
 <?php
 
+/*
+ * This file is part of the Thelia package.
+ * http://www.thelia.net
+ *
+ * (c) OpenStudio <info@thelia.net>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace RewriteUrl\Controller\Admin;
 
 use Propel\Runtime\ActiveQuery\Criteria;
@@ -10,35 +20,37 @@ use RewriteUrl\RewriteUrl;
 use Thelia\Controller\Admin\BaseAdminController;
 use Thelia\Core\HttpFoundation\JsonResponse;
 use Thelia\Core\HttpFoundation\Request;
+use Thelia\Core\HttpFoundation\Response;
 use Thelia\Core\Security\AccessManager;
 use Thelia\Core\Security\Resource\AdminResources;
 use Thelia\Core\Translation\Translator;
+use Thelia\Exception\TheliaProcessException;
 use Thelia\Model\ConfigQuery;
 
 class ModuleConfigController extends BaseAdminController
 {
     public function viewConfigAction()
     {
-        if (null !== $response = $this->checkAuth(array(AdminResources::MODULE), 'RewriteUrl', AccessManager::VIEW)) {
+        if (null !== $response = $this->checkAuth([AdminResources::MODULE], 'RewriteUrl', AccessManager::VIEW)) {
             return $response;
         }
 
         $isRewritingEnabled = ConfigQuery::isRewritingEnable();
 
         return $this->render(
-            "RewriteUrl/module-configuration",
+            'RewriteUrl/module-configuration',
             [
-                "isRewritingEnabled" => $isRewritingEnabled
+                'isRewritingEnabled' => $isRewritingEnabled,
             ]
         );
     }
 
     public function getDatatableRules(Request $request)
     {
-        $requestSearchValue = $request->get('search') ? '%' . $request->get('search')['value'] . '%' : "";
+        $requestSearchValue = $request->get('search') ? '%'.$request->get('search')['value'].'%' : '';
         $recordsTotal = RewriteurlRuleQuery::create()->count();
         $search = RewriteurlRuleQuery::create();
-        if ("" !== $requestSearchValue) {
+        if ('' !== $requestSearchValue) {
             $search
                 ->filterByValue($requestSearchValue, Criteria::LIKE)
                 ->_or()
@@ -80,33 +92,35 @@ class ModuleConfigController extends BaseAdminController
         $resultsArray = [];
         foreach ($searchArray as $row) {
             $id = $row['Id'];
-            $isRegexSelected = $row['RuleType'] === 'regex' ? 'selected' : '';
-            $isParamsSelected = $row['RuleType'] === 'params' ? 'selected' : '';
+            $isRegexSelected = $row['RuleType'] === RewriteurlRule::TYPE_REGEX ? 'selected' : '';
+            $isParamsSelected = $row['RuleType'] === RewriteurlRule::TYPE_GET_PARAMS ? 'selected' : '';
+            $isRegexParamsSelected = $row['RuleType'] === RewriteurlRule::TYPE_REGEX_GET_PARAMS ? 'selected' : '';
             $isOnly404Checked = $row['Only404'] ? 'checked' : '';
             $rewriteUrlRuleParams = RewriteurlRuleQuery::create()->findPk($row['Id'])->getRewriteUrlParamCollection();
             $resultsArray[] = [
                 'Id' => $row['Id'],
-                'RuleType' => '<select class="js_rule_type form-control" data-idrule="' . $id . '" required>
-                                <option value="regex" ' . $isRegexSelected . '>' . Translator::getInstance()->trans("Regex", [], RewriteUrl::MODULE_DOMAIN) . '</option>
-                                <option value="params" ' . $isParamsSelected . '>' . Translator::getInstance()->trans("Get Params", [], RewriteUrl::MODULE_DOMAIN) . '</option>
+                'RuleType' => '<select class="js_rule_type form-control" data-idrule="'.$id.'" required>
+                                <option value="'.RewriteurlRule::TYPE_REGEX.'" '.$isRegexSelected.'>'.Translator::getInstance()->trans('Regex', [], RewriteUrl::MODULE_DOMAIN).'</option>
+                                <option value="'.RewriteurlRule::TYPE_GET_PARAMS.'" '.$isParamsSelected.'>'.Translator::getInstance()->trans('Get Params', [], RewriteUrl::MODULE_DOMAIN).'</option>
+                                <option value="'.RewriteurlRule::TYPE_REGEX_GET_PARAMS.'" '.$isRegexParamsSelected.'>'.Translator::getInstance()->trans('Regex and Get Params', [], RewriteUrl::MODULE_DOMAIN).'</option>
                                </select>',
                 'Value' => $this->renderRaw(
-                    "RewriteUrl/tab-value-render",
+                    'RewriteUrl/tab-value-render',
                     [
-                        "ID" => $row['Id'],
-                        "REWRITE_URL_PARAMS" => $rewriteUrlRuleParams,
-                        "VALUE" => $row['Value'],
+                        'ID' => $row['Id'],
+                        'REWRITE_URL_PARAMS' => $rewriteUrlRuleParams,
+                        'VALUE' => $row['Value'],
                     ]
                 ),
-                'Only404' => '<input class="js_only404 form-control" type="checkbox" style="width: 100%!important;" ' . $isOnly404Checked . '/>',
+                'Only404' => '<input class="js_only404 form-control" type="checkbox" style="width: 100%!important;" '.$isOnly404Checked.'/>',
                 'RedirectUrl' => '<div class="col-md-12 input-group">
-                                    <input class="js_url_to_redirect form-control" type="text" placeholder="/path/mypage.html" value="' . $row['RedirectUrl'] . '"/>
+                                    <input class="js_url_to_redirect form-control" type="text" placeholder="/path/mypage.html" value="'.$row['RedirectUrl'].'"/>
                                   </div>',
-                'Position' => '<a href="#" class="u-position-up js_move_rule_position_up" data-idrule="' . $id . '"><i class="glyphicon glyphicon-arrow-up"></i></a>
-                                <span class="js_editable_rule_position editable editable-click" data-idrule="' . $id . '">' . $row['Position'] . '</span>
-                               <a href="#" class="u-position-down js_move_rule_position_down" data-idrule="' . $id . '"><i class="glyphicon glyphicon-arrow-down"></i></a>',
-                'Actions' => '<a href="#" class="js_btn_update_rule btn btn-success" data-idrule="' . $id . '"><span class="glyphicon glyphicon-check"></span></a>
-                              <a href="#" class="js_btn_remove_rule btn btn-danger" data-idrule="' . $id . '"><span class="glyphicon glyphicon-remove"></span></a>
+                'Position' => '<a href="#" class="u-position-up js_move_rule_position_up" data-idrule="'.$id.'"><i class="glyphicon glyphicon-arrow-up"></i></a>
+                                <span class="js_editable_rule_position editable editable-click" data-idrule="'.$id.'">'.$row['Position'].'</span>
+                               <a href="#" class="u-position-down js_move_rule_position_down" data-idrule="'.$id.'"><i class="glyphicon glyphicon-arrow-down"></i></a>',
+                'Actions' => '<a href="#" class="js_btn_update_rule btn btn-success" data-idrule="'.$id.'"><span class="glyphicon glyphicon-check"></span></a>
+                              <a href="#" class="js_btn_remove_rule btn btn-danger" data-idrule="'.$id.'"><span class="glyphicon glyphicon-remove"></span></a>
 ',
             ];
         }
@@ -115,24 +129,25 @@ class ModuleConfigController extends BaseAdminController
             'draw' => $request->get('draw'),
             'recordsTotal' => $recordsTotal,
             'recordsFiltered' => $recordsFiltered,
-            'data' => $resultsArray
+            'data' => $resultsArray,
         ]);
     }
 
-    public function setRewritingEnableAction(Request $request)
+    public function setRewritingEnableAction(Request $request): Response
     {
-        $isRewritingEnable = $request->get("rewriting_enable", null);
+        $isRewritingEnable = $request->get('rewriting_enable', null);
 
         if ($isRewritingEnable !== null) {
-            ConfigQuery::write("rewriting_enable", $isRewritingEnable ? 1 : 0);
-            return $this->jsonResponse(json_encode(["state" => "Success"]), 200);
-        } else {
-            return $this->jsonResponse(Translator::getInstance()->trans(
-                "Unable to change the configuration variable.",
-                [],
-                RewriteUrl::MODULE_DOMAIN
-            ), 500);
+            ConfigQuery::write('rewriting_enable', $isRewritingEnable ? 1 : 0);
+
+            return $this->jsonResponse(json_encode(['state' => 'Success']), 200);
         }
+
+        return $this->jsonResponse(Translator::getInstance()->trans(
+            'Unable to change the configuration variable.',
+            [],
+            RewriteUrl::MODULE_DOMAIN
+        ), 500);
     }
 
     public function addRuleAction(Request $request)
@@ -144,16 +159,18 @@ class ModuleConfigController extends BaseAdminController
         } catch (\Exception $ex) {
             return $this->jsonResponse($ex->getMessage(), 500);
         }
-        return $this->jsonResponse(json_encode(["state" => "Success"]), 200);
+
+        return $this->jsonResponse(json_encode(['state' => 'Success']), 200);
     }
 
     public function updateRuleAction(Request $request)
     {
         try {
-            $rule = RewriteurlRuleQuery::create()->findOneById($request->get("id"));
-            if ($rule == null) {
+            $rule = RewriteurlRuleQuery::create()->findOneById($request->get('id'));
+
+            if ($rule === null) {
                 throw new \Exception(Translator::getInstance()->trans(
-                    "Unable to find rule to update.",
+                    'Unable to find rule to update.',
                     [],
                     RewriteUrl::MODULE_DOMAIN
                 ));
@@ -163,17 +180,18 @@ class ModuleConfigController extends BaseAdminController
         } catch (\Exception $ex) {
             return $this->jsonResponse($ex->getMessage(), 500);
         }
-        return $this->jsonResponse(json_encode(["state" => "Success"]), 200);
-    }
 
+        return $this->jsonResponse(json_encode(['state' => 'Success']), 200);
+    }
 
     public function removeRuleAction(Request $request)
     {
         try {
-            $rule = RewriteurlRuleQuery::create()->findOneById($request->get("id"));
-            if ($rule == null) {
+            $rule = RewriteurlRuleQuery::create()->findOneById($request->get('id'));
+
+            if ($rule === null) {
                 throw new \Exception(Translator::getInstance()->trans(
-                    "Unable to find rule to remove.",
+                    'Unable to find rule to remove.',
                     [],
                     RewriteUrl::MODULE_DOMAIN
                 ));
@@ -183,28 +201,31 @@ class ModuleConfigController extends BaseAdminController
         } catch (\Exception $ex) {
             return $this->jsonResponse($ex->getMessage(), 500);
         }
-        return $this->jsonResponse(json_encode(["state" => "Success"]), 200);
+
+        return $this->jsonResponse(json_encode(['state' => 'Success']), 200);
     }
 
     public function moveRulePositionAction(Request $request)
     {
         try {
-            $rule = RewriteurlRuleQuery::create()->findOneById($request->get("id"));
-            if ($rule == null) {
+            $rule = RewriteurlRuleQuery::create()->findOneById($request->get('id'));
+
+            if ($rule === null) {
                 throw new \Exception(Translator::getInstance()->trans(
-                    "Unable to find rule to change position.",
+                    'Unable to find rule to change position.',
                     [],
                     RewriteUrl::MODULE_DOMAIN
                 ));
             }
 
-            $type = $request->get("type", null);
-            if ($type == "up") {
+            $type = $request->get('type', null);
+
+            if ($type === 'up') {
                 $rule->movePositionUp();
-            } elseif ($type == "down") {
+            } elseif ($type === 'down') {
                 $rule->movePositionDown();
-            } elseif ($type == "absolute") {
-                $position = $request->get("position", null);
+            } elseif ($type === 'absolute') {
+                $position = $request->get('position', null);
                 if (!empty($position)) {
                     $rule->changeAbsolutePosition($position);
                 }
@@ -212,38 +233,52 @@ class ModuleConfigController extends BaseAdminController
         } catch (\Exception $ex) {
             return $this->jsonResponse($ex->getMessage(), 500);
         }
-        return $this->jsonResponse(json_encode(["state" => "Success"]), 200);
+
+        return $this->jsonResponse(json_encode(['state' => 'Success']), 200);
     }
 
-    protected function fillRuleObjectFields(RewriteurlRule $rule, Request $request)
+    /**
+     * @throws \Propel\Runtime\Exception\PropelException
+     */
+    protected function fillRuleObjectFields(RewriteurlRule $rule, Request $request): void
     {
-        $ruleType = $request->get("ruleType", null);
-        if ($ruleType !== "regex" && $ruleType !== "params") {
-            throw new \Exception(Translator::getInstance()->trans("Unknown rule type.", [], RewriteUrl::MODULE_DOMAIN));
+        $ruleType = $request->get('ruleType', null);
+
+        $isParamRule = $ruleType === RewriteurlRule::TYPE_GET_PARAMS || $ruleType === RewriteurlRule::TYPE_REGEX_GET_PARAMS;
+        $isRegexRule = $ruleType === RewriteurlRule::TYPE_REGEX || $ruleType === RewriteurlRule::TYPE_REGEX_GET_PARAMS;
+
+        if (!($isParamRule || $isRegexRule)) {
+            throw new TheliaProcessException(Translator::getInstance()->trans('Unknown rule type.', [], RewriteUrl::MODULE_DOMAIN));
         }
 
-        $regexValue = $request->get("value", null);
-        if ($ruleType == "regex" && empty($regexValue)) {
-            throw new \Exception(Translator::getInstance()->trans("Regex value cannot be empty.", [], RewriteUrl::MODULE_DOMAIN));
+        $regexValue = $request->get('value', null);
+
+        if ($isRegexRule && empty($regexValue)) {
+            throw new TheliaProcessException(Translator::getInstance()->trans('Regex value cannot be empty.', [], RewriteUrl::MODULE_DOMAIN));
         }
 
-        $redirectUrl = $request->get("redirectUrl", null);
+        $redirectUrl = $request->get('redirectUrl', null);
+
         if (empty($redirectUrl)) {
-            throw new \Exception(Translator::getInstance()->trans("Redirect url cannot be empty.", [], RewriteUrl::MODULE_DOMAIN));
+            throw new TheliaProcessException(Translator::getInstance()->trans('Redirect url cannot be empty.', [], RewriteUrl::MODULE_DOMAIN));
         }
 
-        $paramRuleArray = array();
-        if ($ruleType == "params") {
-            $paramRuleArray = $request->get("paramRules", null);
+        $paramRuleArray = [];
+
+        if ($isParamRule) {
+            $paramRuleArray = $request->get('paramRules', null);
             if (empty($paramRuleArray)) {
-                throw new \Exception(Translator::getInstance()->trans("At least one GET parameter is required.", [], RewriteUrl::MODULE_DOMAIN));
+                throw new TheliaProcessException(Translator::getInstance()->trans('At least one GET parameter is required.', [], RewriteUrl::MODULE_DOMAIN));
             }
         }
 
-        $rule->setRuleType($ruleType);
-        $rule->setValue($regexValue);
-        $rule->setOnly404($request->get("only404", 1));
-        $rule->setRedirectUrl($redirectUrl);
+        $rule
+            ->setRuleType($ruleType)
+            ->setValue($regexValue)
+            ->setOnly404($request->get('only404', 1))
+            ->setRedirectUrl($redirectUrl)
+        ;
+
         if (empty($rule->getPosition())) {
             $rule->setPosition($rule->getNextPosition());
         }
@@ -252,29 +287,29 @@ class ModuleConfigController extends BaseAdminController
 
         $rule->save();
 
-        if ($ruleType == "params") {
+        if ($isParamRule) {
             foreach ($paramRuleArray as $paramRule) {
-                if (!array_key_exists("paramName", $paramRule) || empty($paramRule["paramName"])) {
-                    throw new \Exception(Translator::getInstance()->trans(
-                        "Param name is empty.",
+                if (!\array_key_exists('paramName', $paramRule) || empty($paramRule['paramName'])) {
+                    throw new TheliaProcessException(Translator::getInstance()->trans(
+                        'Param name is empty.',
                         [],
                         RewriteUrl::MODULE_DOMAIN
                     ));
                 }
-                if (!array_key_exists("condition", $paramRule) || empty($paramRule["condition"])) {
-                    throw new \Exception(Translator::getInstance()->trans(
-                        "Param condition is empty.",
+                if (!\array_key_exists('condition', $paramRule) || empty($paramRule['condition'])) {
+                    throw new TheliaProcessException(Translator::getInstance()->trans(
+                        'Param condition is empty.',
                         [],
                         RewriteUrl::MODULE_DOMAIN
                     ));
                 }
 
-                $paramRuleObject = new RewriteurlRuleParam();
-                $paramRuleObject->setParamName($paramRule["paramName"]);
-                $paramRuleObject->setParamCondition($paramRule["condition"]);
-                $paramRuleObject->setParamValue($paramRule["paramValue"]);
-                $paramRuleObject->setIdRule($rule->getId());
-                $paramRuleObject->save();
+                (new RewriteurlRuleParam())
+                    ->setParamName($paramRule['paramName'])
+                    ->setParamCondition($paramRule['condition'])
+                    ->setParamValue($paramRule['paramValue'])
+                    ->setIdRule($rule->getId())
+                    ->save();
             }
         }
     }
