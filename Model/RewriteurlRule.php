@@ -47,7 +47,7 @@ class RewriteurlRule extends BaseRewriteurlRule
     {
         if (!empty($this->getValue())) {
             try {
-                $match = @preg_match('/'.$this->getValue().'/', $url) === 1;
+                $match = @preg_match('/'.$this->getValue().'/', $url);
 
                 if (false === $match) {
                     Tlog::getInstance()->error('Invalid pattern: '.$this->getValue());
