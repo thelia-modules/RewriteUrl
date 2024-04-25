@@ -37,13 +37,25 @@ class KernelExceptionListener implements EventSubscriberInterface
         if ($event->getThrowable() instanceof NotFoundHttpException) {
             $urlTool = URL::getInstance();
 
+            $request = $this->requestStack->getCurrentRequest();
+            $pathInfo = $request instanceof TheliaRequest ? $request->getRealPathInfo() : $request->getPathInfo();
+
+            // Check RewriteUrl text rules
+            $textRule = RewriteurlRuleQuery::create()
+                ->filterByOnly404(0)
+                ->filterByValue(ltrim($pathInfo, '/'))
+                ->filterByRuleType('text')
+                ->orderByPosition()
+                ->findOne();
+
+            if ($textRule) {
+                $event->setThrowable(new RedirectException($urlTool->absoluteUrl($textRule->getRedirectUrl()), 301));
+            }
+
             $ruleCollection = RewriteurlRuleQuery::create()
                 ->filterByOnly404(1)
                 ->orderByPosition()
                 ->find();
-
-            $request = $this->requestStack->getCurrentRequest();
-            $pathInfo = $request instanceof TheliaRequest ? $request->getRealPathInfo() : $request->getPathInfo();
 
             /** @var RewriteurlRule $rule */
             foreach ($ruleCollection as $rule) {

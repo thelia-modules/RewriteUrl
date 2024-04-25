@@ -29,6 +29,9 @@ class RewriteurlRule extends BaseRewriteurlRule
     /** @var string */
     public const TYPE_REGEX_GET_PARAMS = 'regex-params';
 
+    /** @var string */
+    public const TYPE_TEXT = 'text';
+
     protected $rewriteUrlParamCollection = null;
 
     /**
@@ -47,15 +50,15 @@ class RewriteurlRule extends BaseRewriteurlRule
     {
         if (!empty($this->getValue())) {
             try {
-                $match = @preg_match('/'.$this->getValue().'/', $url);
+                $match = @preg_match('/' . $this->getValue() . '/', $url);
 
                 if (false === $match) {
-                    Tlog::getInstance()->error('Invalid pattern: '.$this->getValue());
+                    Tlog::getInstance()->error('Invalid pattern: ' . $this->getValue());
                 }
 
-                return (bool) $match;
+                return (bool)$match;
             } catch (\Exception $ex) {
-                Tlog::getInstance()->error('Failed to match rule : '.$ex->getMessage());
+                Tlog::getInstance()->error('Failed to match rule : ' . $ex->getMessage());
             }
         }
 

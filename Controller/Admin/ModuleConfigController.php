@@ -47,15 +47,14 @@ class ModuleConfigController extends BaseAdminController
 
     public function getDatatableRules(Request $request)
     {
-        $requestSearchValue = $request->get('search') ? '%'.$request->get('search')['value'].'%' : '';
+        $requestSearchValue = $request->get('search') ? '%' . $request->get('search')['value'] . '%' : '';
         $recordsTotal = RewriteurlRuleQuery::create()->count();
         $search = RewriteurlRuleQuery::create();
         if ('' !== $requestSearchValue) {
             $search
                 ->filterByValue($requestSearchValue, Criteria::LIKE)
                 ->_or()
-                ->filterByRedirectUrl($requestSearchValue)
-            ;
+                ->filterByRedirectUrl($requestSearchValue);
         }
 
         $recordsFiltered = $search->count();
@@ -85,8 +84,7 @@ class ModuleConfigController extends BaseAdminController
 
         $search
             ->offset($request->get('start'))
-            ->limit($request->get('length'))
-        ;
+            ->limit($request->get('length'));
         $searchArray = $search->find()->toArray();
 
         $resultsArray = [];
@@ -95,14 +93,16 @@ class ModuleConfigController extends BaseAdminController
             $isRegexSelected = $row['RuleType'] === RewriteurlRule::TYPE_REGEX ? 'selected' : '';
             $isParamsSelected = $row['RuleType'] === RewriteurlRule::TYPE_GET_PARAMS ? 'selected' : '';
             $isRegexParamsSelected = $row['RuleType'] === RewriteurlRule::TYPE_REGEX_GET_PARAMS ? 'selected' : '';
+            $isTextParamsSelected = $row['RuleType'] === RewriteurlRule::TYPE_TEXT ? 'selected' : '';
             $isOnly404Checked = $row['Only404'] ? 'checked' : '';
             $rewriteUrlRuleParams = RewriteurlRuleQuery::create()->findPk($row['Id'])->getRewriteUrlParamCollection();
             $resultsArray[] = [
                 'Id' => $row['Id'],
-                'RuleType' => '<select class="js_rule_type form-control" data-idrule="'.$id.'" required>
-                                <option value="'.RewriteurlRule::TYPE_REGEX.'" '.$isRegexSelected.'>'.Translator::getInstance()->trans('Regex', [], RewriteUrl::MODULE_DOMAIN).'</option>
-                                <option value="'.RewriteurlRule::TYPE_GET_PARAMS.'" '.$isParamsSelected.'>'.Translator::getInstance()->trans('Get Params', [], RewriteUrl::MODULE_DOMAIN).'</option>
-                                <option value="'.RewriteurlRule::TYPE_REGEX_GET_PARAMS.'" '.$isRegexParamsSelected.'>'.Translator::getInstance()->trans('Regex and Get Params', [], RewriteUrl::MODULE_DOMAIN).'</option>
+                'RuleType' => '<select class="js_rule_type form-control" data-idrule="' . $id . '" required>
+                                <option value="' . RewriteurlRule::TYPE_REGEX . '" ' . $isRegexSelected . '>' . Translator::getInstance()->trans('Regex', [], RewriteUrl::MODULE_DOMAIN) . '</option>
+                                <option value="' . RewriteurlRule::TYPE_GET_PARAMS . '" ' . $isParamsSelected . '>' . Translator::getInstance()->trans('Get Params', [], RewriteUrl::MODULE_DOMAIN) . '</option>
+                                <option value="' . RewriteurlRule::TYPE_REGEX_GET_PARAMS . '" ' . $isRegexParamsSelected . '>' . Translator::getInstance()->trans('Regex and Get Params', [], RewriteUrl::MODULE_DOMAIN) . '</option>
+                                <option value="' . RewriteurlRule::TYPE_TEXT . '" ' . $isTextParamsSelected . '>' . Translator::getInstance()->trans('Text', [], RewriteUrl::MODULE_DOMAIN) . '</option>
                                </select>',
                 'Value' => $this->renderRaw(
                     'RewriteUrl/tab-value-render',
@@ -112,15 +112,15 @@ class ModuleConfigController extends BaseAdminController
                         'VALUE' => $row['Value'],
                     ]
                 ),
-                'Only404' => '<input class="js_only404 form-control" type="checkbox" style="width: 100%!important;" '.$isOnly404Checked.'/>',
+                'Only404' => '<input class="js_only404 form-control" type="checkbox" style="width: 100%!important;" ' . $isOnly404Checked . '/>',
                 'RedirectUrl' => '<div class="col-md-12 input-group">
-                                    <input class="js_url_to_redirect form-control" type="text" placeholder="/path/mypage.html" value="'.$row['RedirectUrl'].'"/>
+                                    <input class="js_url_to_redirect form-control" type="text" placeholder="/path/mypage.html" value="' . $row['RedirectUrl'] . '"/>
                                   </div>',
-                'Position' => '<a href="#" class="u-position-up js_move_rule_position_up" data-idrule="'.$id.'"><i class="glyphicon glyphicon-arrow-up"></i></a>
-                                <span class="js_editable_rule_position editable editable-click" data-idrule="'.$id.'">'.$row['Position'].'</span>
-                               <a href="#" class="u-position-down js_move_rule_position_down" data-idrule="'.$id.'"><i class="glyphicon glyphicon-arrow-down"></i></a>',
-                'Actions' => '<a href="#" class="js_btn_update_rule btn btn-success" data-idrule="'.$id.'"><span class="glyphicon glyphicon-check"></span></a>
-                              <a href="#" class="js_btn_remove_rule btn btn-danger" data-idrule="'.$id.'"><span class="glyphicon glyphicon-remove"></span></a>
+                'Position' => '<a href="#" class="u-position-up js_move_rule_position_up" data-idrule="' . $id . '"><i class="glyphicon glyphicon-arrow-up"></i></a>
+                                <span class="js_editable_rule_position editable editable-click" data-idrule="' . $id . '">' . $row['Position'] . '</span>
+                               <a href="#" class="u-position-down js_move_rule_position_down" data-idrule="' . $id . '"><i class="glyphicon glyphicon-arrow-down"></i></a>',
+                'Actions' => '<a href="#" class="js_btn_update_rule btn btn-success" data-idrule="' . $id . '"><span class="glyphicon glyphicon-check"></span></a>
+                              <a href="#" class="js_btn_remove_rule btn btn-danger" data-idrule="' . $id . '"><span class="glyphicon glyphicon-remove"></span></a>
 ',
             ];
         }
@@ -246,9 +246,14 @@ class ModuleConfigController extends BaseAdminController
 
         $isParamRule = $ruleType === RewriteurlRule::TYPE_GET_PARAMS || $ruleType === RewriteurlRule::TYPE_REGEX_GET_PARAMS;
         $isRegexRule = $ruleType === RewriteurlRule::TYPE_REGEX || $ruleType === RewriteurlRule::TYPE_REGEX_GET_PARAMS;
+        $isTextRule = $ruleType === RewriteurlRule::TYPE_TEXT;
 
-        if (!($isParamRule || $isRegexRule)) {
+        if (!($isParamRule || $isRegexRule || $isTextRule)) {
             throw new TheliaProcessException(Translator::getInstance()->trans('Unknown rule type.', [], RewriteUrl::MODULE_DOMAIN));
+        }
+
+        if ($isTextRule && !$textValue = $request->get('textValue', null)) {
+            throw new TheliaProcessException(Translator::getInstance()->trans('Text value cannot be empty.', [], RewriteUrl::MODULE_DOMAIN));
         }
 
         $regexValue = $request->get('value', null);
@@ -263,6 +268,8 @@ class ModuleConfigController extends BaseAdminController
             throw new TheliaProcessException(Translator::getInstance()->trans('Redirect url cannot be empty.', [], RewriteUrl::MODULE_DOMAIN));
         }
 
+        $value = $isTextRule ? $textValue : $regexValue;
+
         $paramRuleArray = [];
 
         if ($isParamRule) {
@@ -272,12 +279,10 @@ class ModuleConfigController extends BaseAdminController
             }
         }
 
-        $rule
-            ->setRuleType($ruleType)
-            ->setValue($regexValue)
+        $rule->setRuleType($ruleType)
+            ->setValue($value)
             ->setOnly404($request->get('only404', 1))
-            ->setRedirectUrl($redirectUrl)
-        ;
+            ->setRedirectUrl($redirectUrl);
 
         if (empty($rule->getPosition())) {
             $rule->setPosition($rule->getNextPosition());

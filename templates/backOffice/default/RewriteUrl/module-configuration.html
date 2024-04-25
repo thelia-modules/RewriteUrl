@@ -52,6 +52,7 @@
                                                 <option value="regex">{intl d=$d l="Regex"}</option>
                                                 <option value="params">{intl d=$d l="GET params"}</option>
                                                 <option value="regex-params">{intl d=$d l="Regex and GET params"}</option>
+                                                <option value="text">{intl d=$d l="Text"}</option>
                                             </select>
                                         </td>
                                         <td>
@@ -60,7 +61,11 @@
                                                 <input class="js_regex form-control" type="text" placeholder="{literal}^[a-z0-9_-]{3,16}${/literal}"/>
                                                 <span class="input-group-addon">/</span>
                                             </div>
-
+                                            <div class="js_text_group input-group">
+                                                <span class="input-group-addon">/</span>
+                                                <input class="js_text form-control" type="text" placeholder=""/>
+                                                <span class="input-group-addon"></span>
+                                            </div>
                                             <div class="js_param_rule_group"></div>
                                         </td>
                                         <td class="text-center">

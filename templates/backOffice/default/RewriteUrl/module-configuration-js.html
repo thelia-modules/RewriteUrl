@@ -66,14 +66,21 @@
                 $container.find(".js_regex_group").css('margin-bottom', '0px');
 
                 if (selectedRuleType === "regex"){
-                    $container.find(".js_regex_group").show();
+                    $container.find(".js_text_group").hide();
                     $container.find(".js_param_rule_group").hide();
+                    $container.find(".js_regex_group").show();
                 } else if (selectedRuleType === "params"){
+                    $container.find(".js_text_group").hide();
                     $container.find(".js_regex_group").hide();
                     $container.find(".js_param_rule_group").show();
                 } else if (selectedRuleType === "regex-params"){
+                    $container.find(".js_text_group").hide();
                     $container.find(".js_regex_group").css('margin-bottom', '5px').show();
                     $container.find(".js_param_rule_group").show();
+                } else if (selectedRuleType === "text") {
+                    $container.find(".js_regex_group").hide();
+                    $container.find(".js_param_rule_group").hide();
+                    $container.find(".js_text_group").show();
                 }
             });
 
@@ -103,8 +110,6 @@
                 var id_rule = this.dataset.idrule;
                 moveRulePosition(id_rule, "down");
             });
-
-
 
             function onChangeParamCondition(element){
                 var selectedParamCondition = $(element).val();
@@ -235,6 +240,7 @@
                 data.id = ruleid;
                 data.ruleType = $tr.find(".js_rule_type").val();
                 data.value = $tr.find(".js_regex").val();
+                data.textValue = $tr.find(".js_text").val();
                 data.only404 = $tr.find(".js_only404").prop("checked") ? 1 : 0;
                 data.redirectUrl = $tr.find(".js_url_to_redirect").val();
 

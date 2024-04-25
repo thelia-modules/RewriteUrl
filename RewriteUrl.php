@@ -13,6 +13,8 @@
 namespace RewriteUrl;
 
 use Propel\Runtime\Connection\ConnectionInterface;
+use RewriteUrl\Model\RewriteurlRuleQuery;
+use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ServicesConfigurator;
 use Symfony\Component\Finder\Finder;
 use Thelia\Model\ConfigQuery;
@@ -30,10 +32,10 @@ use Thelia\Install\Database;
  */
 class RewriteUrl extends BaseModule
 {
-    /** @var string  */
+    /** @var string */
     const MODULE_DOMAIN = "rewriteurl";
 
-    /** @var string  */
+    /** @var string */
     const MODULE_NAME = "rewriteurl";
 
     /* @var string */
@@ -41,7 +43,6 @@ class RewriteUrl extends BaseModule
 
     /** @static null|array */
     static protected $unknownSources;
-
 
 
     public function preActivation(ConnectionInterface $con = null)
@@ -65,7 +66,7 @@ class RewriteUrl extends BaseModule
      * @throws \Propel\Runtime\Exception\PropelException
      * @since 1.2.3
      */
-    public function update($currentVersion, $newVersion, ConnectionInterface $con = null):void
+    public function update($currentVersion, $newVersion, ConnectionInterface $con = null): void
     {
         $finder = (new Finder())->files()->name('#.*?\.sql#')->sortByName()->in(self::UPDATE_PATH);
 
@@ -121,8 +122,8 @@ class RewriteUrl extends BaseModule
      */
     public static function configureServices(ServicesConfigurator $servicesConfigurator): void
     {
-        $servicesConfigurator->load(self::getModuleCode().'\\', __DIR__)
-            ->exclude([THELIA_MODULE_DIR.ucfirst(self::getModuleCode()).'/I18n/*'])
+        $servicesConfigurator->load(self::getModuleCode() . '\\', __DIR__)
+            ->exclude([THELIA_MODULE_DIR . ucfirst(self::getModuleCode()) . '/I18n/*'])
             ->autowire(true)
             ->autoconfigure(true);
     }

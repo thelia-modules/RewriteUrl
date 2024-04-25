@@ -25,17 +25,26 @@ class RewritingRouterFirst extends RewritingRouter
     /**
      * @inheritdoc
      */
-    public function matchRequest(Request $request) : array
+    public function matchRequest(Request $request): array
     {
         if (ConfigQuery::isRewritingEnable()) {
             $urlTool = URL::getInstance();
 
             $pathInfo = $request instanceof TheliaRequest ? $request->getRealPathInfo() : $request->getPathInfo();
 
+            // Check RewriteUrl text rules
+            $textRule = RewriteurlRuleQuery::create()
+                ->filterByOnly404(0)
+                ->filterByValue(ltrim($pathInfo, '/'))
+                ->filterByRuleType('text')
+                ->orderByPosition()
+                ->findOne();
 
+            if ($textRule) {
+                $this->redirect($urlTool->absoluteUrl($textRule->getRedirectUrl()), 301);
+            }
 
             // Check RewriteUrl rules
-
             $ruleCollection = RewriteurlRuleQuery::create()
                 ->filterByOnly404(0)
                 ->orderByPosition()
@@ -47,8 +56,6 @@ class RewritingRouterFirst extends RewritingRouter
                     $this->redirect($urlTool->absoluteUrl($rule->getRedirectUrl()), 301);
                 }
             }
-
-
 
             try {
                 $rewrittenUrlData = $urlTool->resolve($pathInfo);
@@ -64,7 +71,7 @@ class RewritingRouterFirst extends RewritingRouter
 
             // If we have a "lang" parameter, whe have to check if the found URL has the proper locale
             // If it's not the case, find the rewritten URL with the requested locale, and redirect to it.
-            if (null ==! $requestedLocale = $request->get('lang')) {
+            if (null == !$requestedLocale = $request->get('lang')) {
                 if (null !== $requestedLang = LangQuery::create()->findOneByLocale($requestedLocale)) {
                     if ($requestedLang->getLocale() != $rewrittenUrlData->locale) {
                         $localizedUrl = $urlTool->retrieve(
@@ -85,8 +92,7 @@ class RewritingRouterFirst extends RewritingRouter
                     ->filterByViewId($rewrittenUrlData->viewId)
                     ->filterByViewLocale($rewrittenUrlData->locale)
                     ->filterByRedirected(null, Criteria::ISNULL)
-                    ->findOne()
-                ;
+                    ->findOne();
 
                 // Differences with the base class for handling 301 or 302 redirection
                 $redirectType = $this->fetchRewritingRedirectTypeFromUrl($rewrittenUrlData->rewrittenUrl);
