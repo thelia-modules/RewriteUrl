@@ -242,6 +242,7 @@ class ModuleConfigController extends BaseAdminController
      */
     protected function fillRuleObjectFields(RewriteurlRule $rule, Request $request): void
     {
+        $textValue = "";
         $ruleType = $request->get('ruleType', null);
 
         $isParamRule = $ruleType === RewriteurlRule::TYPE_GET_PARAMS || $ruleType === RewriteurlRule::TYPE_REGEX_GET_PARAMS;
@@ -252,7 +253,7 @@ class ModuleConfigController extends BaseAdminController
             throw new TheliaProcessException(Translator::getInstance()->trans('Unknown rule type.', [], RewriteUrl::MODULE_DOMAIN));
         }
 
-        if ($isTextRule && !$textValue = $request->get('textValue', null)) {
+        if ($isTextRule && !$textValue = $request->get('textValue')) {
             throw new TheliaProcessException(Translator::getInstance()->trans('Text value cannot be empty.', [], RewriteUrl::MODULE_DOMAIN));
         }
 
@@ -268,7 +269,7 @@ class ModuleConfigController extends BaseAdminController
             throw new TheliaProcessException(Translator::getInstance()->trans('Redirect url cannot be empty.', [], RewriteUrl::MODULE_DOMAIN));
         }
 
-        $value = $isTextRule ? $textValue : $regexValue;
+        $value = $isTextRule ? "/". $textValue : $regexValue;
 
         $paramRuleArray = [];
 

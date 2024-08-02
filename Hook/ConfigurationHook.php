@@ -62,11 +62,19 @@ class ConfigurationHook extends BaseHook
     {
         $event->add(
             [
-                'id' => 'tools_menu_rewriteutl',
+                'id' => 'tools_menu_rewriteurl',
                 'class' => '',
-                'url' => URL::getInstance()->absoluteUrl('/admin/module/RewriteUrl'),
+                'url' => URL::getInstance()?->absoluteUrl('/admin/module/RewriteUrl'),
                 'title' => $this->trans('Global URL Rewriting', [], RewriteUrl::MODULE_DOMAIN),
-            ]
+            ],
+        );
+        $event->add(
+            [
+                'id' => 'tools_menu_rewriteurl_error',
+                'class' => '',
+                'url' => URL::getInstance()?->absoluteUrl('/admin/module/RewriteUrl/manageErrorUrl'),
+                'title' => $this->trans('Manage 404 Errors Url', [], RewriteUrl::MODULE_DOMAIN),
+            ],
         );
     }
 }

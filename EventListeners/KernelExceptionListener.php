@@ -2,6 +2,9 @@
 
 namespace RewriteUrl\EventListeners;
 
+use Propel\Runtime\Exception\PropelException;
+use RewriteUrl\Model\RewriteurlErrorUrl;
+use RewriteUrl\Model\RewriteurlErrorUrlQuery;
 use RewriteUrl\Model\RewriteurlRule;
 use RewriteUrl\Model\RewriteurlRuleQuery;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -17,28 +20,54 @@ use Thelia\Tools\URL;
 class KernelExceptionListener implements EventSubscriberInterface
 {
     /** @var RequestStack */
-    private $requestStack;
 
-    public function __construct(RequestStack $requestStack)
-    {
-        $this->requestStack = $requestStack;
-    }
+    public function __construct(protected RequestStack $requestStack)
+    { }
 
-
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [
             KernelEvents::EXCEPTION => ['onKernelHttpNotFoundException', 300],
         ];
     }
 
-    public function onKernelHttpNotFoundException(ExceptionEvent $event)
+    /**
+     * @throws PropelException
+     */
+    public function onKernelHttpNotFoundException(ExceptionEvent $event): void
     {
         if ($event->getThrowable() instanceof NotFoundHttpException) {
             $urlTool = URL::getInstance();
 
             $request = $this->requestStack->getCurrentRequest();
             $pathInfo = $request instanceof TheliaRequest ? $request->getRealPathInfo() : $request->getPathInfo();
+
+            // Errors Url
+            $userAgent = $this->requestStack->getCurrentRequest()->headers->get('user_agent');
+
+            if (null === $errorUrl = RewriteurlErrorUrlQuery::create()->findOneByUrlSource($pathInfo)) {
+                $rewriteUrlRule = RewriteurlRuleQuery::create()
+                    ->filterByRuleType(RewriteurlRule::TYPE_TEXT)
+                    ->filterByOnly404(1)
+                    ->findOneByValue($pathInfo);
+
+                if (null === $rewriteUrlRule) {
+                    $errorUrl = new RewriteurlErrorUrl();
+                    $errorUrl
+                        ->setUrlSource($pathInfo)
+                        ->setCount(0)
+                    ;
+                }
+            }
+
+            if ((null !== $errorUrl) && null === RewriteurlRuleQuery::create()->findOneById($errorUrl->getRewriteurlRuleId())) {
+                $errorUrl
+                    ->setUserAgent($userAgent)
+                    ->setCount($errorUrl->getCount() + 1)
+                    ->save()
+                ;
+            }
+            // End Errors Url
 
             // Check RewriteUrl text rules
             $textRule = RewriteurlRuleQuery::create()
@@ -49,7 +78,7 @@ class KernelExceptionListener implements EventSubscriberInterface
                 ->findOne();
 
             if ($textRule) {
-                $event->setThrowable(new RedirectException($urlTool->absoluteUrl($textRule->getRedirectUrl()), 301));
+                $event->setThrowable(new RedirectException($urlTool?->absoluteUrl($textRule->getRedirectUrl()), 301));
             }
 
             $ruleCollection = RewriteurlRuleQuery::create()
@@ -60,7 +89,7 @@ class KernelExceptionListener implements EventSubscriberInterface
             /** @var RewriteurlRule $rule */
             foreach ($ruleCollection as $rule) {
                 if ($rule->isMatching($pathInfo, $request->query->all())) {
-                    $event->setThrowable(new RedirectException($urlTool->absoluteUrl($rule->getRedirectUrl()), 301));
+                    $event->setThrowable(new RedirectException($urlTool?->absoluteUrl($rule->getRedirectUrl()), 301));
                     return;
                 }
             }

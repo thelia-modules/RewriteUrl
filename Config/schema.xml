@@ -34,5 +34,18 @@
         </foreign-key>
     </table>
 
+    <table name="rewriteurl_error_url" namespace="RewriteUrl\Model">
+        <column name="id" type="INTEGER" primaryKey="true" required="true" autoIncrement="true" />
+        <column name="url_source" type="VARCHAR" size="255" required="true" />
+        <column name="count" type="INTEGER" required="true" />
+        <column name="user_agent" type="VARCHAR" size="255" required="true" />
+        <column name="rewriteurl_rule_id" type="INTEGER" />
+        <behavior name="timestampable" />
+
+        <foreign-key foreignTable="rewriteurl_rule" name="rewriteurl_error_url_param_FK_id" onDelete="CASCADE">
+            <reference foreign="id" local="rewriteurl_rule_id" />
+        </foreign-key>
+    </table>
+
     <external-schema filename="local/config/schema.xml" referenceOnly="true" />
 </database>

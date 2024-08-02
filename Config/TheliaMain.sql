@@ -51,9 +51,32 @@ CREATE TABLE `rewriteurl_rule_param`
     `param_condition` VARCHAR(64) NOT NULL,
     `param_value` VARCHAR(255),
     PRIMARY KEY (`id`),
-    INDEX `rewriteurl_rule_rule_param_FI_id` (`id_rule`),
+    INDEX `fi_riteurl_rule_rule_param_FK_id` (`id_rule`),
     CONSTRAINT `rewriteurl_rule_rule_param_FK_id`
         FOREIGN KEY (`id_rule`)
+        REFERENCES `rewriteurl_rule` (`id`)
+        ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+-- ---------------------------------------------------------------------
+-- rewriteurl_error_url
+-- ---------------------------------------------------------------------
+
+DROP TABLE IF EXISTS `rewriteurl_error_url`;
+
+CREATE TABLE `rewriteurl_error_url`
+(
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `url_source` VARCHAR(255) NOT NULL,
+    `count` INTEGER NOT NULL,
+    `user_agent` VARCHAR(255) NOT NULL,
+    `rewriteurl_rule_id` INTEGER,
+    `created_at` DATETIME,
+    `updated_at` DATETIME,
+    PRIMARY KEY (`id`),
+    INDEX `fi_riteurl_error_url_param_FK_id` (`rewriteurl_rule_id`),
+    CONSTRAINT `rewriteurl_error_url_param_FK_id`
+        FOREIGN KEY (`rewriteurl_rule_id`)
         REFERENCES `rewriteurl_rule` (`id`)
         ON DELETE CASCADE
 ) ENGINE=InnoDB;

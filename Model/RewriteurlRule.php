@@ -12,6 +12,7 @@
 
 namespace RewriteUrl\Model;
 
+use Propel\Runtime\Collection\ObjectCollection;
 use RewriteUrl\Model\Base\RewriteurlRule as BaseRewriteurlRule;
 use Thelia\Log\Tlog;
 use Thelia\Model\Tools\PositionManagementTrait;
@@ -32,12 +33,12 @@ class RewriteurlRule extends BaseRewriteurlRule
     /** @var string */
     public const TYPE_TEXT = 'text';
 
-    protected $rewriteUrlParamCollection = null;
+    protected ?ObjectCollection $rewriteUrlParamCollection = null;
 
     /**
-     * @return \Propel\Runtime\Collection\ObjectCollection|RewriteurlRuleParam[]
+     * @return ObjectCollection|RewriteurlRuleParam[]
      */
-    public function getRewriteUrlParamCollection()
+    public function getRewriteUrlParamCollection(): ?ObjectCollection
     {
         if ($this->rewriteUrlParamCollection === null) {
             $this->rewriteUrlParamCollection = RewriteurlRuleParamQuery::create()->filterByIdRule($this->getId())->find();
@@ -65,9 +66,14 @@ class RewriteurlRule extends BaseRewriteurlRule
         return false;
     }
 
+    protected function isMatchingText(string $url): bool
+    {
+        return ! empty($this->getValue()) && $url === $this->getValue();
+    }
+
     protected function isMatchingGetParams(array $getParamArray): bool
     {
-        if ($this->getRewriteUrlParamCollection()->count() === 0) {
+        if ($this->getRewriteUrlParamCollection()?->count() === 0) {
             return false;
         }
 
@@ -82,19 +88,13 @@ class RewriteurlRule extends BaseRewriteurlRule
 
     public function isMatching(string $url, array $getParamArray): bool
     {
-        if ($this->getRuleType() === self::TYPE_REGEX) {
-            return $this->isMatchingPath($url);
-        }
-
-        if ($this->getRuleType() === self::TYPE_GET_PARAMS) {
-            return $this->isMatchingGetParams($getParamArray);
-        }
-
-        if ($this->getRuleType() === self::TYPE_REGEX_GET_PARAMS) {
-            return $this->isMatchingPath($url) && $this->isMatchingGetParams($getParamArray);
-        }
-
-        return false;
+        return match($this->getRuleType()) {
+            self::TYPE_REGEX => $this->isMatchingPath($url),
+            self::TYPE_GET_PARAMS => $this->isMatchingGetParams($getParamArray),
+            self::TYPE_REGEX_GET_PARAMS => $this->isMatchingPath($url) && $this->isMatchingGetParams($getParamArray),
+            self::TYPE_TEXT => $this->isMatchingText($url),
+            default => false
+        };
     }
 
     public function deleteAllRelatedParam(): void
