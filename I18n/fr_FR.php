@@ -4,6 +4,7 @@ return array(
     'At least one GET parameter is required.' => 'Au moins un paramètre GET est requis.',
     'Get Params' => 'Paramètres GET',
     'Global URL Rewriting' => 'Ré-écritures URL globales',
+    'Manage 404 Errors Url' => 'Gestion des Urls en erreurs 404',
     'Param condition is empty.' => 'Une des conditions d\'un paramètre GET est vide.',
     'Param name is empty.' => 'Le nom d\'un paramètre GET est vide.',
     'Redirect url cannot be empty.' => 'L URL redirigée ne peut pas être vide.',
