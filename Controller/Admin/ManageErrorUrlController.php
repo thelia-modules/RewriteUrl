@@ -9,6 +9,7 @@ use RewriteUrl\Model\RewriteurlErrorUrlQuery;
 use RewriteUrl\Model\RewriteurlRule;
 use RewriteUrl\Model\RewriteurlRuleQuery;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Annotation\Route;
 use Thelia\Controller\Admin\BaseAdminController;
 use Thelia\Core\HttpFoundation\JsonResponse;
@@ -23,6 +24,13 @@ class ManageErrorUrlController extends BaseAdminController
     public function manageErrorUrl(): Response|RedirectResponse
     {
         return $this->render('manage-errors-url');
+    }
+    
+    #[Route('/get-rule', name: 'get_value', methods: ['GET'])]
+    public function getRewriteUrlRuleValue(RequestStack $requestStack): JsonResponse
+    {
+        $ruleId = $requestStack->getCurrentRequest()->query->get('rule_id');
+        return new JsonResponse(RewriteurlRuleQuery::create()->findOneById($ruleId)?->getRedirectUrl());
     }
 
     #[Route('/update/{id}', name: 'update', methods: ['POST'])]

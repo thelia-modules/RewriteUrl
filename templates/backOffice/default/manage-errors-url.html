@@ -41,6 +41,7 @@
                                     path='/admin/module/RewriteUrl/manageErrorUrl'
                                     label="{intl l='User Agent' d="rewriteurl.bo.default"}"
                                     }
+                                </th>
                                 <th class="text-center">
                                     {admin_sortable_header
                                     current_order=$order
@@ -49,6 +50,7 @@
                                     path='/admin/module/RewriteUrl/manageErrorUrl'
                                     label="{intl l='Hit Count' d="rewriteurl.bo.default"}"
                                     }
+                                </th>
                                 <th class="text-center">
                                     {admin_sortable_header
                                     current_order=$order
@@ -57,6 +59,7 @@
                                     path='/admin/module/RewriteUrl/manageErrorUrl'
                                     label="{intl l='Lastest Hit' d="rewriteurl.bo.default"}"
                                     }
+                                </th>
                             </tr>
                             </thead>
                             <tbody>
@@ -66,48 +69,11 @@
                                     <td>{$USER_AGENT}</td>
                                     <td class="text-center">{$COUNT}</td>
                                     <td class="text-center">{$UPDATED_AT|date_format:"%d/%m/%y"}</td>
-                                </tr>
-
-                                <tr data-id="{$ID}">
-                                    {form name="rewriteurl_form_update_rewrite_url_form"}
-                                        <form method="post"
-                                              action="{url path="/admin/module/RewriteUrl/manageErrorUrl/update/{$ID}"}" {form_enctype form=$form} >
-                                            {form_hidden_fields form=$form}
-
-                                            {render_form_field field="success_url" value={url path='/admin/module/RewriteUrl/manageErrorUrl'}}
-                                            {render_form_field field="error_url" value={url path='/admin/module/RewriteUrl/manageErrorUrl'}}
-
-                                            <td colspan="3" class="form-group">
-                                                {if $form_error}
-                                                    <div class="row">
-                                                        <div class="col-md-12">
-                                                            <div class="alert alert-danger">{$form_error_message}</div>
-                                                        </div>
-                                                    </div>
-                                                {/if}
-
-                                                {ifloop rel="rewriteurl_rule_loop"}
-                                                {loop type="generic" name="rewriteurl_rule_loop" table_name="rewriteurl_rule" filters="id:$REWRITEURL_RULE_ID" limit=1}
-                                                {form_field form=$form field="rewritten_url"}
-                                                    <input class="form-control" type="text" name="{$name}" value="{$REDIRECT_URL}" placeholder="/path/mypage.html" />
-                                                {/form_field}
-                                                {/loop}
-                                                {/ifloop}
-                                                {elseloop rel="rewriteurl_rule_loop"}
-                                                {form_field form=$form field="rewritten_url"}
-                                                    <input class="form-control" type="text" name="{$name}" value="" placeholder="/path/mypage.html" />
-                                                {/form_field}
-                                                {/elseloop}
-                                            </td>
-
-                                            <td class="btn-group">
-                                                <button type="submit" title="{intl l="Update the rewritten url" d='rewriteurl.bo.default'}" class="btn btn-success"><span
-                                                            class="glyphicon glyphicon-check"></span></button>
-                                                <a href="#" title="{intl l="Delete this line (it's not deleting the rewritten url !)" d='rewriteurl.bo.default'}" class="btn btn-danger" data-id="{$ID}"><span
-                                                            class="glyphicon glyphicon-remove"></span></a>
-                                            </td>
-                                        </form>
-                                    {/form}
+                                    <td class="btn-group">
+                                        <button class="rewrite_url_modal btn btn-primary" data-toggle="modal" data-target="#ModalRewriteUrl" data-id="{$ID}" data-rule-id="{$REWRITEURL_RULE_ID}"><span class="glyphicon glyphicon-pencil"></span></button>
+                                        <a href="#" title="{intl l="Delete this line (it's not deleting the rewritten url !)" d='rewriteurl.bo.default'}" class="btn btn-danger" data-id="{$ID}">
+                                            <span class="glyphicon glyphicon-remove"></span></a>
+                                    </td>
                                 </tr>
                             {/loop}
                             </tbody>
@@ -117,6 +83,88 @@
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="ModalRewriteUrl" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h3>{intl l="Edit Rewrite Url"}</h3>
+                </div>
+                {form name="rewriteurl_form_update_rewrite_url_form"}
+                    <form id="RewriteUrlForm" action="{url path='/admin/module/RewriteUrl/manageErrorUrl/update/%id'}" method="post" {form_enctype form=$form} >
+                        <div class="modal-body">
+                            {form_hidden_fields form=$form}
+
+                            {render_form_field field="success_url" value={url path='/admin/module/RewriteUrl/manageErrorUrl'}}
+                            {render_form_field field="error_url" value={url path='/admin/module/RewriteUrl/manageErrorUrl'}}
+
+                            <div class="form-group">
+                                {if $form_error}
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="alert alert-danger">{$form_error_message}</div>
+                                        </div>
+                                    </div>
+                                {/if}
+
+                                {form_field form=$form field="rewritten_url"}
+                                    <input class="form-control rewrite_url" type="text" name="{$name}" value="{$REDIRECT_URL}" placeholder="/path/mypage.html" />
+                                {/form_field}
+                            </div>
+
+                            <div class="modal-footer">
+                                <div class="btn-group">
+                                    <button type="submit" class="btn btn-success">{intl l="Update the rewritten url" d='rewriteurl.bo.default'}</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                {/form}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const baseUrlUpdate = "{url path='/admin/module/RewriteUrl/manageErrorUrl/update/%id'}";
+        const baseUrlGetRule = "{url path='/admin/module/RewriteUrl/manageErrorUrl/get-rule?rule_id=%rule_id'}";
+
+        async function getRewriteUrl(rule_id) {
+            let getRuleUrl = baseUrlGetRule.replace('%rule_id', rule_id);
+
+            const response = await fetch(getRuleUrl, {
+                method: "GET",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            return await response.json()
+        }
+
+        async function openModal() {
+            let dataId = this.getAttribute('data-id');
+            let dataRuleId = this.getAttribute('data-rule-id');
+
+            let form = document.getElementById('RewriteUrlForm');
+            let updatedUrl = baseUrlUpdate.replace('%id', dataId);
+            form.setAttribute('action', updatedUrl);
+
+            let inputField = document.querySelector('.rewrite_url');
+            inputField.setAttribute('value', "")
+
+            if ("" !== dataRuleId) {
+                inputField.setAttribute('value', await getRewriteUrl(dataRuleId))
+            }
+        }
+
+        btnOpenModal = document.getElementsByClassName('rewrite_url_modal')
+
+        for (let i = 0; i < btnOpenModal.length; i++) {
+            btnOpenModal[i].onclick = openModal;
+        }
+    </script>
 {/block}
 
 {block name="javascript-initialization"}
