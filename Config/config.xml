@@ -8,6 +8,7 @@
         <loop name="rewrite_url" class="RewriteUrl\Loop\RewriteUrlLoop" />
         <loop name="list-notrewritenurls" class="RewriteUrl\Loop\NotRewritenUrlCategoryLoop"/>
         <loop name="rewrite_url_rule" class="RewriteUrl\Loop\RewriteUrlRuleLoop"/>
+        <loop name="rewrite_url_error_url" class="RewriteUrl\Loop\RewriteUrlErrorUrlLoop"/>
     </loops>
 
     <forms>
