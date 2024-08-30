@@ -8,19 +8,49 @@
 
 {block name="main-content"}
     {$order = $smarty.get.order|default:"updated_at:desc"}
+    {$url_source = $smarty.get.url_source|default:null}
+    {$user_agent = $smarty.get.user_agent|default:null}
     <div class="row">
         <div class="col-md-12">
             <div class="general-block-decorator">
                 <div class="row">
                     <div class="col-md-12">
-                        <div class="title col-md-6">
+                        <div class="title">
                             {intl l="Manage 404 Error URLs" d='rewriteurl.bo.default'}
                         </div>
 
-                        <div class="text-right">
-                            <a href="{url path="/admin/module/RewriteUrl/manageErrorUrl/delete"}" class="btn btn-danger">{intl l="Delete All Errors Urls" d='rewriteurl.bo.default'}</span></a>
+                        <hr>
+                        <br>
+
+                        <div class="title">
+                            {intl l="Search by Field" d='rewriteurl.bo.default'}
                         </div>
 
+                        <div>
+                            {form name="rewriteurl_form_research_form"}
+                                <form method="post" action="{url path='/admin/module/RewriteUrl/manageErrorUrl/search'}" {form_enctype form=$form} >
+                                    {form_hidden_fields form=$form}
+
+                                    <div class="col-md-3">
+                                        {render_form_field field='url_source'}
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        {render_form_field field='user_agent'}
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <button type="submit" class="btn btn-success" >{intl l="Search" d="rewriteurl.bo.default"}</button>
+                                    </div>
+
+                                    <div class="text-right">
+                                        <a href="{url path="/admin/module/RewriteUrl/manageErrorUrl/delete"}" class="btn btn-danger">{intl l="Delete All Errors Urls" d='rewriteurl.bo.default'}</span></a>
+                                    </div>
+                                </form>
+                            {/form}
+                        </div>
+
+                        <hr>
                         <br>
 
                         <table class="table table-striped">
@@ -63,14 +93,14 @@
                             </tr>
                             </thead>
                             <tbody>
-                            {loop type="generic" name="rewriteurl_error_url_loop" table_name="rewriteurl_error_url" orders=$order}
+                            {loop type="rewrite_url_error_url" name="rewriteurl_error_url_loop" orders=$order user_agent=$user_agent url_source=$url_source}
                                 <tr data-id="{$ID}">
                                     <td><a href="{url path="$URL_SOURCE"}" target="_blank">{$URL_SOURCE}</a></td>
                                     <td>{$USER_AGENT}</td>
                                     <td class="text-center">{$COUNT}</td>
                                     <td class="text-center">{$UPDATED_AT|date_format:"%d/%m/%y"}</td>
                                     <td class="btn-group">
-                                        <button class="rewrite_url_modal btn btn-primary" data-toggle="modal" data-target="#ModalRewriteUrl" data-id="{$ID}" data-rule-id="{$REWRITEURL_RULE_ID}"><span class="glyphicon glyphicon-pencil"></span></button>
+                                        <button class="rewrite_url_modal btn btn-primary" data-toggle="modal" data-target="#ModalRewriteUrl" data-id="{$ID}" data-rule-id="{$REWRITEURL_RULE_ID}" title="{$REDIRECT_URL}"><span class="glyphicon glyphicon-pencil"></span></button>
                                         <a href="#" title="{intl l="Delete this line (it's not deleting the rewritten url !)" d='rewriteurl.bo.default'}" class="btn btn-danger" data-id="{$ID}">
                                             <span class="glyphicon glyphicon-remove"></span></a>
                                     </td>
@@ -109,7 +139,7 @@
                                 {/if}
 
                                 {form_field form=$form field="rewritten_url"}
-                                    <input class="form-control rewrite_url" type="text" name="{$name}" value="{$REDIRECT_URL}" placeholder="/path/mypage.html" />
+                                    <input class="form-control rewrite_url" type="text" name="{$name}" value="" placeholder="/path/mypage.html" />
                                 {/form_field}
                             </div>
 
