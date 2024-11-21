@@ -46,7 +46,7 @@
                             <form action="{url path="/admin/module/RewriteUrl/manageErrorUrl/search"}">
                                 <div class="form-group input-group">
                                     <input type="hidden" name="success_url" class="form-control" value="{$smarty.server.REQUEST_URI}">
-                                    <input type="text" name="search_term" class="form-control" placeholder="{intl l="Search" d='rewriteurl.bo.default'}" value="{$search}">
+                                    <input type="text" name="search_term" class="form-control" placeholder="{intl l="Search in url or user agent" d='rewriteurl.bo.default'}" value="{$search}">
                                     <span class="input-group-btn">
                                         <button class="form-control btn btn-default">
                                             <span class="fas fa-search"></span>
@@ -185,7 +185,7 @@
     file = "includes/generic-warning-dialog.html"
 
     dialog_id    = "referer_list_dialog"
-    dialog_title = {intl d='rewriteurl.bo.default' l="Sources"}
+    dialog_title = {intl d='rewriteurl.bo.default' l="Sources (Referer)"}
     dialog_body  = {$smarty.capture.referer_list_dialog nofilter}
 
     dialog_ok_label     = {intl l="Exit"}
