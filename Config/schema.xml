@@ -47,5 +47,15 @@
         </foreign-key>
     </table>
 
+    <table name="rewriteurl_error_url_referer" namespace="RewriteUrl\Model">
+        <column name="id" type="INTEGER" primaryKey="true" required="true" autoIncrement="true" />
+        <column name="rewriteurl_error_url_id" type="INTEGER" required="true" />
+        <column name="referer" required="true" type="VARCHAR" size="255"/>
+
+        <foreign-key foreignTable="rewriteurl_error_url" name="rewriteurl_error_url_referer_FK_id" onDelete="CASCADE">
+            <reference foreign="id" local="rewriteurl_error_url_id" />
+        </foreign-key>
+    </table>
+
     <external-schema filename="local/config/schema.xml" referenceOnly="true" />
 </database>
