@@ -11,6 +11,8 @@ return array(
     'Regex' => 'Expression régulière',
     'Regex and Get Params' => 'Expr. régulière + Param. GET',
     'Regex value cannot be empty.' => 'La valeur de l\'expression régulière ne peut pas être vide.',
+    'Text' => 'Texte',
+    'Text value cannot be empty.' => 'Le champ texte ne peux pas être vide',
     'This url is already used here %url.' => 'L URL est déjà utilisée ici : %url',
     'Unable to change the configuration variable.' => 'Impossible de changer la variable de configuration.',
     'Unable to find rule to change position.' => 'Impossible de trouver la règle pour le changement de position.',

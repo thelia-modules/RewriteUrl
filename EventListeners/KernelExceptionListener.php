@@ -5,6 +5,8 @@ namespace RewriteUrl\EventListeners;
 use Propel\Runtime\Exception\PropelException;
 use RewriteUrl\Model\RewriteurlErrorUrl;
 use RewriteUrl\Model\RewriteurlErrorUrlQuery;
+use RewriteUrl\Model\RewriteurlErrorUrlRefererQuery;
+use RewriteUrl\Model\RewriteurlErrorUrlReferrerQuery;
 use RewriteUrl\Model\RewriteurlRule;
 use RewriteUrl\Model\RewriteurlRuleQuery;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -66,6 +68,15 @@ class KernelExceptionListener implements EventSubscriberInterface
                     ->setCount($errorUrl->getCount() + 1)
                     ->save()
                 ;
+
+                if (null !== $request->server->get('HTTP_REFERER')){
+                    $errorUrlReferer = RewriteurlErrorUrlRefererQuery::create()
+                        ->filterByRewriteurlErrorUrlId($errorUrl->getId())
+                        ->filterByReferer($request->server->get('HTTP_REFERER'))
+                        ->findOneOrCreate();
+
+                    $errorUrlReferer->save();
+                }
             }
             // End Errors Url
 

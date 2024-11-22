@@ -6,18 +6,54 @@
 
 {block name="page-title"}{intl l='List of 404 Error URLs' d="rewriteurl.bo.default"}{/block}
 
+{block name="after-admin-css"}
+    <style>
+        .redirection-tooltip-button{
+            display: inline-block
+        }
+
+        .redirection-tooltip-button .redirection-tooltip {
+            border: lightgrey 1px solid;
+            background-color: white;
+            padding: 5px 15px;
+            text-align: center;
+            visibility: hidden;
+            position: absolute;
+            z-index: 1;
+            margin-left: -98px;
+            margin-top: 32px;
+        }
+
+        .redirection-tooltip-button:hover .redirection-tooltip {
+            visibility: visible;
+        }
+    </style>
+{/block}
+
 {block name="main-content"}
-    {$order = $smarty.get.order|default:"updated_at:desc"}
+    {$order = $smarty.get.order|default:"updated_at:asc"}
+    {$search = $smarty.get.search|default:null}
     <div class="row">
         <div class="col-md-12">
             <div class="general-block-decorator">
                 <div class="row">
                     <div class="col-md-12">
-                        <div class="title col-md-6">
+                        <div class="title col-md-9">
                             {intl l="Manage 404 Error URLs" d='rewriteurl.bo.default'}
                         </div>
 
                         <div class="text-right">
+                            <form action="{url path="/admin/module/RewriteUrl/manageErrorUrl/search"}">
+                                <div class="form-group input-group">
+                                    <input type="hidden" name="success_url" class="form-control" value="{$smarty.server.REQUEST_URI}">
+                                    <input type="text" name="search_term" class="form-control" placeholder="{intl l="Search in url or user agent" d='rewriteurl.bo.default'}" value="{$search}">
+                                    <span class="input-group-btn">
+                                        <button class="form-control btn btn-default">
+                                            <span class="fas fa-search"></span>
+                                        </button>
+                                    </span>
+                                </div>
+                            </form>
                             <a href="{url path="/admin/module/RewriteUrl/manageErrorUrl/delete"}" class="btn btn-danger">{intl l="Delete All Errors Urls" d='rewriteurl.bo.default'}</span></a>
                         </div>
 
@@ -30,7 +66,7 @@
                                     current_order=$order
                                     order='url_source:asc'
                                     reverse_order='url_source:desc'
-                                    path='/admin/module/RewriteUrl/manageErrorUrl'
+                                    path=$smarty.server.REQUEST_URI
                                     label="{intl l='URL Source' d="rewriteurl.bo.default"}"
                                     }
                                 </th>
@@ -38,76 +74,72 @@
                                     current_order=$order
                                     order='user_agent:asc'
                                     reverse_order='user_agent:desc'
-                                    path='/admin/module/RewriteUrl/manageErrorUrl'
+                                    path=$smarty.server.REQUEST_URI
                                     label="{intl l='User Agent' d="rewriteurl.bo.default"}"
                                     }
+                                </th>
                                 <th class="text-center">
                                     {admin_sortable_header
                                     current_order=$order
                                     order='count:asc'
                                     reverse_order='count:desc'
-                                    path='/admin/module/RewriteUrl/manageErrorUrl'
+                                    path=$smarty.server.REQUEST_URI
                                     label="{intl l='Hit Count' d="rewriteurl.bo.default"}"
                                     }
+                                </th>
                                 <th class="text-center">
                                     {admin_sortable_header
                                     current_order=$order
                                     order='updated_at:asc'
                                     reverse_order='updated_at:desc'
-                                    path='/admin/module/RewriteUrl/manageErrorUrl'
+                                    path=$smarty.server.REQUEST_URI
                                     label="{intl l='Lastest Hit' d="rewriteurl.bo.default"}"
                                     }
+                                </th>
+                                <th class="actions">{intl l="Actions" d="rewriteurl.bo.default"}</th>
                             </tr>
                             </thead>
                             <tbody>
-                            {loop type="generic" name="rewriteurl_error_url_loop" table_name="rewriteurl_error_url" orders=$order}
+                            {loop type="rewrite_url_error_url_loop" name="rewriteurl_error_url_loop" table_name="rewriteurl_error_url" orders=$order search=$search}
+
+                                {$redirect= ""}
+
+                                {loop type="generic" name="rewriteurl_rule_loop" table_name="rewriteurl_rule" filters="id:$REWRITEURL_RULE_ID" limit=1}
+                                    {$redirect = $REDIRECT_URL}
+                                {/loop}
+
                                 <tr data-id="{$ID}">
                                     <td><a href="{url path="$URL_SOURCE"}" target="_blank">{$URL_SOURCE}</a></td>
                                     <td>{$USER_AGENT}</td>
                                     <td class="text-center">{$COUNT}</td>
                                     <td class="text-center">{$UPDATED_AT|date_format:"%d/%m/%y"}</td>
-                                </tr>
+                                    <td class="text-right">
+                                        <div class="redirection-tooltip-button">
+                                            <a
+                                                    class="btn btn-primary redirection-button"
+                                                    title="{intl l='Redirection' d="rewriteurl.bo.default"}"
+                                                    href="#edit_error_redirection_dialog"
+                                                    data-toggle="modal"
+                                                    data-id="{$ID}"
+                                                    data-redirect="{$redirect}"
+                                            >
+                                                {intl l='Redirection' d="rewriteurl.bo.default"}
+                                            </a>
+                                            {if $redirect}
+                                                <span class="redirection-tooltip">{$redirect}</span>
+                                            {/if}
+                                        </div>
 
-                                <tr data-id="{$ID}">
-                                    {form name="rewriteurl_form_update_rewrite_url_form"}
-                                        <form method="post"
-                                              action="{url path="/admin/module/RewriteUrl/manageErrorUrl/update/{$ID}"}" {form_enctype form=$form} >
-                                            {form_hidden_fields form=$form}
-
-                                            {render_form_field field="success_url" value={url path='/admin/module/RewriteUrl/manageErrorUrl'}}
-                                            {render_form_field field="error_url" value={url path='/admin/module/RewriteUrl/manageErrorUrl'}}
-
-                                            <td colspan="3" class="form-group">
-                                                {if $form_error}
-                                                    <div class="row">
-                                                        <div class="col-md-12">
-                                                            <div class="alert alert-danger">{$form_error_message}</div>
-                                                        </div>
-                                                    </div>
-                                                {/if}
-
-                                                {ifloop rel="rewriteurl_rule_loop"}
-                                                {loop type="generic" name="rewriteurl_rule_loop" table_name="rewriteurl_rule" filters="id:$REWRITEURL_RULE_ID" limit=1}
-                                                {form_field form=$form field="rewritten_url"}
-                                                    <input class="form-control" type="text" name="{$name}" value="{$REDIRECT_URL}" placeholder="/path/mypage.html" />
-                                                {/form_field}
-                                                {/loop}
-                                                {/ifloop}
-                                                {elseloop rel="rewriteurl_rule_loop"}
-                                                {form_field form=$form field="rewritten_url"}
-                                                    <input class="form-control" type="text" name="{$name}" value="" placeholder="/path/mypage.html" />
-                                                {/form_field}
-                                                {/elseloop}
-                                            </td>
-
-                                            <td class="btn-group">
-                                                <button type="submit" title="{intl l="Update the rewritten url" d='rewriteurl.bo.default'}" class="btn btn-success"><span
-                                                            class="glyphicon glyphicon-check"></span></button>
-                                                <a href="#" title="{intl l="Delete this line (it's not deleting the rewritten url !)" d='rewriteurl.bo.default'}" class="btn btn-danger" data-id="{$ID}"><span
-                                                            class="glyphicon glyphicon-remove"></span></a>
-                                            </td>
-                                        </form>
-                                    {/form}
+                                        <a
+                                                class="btn btn-info referer-list-button"
+                                                title="{intl l='Sources' d="rewriteurl.bo.default"}"
+                                                data-toggle="modal"
+                                                href="#referer_list_dialog"
+                                                data-id="{$ID}"
+                                        >
+                                            {intl l='Sources' d="rewriteurl.bo.default"}
+                                        </a>
+                                    </td>
                                 </tr>
                             {/loop}
                             </tbody>
@@ -117,6 +149,49 @@
             </div>
         </div>
     </div>
+
+    {form name="rewriteurl_form_update_rewrite_url_form"}
+    {capture name="edit_error_redirection_dialog"}
+        {form_hidden_fields}
+
+        {render_form_field field="success_url" value={url path='/admin/module/RewriteUrl/manageErrorUrl'}}
+        {render_form_field field="error_url" value={url path='/admin/module/RewriteUrl/manageErrorUrl'}}
+        {form_field field="rewritten_url"}
+        <input class="form-control" type="text" name="{$name}" id="error_redirect_field" value="" placeholder="/path/mypage.html" />
+        {/form_field}
+    {/capture}
+    {/form}
+
+    {include
+    file = "includes/generic-create-dialog.html"
+
+    dialog_id    = "edit_error_redirection_dialog"
+    dialog_title = {intl d='rewriteurl.bo.default' l="Edit error redirection"}
+    dialog_body  = {$smarty.capture.edit_error_redirection_dialog nofilter}
+
+    form_action= {url path="/admin/module/RewriteUrl/manageErrorUrl/update/$ID"}
+
+    dialog_ok_label     = {intl l="Save"}
+    dialog_cancel_label = {intl l="Cancel"}
+    form_enctype = null
+    form_content = null
+    }
+
+    {capture name="referer_list_dialog"}
+        <div id="referer_list"></div>
+    {/capture}
+
+    {include
+    file = "includes/generic-warning-dialog.html"
+
+    dialog_id    = "referer_list_dialog"
+    dialog_title = {intl d='rewriteurl.bo.default' l="Sources (Referer)"}
+    dialog_body  = {$smarty.capture.referer_list_dialog nofilter}
+
+    dialog_ok_label     = {intl l="Exit"}
+    }
+
+
 {/block}
 
 {block name="javascript-initialization"}
@@ -156,7 +231,56 @@
                         });
                 });
             });
-        });
 
+            const redirectionButtons = document.querySelectorAll('.redirection-button');
+            const redirectModal = document.querySelector('#edit_error_redirection_dialog');
+            const redirectField = document.querySelector('#error_redirect_field');
+            const baseAction = "{url path="/admin/module/RewriteUrl/manageErrorUrl/update/"}";
+
+            redirectionButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    redirectModal.querySelector(":scope form").action = baseAction + this.dataset.id
+                    redirectField.value = this.dataset.redirect;
+                })
+
+            })
+
+            const refererListButton = document.querySelectorAll('.referer-list-button');
+            const refererList = document.querySelector('#referer_list');
+
+
+            refererListButton.forEach(button => {
+                button.addEventListener('click', async function () {
+                    refererList.innerHTML = '';
+
+                    await fetch('/admin/module/RewriteUrl/manageErrorUrl/referer/'+this.dataset.id, {
+                        method: 'GET'
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Erreur dans la réponse réseau');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.referer.length !== 0) {
+                            data.referer.forEach(function (referer) {
+                                let li = document.createElement("li");
+                                li.appendChild(document.createTextNode(referer));
+                                refererList.appendChild(li);
+                            })
+                        } else {
+                            console.log(refererList)
+                            let li = document.createElement("li");
+                            li.appendChild(document.createTextNode("Il n'y a pas de données pour cette url"));
+                            refererList.appendChild(li);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Erreur:', error);
+                    });
+                })
+            })
+        });
     </script>
 {/block}
