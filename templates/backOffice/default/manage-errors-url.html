@@ -152,11 +152,11 @@
 
     {form name="rewriteurl_form_update_rewrite_url_form"}
     {capture name="edit_error_redirection_dialog"}
-        {form_hidden_fields form=$form}
+        {form_hidden_fields}
 
         {render_form_field field="success_url" value={url path='/admin/module/RewriteUrl/manageErrorUrl'}}
         {render_form_field field="error_url" value={url path='/admin/module/RewriteUrl/manageErrorUrl'}}
-        {form_field form=$form field="rewritten_url"}
+        {form_field field="rewritten_url"}
         <input class="form-control" type="text" name="{$name}" id="error_redirect_field" value="" placeholder="/path/mypage.html" />
         {/form_field}
     {/capture}

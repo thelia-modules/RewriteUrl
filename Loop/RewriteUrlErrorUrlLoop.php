@@ -1,10 +1,14 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: nicolasbarbey
- * Date: 20/07/2020
- * Time: 11:49
- */
+/*************************************************************************************/
+/*      This file is part of the RewriteUrl module for Thelia.                       */
+/*                                                                                   */
+/*      Copyright (c) OpenStudio                                                     */
+/*      email : dev@thelia.net                                                       */
+/*      web : http://www.thelia.net                                                  */
+/*                                                                                   */
+/*      For the full copyright and license information, please view the LICENSE.txt  */
+/*      file that was distributed with this source code.                             */
+/*************************************************************************************/
 
 namespace RewriteUrl\Loop;
 

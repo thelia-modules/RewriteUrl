@@ -93,8 +93,8 @@ CREATE TABLE `rewriteurl_error_url_referer`
     `rewriteurl_error_url_id` INTEGER NOT NULL,
     `referer` VARCHAR(255) NOT NULL,
     PRIMARY KEY (`id`),
-    INDEX `fi_riteurl_error_url_referer_FK_id` (`rewriteurl_error_url_id`),
-    CONSTRAINT `rewriteurl_error_url_referer_FK_id`
+    INDEX `rewriteurl_error_url_referer_fi_e0277e` (`rewriteurl_error_url_id`),
+    CONSTRAINT `rewriteurl_error_url_referer_fk_e0277e`
         FOREIGN KEY (`rewriteurl_error_url_id`)
         REFERENCES `rewriteurl_error_url` (`id`)
         ON DELETE CASCADE
