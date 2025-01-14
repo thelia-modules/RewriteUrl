@@ -33,6 +33,7 @@
 {block name="main-content"}
     {$order = $smarty.get.order|default:"updated_at:asc"}
     {$search = $smarty.get.search|default:null}
+    {$page = $smarty.get.page|default:1}
     <div class="row">
         <div class="col-md-12">
             <div class="general-block-decorator">
@@ -100,7 +101,7 @@
                             </tr>
                             </thead>
                             <tbody>
-                            {loop type="rewrite_url_error_url_loop" name="rewriteurl_error_url_loop" table_name="rewriteurl_error_url" orders=$order search=$search}
+                            {loop type="rewrite_url_error_url_loop" name="rewriteurl_error_url_loop" table_name="rewriteurl_error_url" orders=$order search=$search page=$page limit=20}
 
                                 {$redirect= ""}
 
@@ -143,6 +144,19 @@
                                 </tr>
                             {/loop}
                             </tbody>
+                            <tfoot>
+                            <tr>
+                                <td colspan="100">
+                                    {include
+                                    file = "includes/pagination.html"
+                                    loop_ref       = "rewriteurl_error_url_loop"
+                                    max_page_count = 20
+                                    page_url       = {url path="/admin/module/RewriteUrl/manageErrorUrl" order=$order search=$search}
+                                    }
+
+                                </td>
+                            </tr>
+                            </tfoot>
                         </table>
                     </div>
                 </div>
