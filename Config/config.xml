@@ -16,15 +16,6 @@
         <form name="rewriteurl.setdefault.form" class="RewriteUrl\Form\SetDefaultForm"/>
     </forms>
 
-    <services>
-        <service id="rewriteurl.router.first" class="RewriteUrl\Service\RewritingRouterFirst">
-            <tag name="router.register" priority="300"/>
-        </service>
-        <service id="rewriteurl.router.last" class="RewriteUrl\Service\RewritingRouterLast">
-            <tag name="router.register" priority="-300"/>
-        </service>
-    </services>
-
     <hooks>
         <hook id="notrewritenurls.hook.back" class="RewriteUrl\Hook\ConfigurationHook" scope="request">
             <tag name="hook.event_listener" event="configuration.catalog-top" type="back" method="onConfigurationCatalogTop"/>

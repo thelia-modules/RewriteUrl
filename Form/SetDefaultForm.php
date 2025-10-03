@@ -23,10 +23,7 @@ use Thelia\Form\BaseForm;
  */
 class SetDefaultForm extends BaseForm
 {
-    /**
-     * @return string
-     */
-    public static function getName()
+    public static function getName(): string
     {
         return "rewriteurl_setdefault_form";
     }

@@ -22,7 +22,7 @@ use Thelia\Model\Map\RewritingUrlTableMap;
 use Thelia\Model\RewritingUrl;
 use Thelia\Model\RewritingUrlQuery;
 use Thelia\Module\BaseModule;
-use Thelia\Install\Database;
+use Thelia\Core\Install\Database;
 
 /**
  * Class RewriteUrl
@@ -45,7 +45,7 @@ class RewriteUrl extends BaseModule
     static protected $unknownSources;
 
 
-    public function preActivation(ConnectionInterface $con = null)
+    public function preActivation(?ConnectionInterface $con = null): bool
     {
         if (!$this->getConfigValue('is_initialized', false)) {
             $database = new Database($con);
@@ -106,7 +106,7 @@ class RewriteUrl extends BaseModule
     /**
      * @return array|null
      */
-    public static function getUnknownSources()
+    public static function getUnknownSources(): ?array
     {
         if (static::$unknownSources === null) {
             static::$unknownSources = [];

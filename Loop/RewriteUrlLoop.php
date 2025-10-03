@@ -13,6 +13,7 @@
 namespace RewriteUrl\Loop;
 
 use Propel\Runtime\ActiveQuery\Criteria;
+use Propel\Runtime\ActiveQuery\ModelCriteria;
 use RewriteUrl\Model\RewritingRedirectType;
 use RewriteUrl\Model\RewritingRedirectTypeQuery;
 use Thelia\Core\Template\Element\BaseLoop;
@@ -31,10 +32,7 @@ use Thelia\Model\Base\RewritingUrlQuery;
  */
 class RewriteUrlLoop extends BaseLoop implements PropelSearchLoopInterface
 {
-    /**
-     * @return ArgumentCollection
-     */
-    protected function getArgDefinitions()
+    protected function getArgDefinitions(): ArgumentCollection
     {
         return new ArgumentCollection(
             Argument::createIntTypeArgument('id'),
@@ -44,10 +42,7 @@ class RewriteUrlLoop extends BaseLoop implements PropelSearchLoopInterface
         );
     }
 
-    /**
-     * @return \Thelia\Model\RewritingUrlQuery
-     */
-    public function buildModelCriteria()
+    public function buildModelCriteria(): ModelCriteria
     {
         $search = RewritingUrlQuery::create();
 
@@ -69,11 +64,7 @@ class RewriteUrlLoop extends BaseLoop implements PropelSearchLoopInterface
         return $search;
     }
 
-    /**
-     * @param LoopResult $loopResult
-     * @return LoopResult
-     */
-    public function parseResults(LoopResult $loopResult)
+    public function parseResults(LoopResult $loopResult): LoopResult
     {
         $redirectTypeSearch = RewritingRedirectTypeQuery::create();
         foreach ($loopResult->getResultDataCollection() as $rewriteURl) {

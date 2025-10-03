@@ -23,10 +23,7 @@ use Thelia\Form\BaseForm;
  */
 class AddUrlForm extends BaseForm
 {
-    /**
-     * @return string
-     */
-    public static function getName()
+    public static function getName(): string
     {
         return "rewriteurl_add_form";
     }
@@ -38,50 +35,49 @@ class AddUrlForm extends BaseForm
                 'view',
                 TextType::class,
                 array(
-                    'constraints'   => array(new NotBlank()),
-                    'required'      => true
+                    'constraints' => array(new NotBlank()),
+                    'required' => true
                 )
             )
             ->add(
                 'view-id',
                 TextType::class,
                 array(
-                    'constraints'   => array(new NotBlank()),
-                    'required'      => true
+                    'constraints' => array(new NotBlank()),
+                    'required' => true
                 )
             )
             ->add(
                 'url',
                 TextType::class,
                 array(
-                    'constraints'  => array(new NotBlank()),
-                    'required'     => true
+                    'constraints' => array(new NotBlank()),
+                    'required' => true
                 )
             )
             ->add(
                 'default',
                 TextType::class,
                 array(
-                    'constraints'  => array(new NotBlank()),
-                    'required'     => true
+                    'constraints' => array(new NotBlank()),
+                    'required' => true
                 )
             )
             ->add(
                 'locale',
                 TextType::class,
                 array(
-                    'constraints'  => array(new NotBlank()),
-                    'required'     => true
+                    'constraints' => array(new NotBlank()),
+                    'required' => true
                 )
             )
             ->add(
                 'httpcode',
                 TextType::class,
                 array(
-                    'constraints'  => array(new NotBlank()),
-                    'required'     => true
+                    'constraints' => array(new NotBlank()),
+                    'required' => true
                 )
-            )
-        ;
+            );
     }
 }

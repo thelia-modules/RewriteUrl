@@ -24,10 +24,7 @@ use Thelia\Form\BaseForm;
  */
 class ReassignForm extends BaseForm
 {
-    /**
-     * @return string
-     */
-    public static function getName()
+    public static function getName(): string
     {
         return "rewriteurl_reassign_form";
     }

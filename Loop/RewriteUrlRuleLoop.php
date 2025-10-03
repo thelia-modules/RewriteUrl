@@ -26,10 +26,7 @@ use Thelia\Core\Template\Loop\Argument\ArgumentCollection;
 
 class RewriteUrlRuleLoop extends BaseLoop implements PropelSearchLoopInterface
 {
-    /**
-     * @return ArgumentCollection
-     */
-    protected function getArgDefinitions()
+    protected function getArgDefinitions(): ArgumentCollection
     {
         return new ArgumentCollection(
             Argument::createIntTypeArgument('id'),
@@ -40,10 +37,7 @@ class RewriteUrlRuleLoop extends BaseLoop implements PropelSearchLoopInterface
         );
     }
 
-    /**
-     * @return ModelCriteria|RewriteurlRuleQuery
-     */
-    public function buildModelCriteria()
+    public function buildModelCriteria(): ModelCriteria
     {
         $search = RewriteurlRuleQuery::create();
 
@@ -66,7 +60,7 @@ class RewriteUrlRuleLoop extends BaseLoop implements PropelSearchLoopInterface
         return $search->orderByPosition();
     }
 
-    public function parseResults(LoopResult $loopResult)
+    public function parseResults(LoopResult $loopResult): LoopResult
     {
         /** @var RewriteurlRule $rewriteUrlRule */
         foreach ($loopResult->getResultDataCollection() as $rewriteUrlRule){

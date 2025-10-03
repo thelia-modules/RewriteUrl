@@ -29,20 +29,14 @@ use Thelia\Core\Template\Loop\Generic;
 
 class RewriteUrlErrorUrlLoop extends Generic
 {
-    /**
-     * @return ArgumentCollection
-     */
-    protected function getArgDefinitions()
+    protected function getArgDefinitions(): ArgumentCollection
     {
         $argumentCollection = parent::getArgDefinitions();
         $argumentCollection->addArgument(Argument::createAnyTypeArgument('search'));
         return $argumentCollection;
     }
 
-    /**
-     * @return ModelCriteria|RewriteurlRuleQuery
-     */
-    public function buildModelCriteria()
+    public function buildModelCriteria(): ModelCriteria
     {
         /** @var RewriteurlErrorUrlQuery $query */
         $query = parent::buildModelCriteria();

@@ -13,9 +13,9 @@
 namespace RewriteUrl\Loop;
 
 use Propel\Runtime\ActiveQuery\Criteria;
+use Propel\Runtime\ActiveQuery\ModelCriteria;
 use Thelia\Core\Template\Element\BaseI18nLoop;
 use Thelia\Core\Template\Element\LoopResult;
-use Thelia\Core\Template\Element\LoopResultRow;
 use Thelia\Core\Template\Element\PropelSearchLoopInterface;
 use Thelia\Core\Template\Loop\Argument\Argument;
 use Thelia\Core\Template\Loop\Argument\ArgumentCollection;
@@ -45,7 +45,7 @@ class NotRewritenUrlCategoryLoop extends BaseI18nLoop implements PropelSearchLoo
 {
     protected static $cacheRewritingUrl = [];
 
-    protected function getArgDefinitions()
+    protected function getArgDefinitions(): ArgumentCollection
     {
         return new ArgumentCollection(
             Argument::createEnumListTypeArgument(
@@ -55,7 +55,7 @@ class NotRewritenUrlCategoryLoop extends BaseI18nLoop implements PropelSearchLoo
         );
     }
 
-    public function buildModelCriteria()
+    public function buildModelCriteria(): ModelCriteria
     {
         $view = $this->getView()[0];
 
@@ -87,7 +87,7 @@ class NotRewritenUrlCategoryLoop extends BaseI18nLoop implements PropelSearchLoo
         return $query;
     }
 
-    public function parseResults(LoopResult $loopResult)
+    public function parseResults(LoopResult $loopResult): LoopResult
     {
         /** @var Category|Product|Folder|Content|Brand $category */
         foreach ($loopResult->getResultDataCollection() as $category) {

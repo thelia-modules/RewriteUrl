@@ -40,7 +40,7 @@
                         </thead>
 
                         <tbody>
-                        {loop type="rewrite_url" name="rewriteUrl" view_id="{$ID}" view="{$viewName}" redirect="0"}
+                        {loop type="rewrite_url_loop" name="rewriteUrl" view_id="{$ID}" view="{$viewName}" redirect="0"}
                             <tr data-id="{$ID_URL}">
                                 <td>
                                     {$ID_URL}
@@ -81,7 +81,7 @@
                         </thead>
 
                         <tbody>
-                        {loop type="rewrite_url" name="rewriteUrl" view_id="{$ID}" view="{$viewName}" redirect="1"}
+                        {loop type="rewrite_url_loop" name="rewriteUrl" view_id="{$ID}" view="{$viewName}" redirect="1"}
                             <tr data-id="{$ID_URL}">
                                 <td>
                                     {$ID_URL}
@@ -204,7 +204,7 @@
             </div>
         </div>
 
-        {loop type="rewrite_url" name="rewriteUrl" view_id=$ID view=$viewName limit=1}
+        {loop type="rewrite_url_loop" name="rewriteUrl" view_id=$ID view=$viewName limit=1}
         <div class="col-md-12">
             <p class="title title-without-tabs">
                 {intl l='Redirect all urls' d="rewriteurl.bo.default"}
