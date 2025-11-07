@@ -64,7 +64,7 @@ class KernelExceptionListener implements EventSubscriberInterface
 
             if ((null !== $errorUrl) && null === RewriteurlRuleQuery::create()->findOneById($errorUrl->getRewriteurlRuleId())) {
                 $errorUrl
-                    ->setUserAgent($userAgent)
+                    ->setUserAgent($userAgent ?? 'N/A')
                     ->setCount($errorUrl->getCount() + 1)
                     ->save()
                 ;
