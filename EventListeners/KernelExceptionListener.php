@@ -6,13 +6,13 @@ use Propel\Runtime\Exception\PropelException;
 use RewriteUrl\Model\RewriteurlErrorUrl;
 use RewriteUrl\Model\RewriteurlErrorUrlQuery;
 use RewriteUrl\Model\RewriteurlErrorUrlRefererQuery;
-use RewriteUrl\Model\RewriteurlErrorUrlReferrerQuery;
+use RewriteUrl\Model\RewriteurlGoneUrlQuery;
 use RewriteUrl\Model\RewriteurlRule;
 use RewriteUrl\Model\RewriteurlRuleQuery;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
-use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
+use Symfony\Component\HttpKernel\Exception\GoneHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Thelia\Core\HttpKernel\Exception\RedirectException;
@@ -43,6 +43,12 @@ class KernelExceptionListener implements EventSubscriberInterface
 
             $request = $this->requestStack->getCurrentRequest();
             $pathInfo = $request instanceof TheliaRequest ? $request->getRealPathInfo() : $request->getPathInfo();
+
+            $gone = RewriteurlGoneUrlQuery::create()->findOneByUrlSource(ltrim($request->getRequestUri(), '/'));
+            if (null !== $gone) {
+                $event->setThrowable(new GoneHttpException());
+                return;
+            }
 
             // Errors Url
             $userAgent = $this->requestStack->getCurrentRequest()->headers->get('user_agent');

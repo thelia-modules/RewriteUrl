@@ -76,5 +76,13 @@ class ConfigurationHook extends BaseHook
                 'title' => $this->trans('Manage 404 Errors Url', [], RewriteUrl::MODULE_DOMAIN),
             ],
         );
+        $event->add(
+            [
+                'id' => 'tools_menu_rewriteurl_gone',
+                'class' => '',
+                'url' => URL::getInstance()?->absoluteUrl('/admin/module/RewriteUrl/manageGoneUrl'),
+                'title' => $this->trans('Manage Gone (410) URLs', [], RewriteUrl::MODULE_DOMAIN),
+            ],
+        );
     }
 }

@@ -57,5 +57,19 @@
         </foreign-key>
     </table>
 
+    <table name="rewriteurl_gone_url" namespace="RewriteUrl\Model">
+        <column name="id" type="INTEGER" primaryKey="true" required="true" autoIncrement="true" />
+        <column name="url_source" type="VARCHAR" size="255" required="true" />
+        <behavior name="timestampable" />
+
+        <index name="rewriteurl_gone_url_url_source_idx">
+            <index-column name="url_source" />
+        </index>
+
+        <unique name="rewriteurl_gone_url_url_source_unq">
+            <unique-column name="url_source" />
+        </unique>
+    </table>
+
     <external-schema filename="local/config/schema.xml" referenceOnly="true" />
 </database>
