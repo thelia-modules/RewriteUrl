@@ -2,9 +2,13 @@
 
 return array(
     'At least one GET parameter is required.' => 'Au moins un paramètre GET est requis.',
+    'Column URL is empty.' => 'La colonne URL est vide.',
+    'Error while processing "%url%": %msg%' => 'Erreur lors du traitement de "%url%" : %msg%',
     'Get Params' => 'Paramètres GET',
     'Global URL Rewriting' => 'Ré-écritures URL globales',
+    'Ignored line for "%url%": neither Redirect 301 nor Delete 410 is set.' => 'Ligne ignorée pour "%url%" : ni Redirection 301, ni Supp 410 renseignée.',
     'Manage 404 Errors Url' => 'Gestion des Urls en erreurs 404',
+    'Manage Gone (410) URLs' => 'Gestion des URLs supprimées (410)',
     'Param condition is empty.' => 'Une des conditions d\'un paramètre GET est vide.',
     'Param name is empty.' => 'Le nom d\'un paramètre GET est vide.',
     'Redirect url cannot be empty.' => 'L URL redirigée ne peut pas être vide.',
