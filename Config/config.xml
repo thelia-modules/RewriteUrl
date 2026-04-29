@@ -50,6 +50,7 @@
                     <![CDATA[
                             <p>Importe des urls de redirections (301) et des URLs supprimées (410).</p>
                             <p>(colonnes : URL, REDIRECT, GONE)</p>
+                            <p>Désactivé le module UrlSanitizer avant de faire l'import</p>
                     ]]>
                 </description>
             </import_descriptive>
@@ -59,6 +60,7 @@
                     <![CDATA[
                             <p>Imports redirect URLs (301) and deleted URLs (410).</p>
                             <p>(columns: URL, REDIRECT, GONE)</p>
+                            <p>Disable module UrlSanitizer before importing datas</p>
                     ]]>
                 </description>
             </import_descriptive>
