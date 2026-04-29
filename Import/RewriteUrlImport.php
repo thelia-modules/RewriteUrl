@@ -3,13 +3,11 @@
 namespace RewriteUrl\Import;
 
 use Propel\Runtime\Exception\PropelException;
-use RewriteUrl\Model\RewriteurlGoneUrl;
-use RewriteUrl\Model\RewriteurlGoneUrlQuery;
 use RewriteUrl\RewriteUrl;
+use RewriteUrl\Service\ImportRewriteUrlService;
 use Thelia\Core\Translation\Translator;
 use Thelia\ImportExport\Import\AbstractImport;
-use Thelia\Model\RewritingUrlQuery;
-use Thelia\Model\RewritingUrl;
+use Thelia\Model\ModuleQuery;
 
 class RewriteUrlImport extends AbstractImport
 {
@@ -18,12 +16,25 @@ class RewriteUrlImport extends AbstractImport
     const COL_GONE        = 'GONE';
 
     protected $mandatoryColumns = [self::COL_URL, self::COL_REDIRECT, self::COL_GONE];
+
+    protected ImportRewriteUrlService $importRewriteUrlService;
+
+    public function __construct()
+    {
+        $this->importRewriteUrlService = new ImportRewriteUrlService();
+    }
+
     /**
      * @param array $data
      * @return string|null Error message or null on success
+     * @throws \Exception
      */
     public function importData(array $data): ?string
     {
+        if (ModuleQuery::create()->filterByCode("UrlSanitizer")->filterByActivate(1)->findOne()) {
+            throw new \Exception("UrlSanitizer module is activated. Please disable it before importing the file.");
+        }
+
         $url      = trim($data[self::COL_URL] ?? '');
         $redirect = trim($data[self::COL_REDIRECT] ?? '');
         $gone     = trim($data[self::COL_GONE] ?? '');
@@ -32,68 +43,25 @@ class RewriteUrlImport extends AbstractImport
             return Translator::getInstance()->trans('Column URL is empty.', [], RewriteUrl::MODULE_DOMAIN);
         }
 
-        $url = $this->formatAndDecodeUrl($url);
-        $redirect = $this->formatAndDecodeUrl($redirect);
+        $url = $this->importRewriteUrlService->formatAndDecodeUrl($url);
+        $redirect = $this->importRewriteUrlService->formatAndDecodeUrl($redirect);
 
         try {
             if (!empty($gone)) {
-                $existing = RewriteurlGoneUrlQuery::create()
-                    ->filterByUrlSource($url)
-                    ->findOne();
-
-                if (null === $existing) {
-                    $goneUrl = new RewriteurlGoneUrl();
-                    $goneUrl
-                        ->setUrlSource($url)
-                        ->save();
-                }
-
+                $this->importRewriteUrlService->importGoneUrl($gone);
                 ++$this->importedRows;
                 return null;
             }
 
             if (!empty($redirect)) {
-                $redirectingUrl = RewritingUrlQuery::create()
-                    ->filterByUrl($redirect)
-                    ->findOne();
-
-                if (null === $redirectingUrl) {
-                    $redirectingUrl = new RewritingUrl();
-                    $redirectingUrl
-                        ->setUrl($redirect)
-                        ->setView('obsolete-rewritten-url')
-                        ->setViewId(NULL)
-                        ->setViewLocale($this->getLang()->getLocale())
-                        ->setRedirected(NULL)
-                        ->save();
-                }
-
-                $rewritingUrl = RewritingUrlQuery::create()
-                    ->filterByUrl($url)
-                    ->findOne();
-
-                if (null === $rewritingUrl) {
-                    $rewritingUrl = new RewritingUrl();
-                    $rewritingUrl->setUrl($url);
-                }
-
-                $rewritingUrl
-                    ->setView($redirectingUrl->getView())
-                    ->setViewId($redirectingUrl->getViewId())
-                    ->setViewLocale($redirectingUrl->getViewLocale())
-                    ->setRedirected($redirectingUrl->getId());
-
-                    $rewritingUrl->save();
-
+                $this->importRewriteUrlService->importRewriteUrl($url, $redirect);
                 ++$this->importedRows;
                 return null;
             }
 
-            return Translator::getInstance()->trans(
-                'Ignored line for "%url%": neither Redirect 301 nor Delete 410 is set.',
-                ['%url%' => $url],
-                RewriteUrl::MODULE_DOMAIN
-            );
+            $this->importRewriteUrlService->importRewriteRuleUrl($url, '/');
+            ++$this->importedRows;
+            return null;
         } catch (PropelException $e) {
             return Translator::getInstance()->trans(
                 'Error while processing "%url%": %msg%',
@@ -101,14 +69,5 @@ class RewriteUrlImport extends AbstractImport
                 RewriteUrl::MODULE_DOMAIN
             );
         }
-    }
-
-    private function formatAndDecodeUrl(string $url): string
-    {
-        if (preg_match('#^https?://[^/]+(/.*)$#i', $url, $matches)) {
-            $url = $matches[1];
-        }
-
-        return urldecode(ltrim($url, '/'));
     }
 }
