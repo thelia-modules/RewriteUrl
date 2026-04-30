@@ -68,7 +68,7 @@ class ImportRewriteUrlService
             ->findOne();
 
         if (null === $redirectingUrl) {
-            $this->importRewriteRuleUrl($redirect, $url);
+            $this->importRewriteRuleUrl($url, $redirect);
             return;
         }
 
@@ -107,8 +107,7 @@ class ImportRewriteUrlService
 
     private function escapeRegexUrl(string $url): string
     {
-        $escaped = preg_replace('/([.+*?^${}()|[\]\\\\])/', '\\\\$1', $url);
-        return str_replace('/', '\\/', $escaped);
+        return preg_quote($url, '/');
     }
 
     /**
