@@ -46,6 +46,14 @@ class RewriteUrlImport extends AbstractImport
         $url = $this->importRewriteUrlService->formatAndDecodeUrl($url);
         $redirect = $this->importRewriteUrlService->formatAndDecodeUrl($redirect);
 
+        if (!$this->importRewriteUrlService->checkValidUrl($url)) {
+            return Translator::getInstance()->trans('Column URL is not a valid URL : "%url%".', ['%url%' => $url], RewriteUrl::MODULE_DOMAIN);
+        }
+
+        if (!empty($redirect) && !$this->importRewriteUrlService->checkValidUrl($redirect)) {
+            return Translator::getInstance()->trans('Column REDIRECT is not a valid URL: "%url%".', ['%url%' => $redirect], RewriteUrl::MODULE_DOMAIN);
+        }
+
         try {
             if (!empty($gone)) {
                 $this->importRewriteUrlService->importGoneUrl($gone);
