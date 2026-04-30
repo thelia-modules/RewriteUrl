@@ -61,6 +61,12 @@ class RewriteUrlImport extends AbstractImport
                 return null;
             }
 
+            if (!empty($redirect) && $this->importRewriteUrlService->hasQueryString($url)) {
+                $this->importRewriteUrlService->importRewriteRuleUrlWithParams($url, $redirect);
+                ++$this->importedRows;
+                return null;
+            }
+
             if (!empty($redirect)) {
                 $this->importRewriteUrlService->importRewriteUrl($url, $redirect);
                 ++$this->importedRows;

@@ -7,6 +7,8 @@ use RewriteUrl\Model\RewriteurlGoneUrl;
 use RewriteUrl\Model\RewriteurlGoneUrlQuery;
 use RewriteUrl\Model\RewriteurlRule;
 use RewriteUrl\Model\RewriteurlRuleQuery;
+use RewriteUrl\Model\RewriteurlRuleParam;
+use RewriteUrl\Model\RewriteurlRuleParamQuery;
 use Thelia\Model\RewritingUrl;
 use Thelia\Model\RewritingUrlQuery;
 
@@ -19,6 +21,11 @@ class ImportRewriteUrlService
         }
 
         return urldecode(ltrim($url, '/'));
+    }
+
+    public function hasQueryString(string $url): bool
+    {
+        return str_contains($url, '?');
     }
 
     public function checkValidUrl(string $url): bool
@@ -96,5 +103,44 @@ class ImportRewriteUrlService
             ->findOneOrCreate();
 
         $rewriteurlRule->save();
+    }
+
+    private function escapeRegexUrl(string $url): string
+    {
+        $escaped = preg_replace('/([.+*?^${}()|[\]\\\\])/', '\\\\$1', $url);
+        return str_replace('/', '\\/', $escaped);
+    }
+
+    /**
+     * @throws PropelException
+     */
+    public function importRewriteRuleUrlWithParams(string $url, string $redirect): void
+    {
+        $parsed = parse_url($url);
+        $path = ltrim($parsed['path'] ?? $url, '/');
+
+        $rewriteurlRule = RewriteurlRuleQuery::create()
+            ->filterByRuleType(RewriteurlRule::TYPE_REGEX_GET_PARAMS)
+            ->filterByValue($this->escapeRegexUrl($path))
+            ->filterByRedirectUrl($redirect)
+            ->findOneOrCreate();
+
+        $rewriteurlRule->save();
+
+        if (!empty($parsed['query'])) {
+            parse_str($parsed['query'], $queryParams);
+
+            foreach ($queryParams as $name => $value) {
+                $param = RewriteurlRuleParamQuery::create()
+                    ->filterByIdRule($rewriteurlRule->getId())
+                    ->filterByParamName($name)
+                    ->findOneOrCreate();
+
+                $param
+                    ->setParamCondition(RewriteurlRuleParam::PARAM_CONDITION_EQUALS)
+                    ->setParamValue($value)
+                    ->save();
+            }
+        }
     }
 }
