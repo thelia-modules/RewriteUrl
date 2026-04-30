@@ -102,6 +102,10 @@ class ImportRewriteUrlService
             ->filterByRedirectUrl($redirect)
             ->findOneOrCreate();
 
+        if ($rewriteurlRule->isNew()) {
+            $rewriteurlRule->setPosition($rewriteurlRule->getNextPosition());
+        }
+
         $rewriteurlRule->save();
     }
 
@@ -123,6 +127,10 @@ class ImportRewriteUrlService
             ->filterByValue($this->escapeRegexUrl($path))
             ->filterByRedirectUrl($redirect)
             ->findOneOrCreate();
+
+        if ($rewriteurlRule->isNew()) {
+            $rewriteurlRule->setPosition($rewriteurlRule->getNextPosition());
+        }
 
         $rewriteurlRule->save();
 
