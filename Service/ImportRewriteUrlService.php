@@ -21,6 +21,15 @@ class ImportRewriteUrlService
         return urldecode(ltrim($url, '/'));
     }
 
+    public function checkValidUrl(string $url): bool
+    {
+        if (preg_match('/[\s<>{}|\\\\^`]/', $url)) {
+            return false;
+        }
+
+        return $url !== '';
+    }
+
     /**
      * @throws PropelException
      */
