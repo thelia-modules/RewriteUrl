@@ -1,0 +1,116 @@
+{# RewriteUrl module configuration (config hook fragment) #}
+{% set d = 'rewriteurl.bo.default' %}
+<div class="modules-configure">
+    <div class="card mb-3">
+        <div class="card-body">
+            <h2 class="card-title h4">{{ 'Global URL Rewriting'|trans({}, d) }}</h2>
+            <div class="mb-3">
+                <label class="form-label">{{ 'Enable URL rewriting'|trans({}, d) }}</label>
+                <div class="form-check form-switch">
+                    <input type="checkbox" class="form-check-input js_switch_rewrite_url" role="switch"{% if isRewritingEnabled %} checked="checked"{% endif %}>
+                </div>
+                <span class="form-text">{{ "Set the config variable 'rewriting_enable'"|trans({}, d) }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h3 class="card-title h5 mb-0">{{ 'Rule management'|trans({}, d) }}</h3>
+            <a href="{{ path('admin_rewrite_url_manage_error_url_show') }}" class="btn btn-primary">{{ 'Manage 404 Error URLs'|trans({}, d) }}</a>
+        </div>
+        <div class="card-body">
+            <div class="js_error_rule_management alert alert-danger" style="display:none"></div>
+
+            <table class="table table-sm table-striped">
+                <thead>
+                    <tr>
+                        <th class="text-center"><span class="form-label">{{ 'Rule type'|trans({}, d) }}</span></th>
+                        <th class="text-center"><span class="form-label">{{ 'Condition'|trans({}, d) }} <a href="#" data-bs-toggle="tooltip" title="{{ "For the regex, your input is compare to URL without the domain name and without any GET params. Ex : for 'www.mysite.com/one/two?three=four', your regex will be compare to '/one/two'."|trans({}, d) }}"><i class="bi bi-question-circle"></i></a></span></th>
+                        <th class="text-center"><span class="form-label">{{ '404 only'|trans({}, d) }}</span></th>
+                        <th class="text-center"><span class="form-label">{{ 'Redirect to'|trans({}, d) }} <a href="#" data-bs-toggle="tooltip" title="{{ "Enter a URL with a leading '/' and no domain name. Ex : for 'www.mysite.com/one/two', enter '/one/two'."|trans({}, d) }}"><i class="bi bi-question-circle"></i></a></span></th>
+                        <th class="text-center"><span class="form-label">{{ 'Position'|trans({}, d) }}</span></th>
+                        <th class="text-center"><span class="form-label">{{ 'Actions'|trans({}, d) }}</span></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr data-idrule="new">
+                        <td class="text-center">
+                            <select class="js_rule_type form-select" data-idrule="new" required>
+                                <option value="regex">{{ 'Regex'|trans({}, d) }}</option>
+                                <option value="params">{{ 'GET params'|trans({}, d) }}</option>
+                                <option value="regex-params">{{ 'Regex and GET params'|trans({}, d) }}</option>
+                                <option value="text">{{ 'Text'|trans({}, d) }}</option>
+                            </select>
+                        </td>
+                        <td>
+                            <div class="js_regex_group input-group">
+                                <span class="input-group-text">/</span>
+                                <input class="js_regex form-control" type="text" placeholder="^[a-z0-9_-]{3,16}$"/>
+                                <span class="input-group-text">/</span>
+                            </div>
+                            <div class="js_text_group input-group">
+                                <span class="input-group-text">/</span>
+                                <input class="js_text form-control" type="text" placeholder=""/>
+                                <span class="input-group-text"></span>
+                            </div>
+                            <div class="js_param_rule_group"></div>
+                        </td>
+                        <td class="text-center">
+                            <input class="js_only404 form-check-input" type="checkbox" checked="checked"/>
+                        </td>
+                        <td class="text-center">
+                            <input class="js_url_to_redirect form-control" type="text" placeholder="/path/mypage.html"/>
+                        </td>
+                        <td class="text-center"></td>
+                        <td class="text-center">
+                            <a href="#" class="js_btn_add_rule btn btn-primary"><i class="bi bi-plus-lg"></i></a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="6" class="text-center"><hr><h2 class="text-center">{{ 'Currently enabled rules'|trans({}, d) }}</h2><hr></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <table class="table table-sm table-striped" id="redirection-table">
+                <thead>
+                    <tr>
+                        <th class="text-center"><span class="form-label">{{ 'Rule type'|trans({}, d) }}</span></th>
+                        <th class="text-center"><span class="form-label">{{ 'Condition'|trans({}, d) }}</span></th>
+                        <th class="text-center"><span class="form-label">{{ '404 only'|trans({}, d) }}</span></th>
+                        <th class="text-center"><span class="form-label">{{ 'Redirect to'|trans({}, d) }}</span></th>
+                        <th class="text-center"><span class="form-label">{{ 'Position'|trans({}, d) }}</span></th>
+                        <th class="text-center"><span class="form-label">{{ 'Actions'|trans({}, d) }}</span></th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+
+    <div class="js_param_rule" data-idparamrule="new_hidden" data-idrule="new_hidden" style="display:none">
+        <form class="row g-2 align-items-center flex-nowrap">
+            <div class="col-auto">
+                <input class="js_param_name form-control" type="text" placeholder="Param name"/>
+            </div>
+            <div class="col-auto">
+                <select class="js_param_condition form-select" data-idparamrule="1" data-idrule="new">
+                    <option value="equals">=</option>
+                    <option value="not_equals">&ne;</option>
+                    <option value="exists">{{ 'exists'|trans({}, d) }}</option>
+                    <option value="missing">{{ 'is missing'|trans({}, d) }}</option>
+                    <option value="empty">{{ 'is empty'|trans({}, d) }}</option>
+                    <option value="not_empty">{{ 'is not empty'|trans({}, d) }}</option>
+                </select>
+            </div>
+            <div class="col-auto">
+                <input class="js_param_value form-control" type="text" placeholder="Param value"/>
+            </div>
+            <div class="col-auto">
+                <a href="#" class="js_btn_remove_param_rule btn btn-secondary" data-idparamrule="1" data-idrule="new"><i class="bi bi-x-lg"></i></a>
+                <a href="#" class="js_btn_add_param_rule btn btn-primary" data-idrule="new"><i class="bi bi-plus-lg"></i></a>
+            </div>
+        </form>
+    </div>
+</div>
+{# The behaviour script is emitted separately by the module.config-js hook. #}

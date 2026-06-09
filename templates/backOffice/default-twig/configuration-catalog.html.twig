@@ -1,0 +1,6 @@
+{% if is_granted('VIEW', {resource: 'admin.module', module: 'RewriteUrl'}) %}
+<tr>
+    <td><a href="{{ path('rewrite.url.list-notrewritenurls') }}">{{ 'Not rewriten urls'|trans({}, 'rewriteurl.bo.default') }}</a></td>
+    <td><a class="btn btn-secondary btn-sm" href="{{ path('rewrite.url.list-notrewritenurls') }}"><i class="bi bi-pencil"></i></a></td>
+</tr>
+{% endif %}

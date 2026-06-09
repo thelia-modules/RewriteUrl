@@ -10,20 +10,4 @@
         <loop name="rewrite_url_rule" class="RewriteUrl\Loop\RewriteUrlRuleLoop"/>
     </loops>
 
-    <forms>
-        <form name="rewriteurl.reassign.form" class="RewriteUrl\Form\ReassignForm" />
-        <form name="rewriteurl.add.form" class="RewriteUrl\Form\AddUrlForm" />
-        <form name="rewriteurl.setdefault.form" class="RewriteUrl\Form\SetDefaultForm"/>
-    </forms>
-
-    <hooks>
-        <hook id="notrewritenurls.hook.back" class="RewriteUrl\Hook\ConfigurationHook" scope="request">
-            <tag name="hook.event_listener" event="configuration.catalog-top" type="back" method="onConfigurationCatalogTop"/>
-            <tag name="hook.event_listener" event="module.configuration" type="back" method="onModuleConfiguration" />
-            <tag name="hook.event_listener" event="module.config-js" type="back" method="onModuleConfigurationJavascript" />
-            <tag name="hook.event_listener" event="module.config-js" type="back" method="onModuleConfigurationJavascript" />
-            <tag name="hook.event_listener" event="main.top-menu-tools" type="back" method="onMainTopMenuTools" />
-        </hook>
-    </hooks>
-
 </config>

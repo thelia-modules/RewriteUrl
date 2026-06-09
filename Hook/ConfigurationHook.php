@@ -12,7 +12,6 @@
 
 namespace RewriteUrl\Hook;
 
-use Carousel\Carousel;
 use RewriteUrl\RewriteUrl;
 use Thelia\Core\Event\Hook\HookRenderBlockEvent;
 use Thelia\Core\Event\Hook\HookRenderEvent;
@@ -27,11 +26,29 @@ use Thelia\Tools\URL;
  */
 class ConfigurationHook extends BaseHook
 {
-    public function onModuleConfiguration(HookRenderEvent $event)
+    public static function getSubscribedHooks(): array
+    {
+        return [
+            'configuration.catalog-top' => [
+                ['type' => 'back', 'method' => 'onConfigurationCatalogTop'],
+            ],
+            'module.configuration' => [
+                ['type' => 'back', 'method' => 'onModuleConfiguration'],
+            ],
+            'module.config-js' => [
+                ['type' => 'back', 'method' => 'onModuleConfigurationJavascript'],
+            ],
+            'main.top-menu-tools' => [
+                ['type' => 'back', 'method' => 'onMainTopMenuTools'],
+            ],
+        ];
+    }
+
+    public function onModuleConfiguration(HookRenderEvent $event): void
     {
         $event->add(
             $this->render(
-                'RewriteUrl/module-configuration.html',
+                'RewriteUrl/module-configuration.html.twig',
                 [
                     "isRewritingEnabled" => ConfigQuery::isRewritingEnable()
                 ]
@@ -39,11 +56,11 @@ class ConfigurationHook extends BaseHook
         );
     }
 
-    public function onModuleConfigurationJavascript(HookRenderEvent $event)
+    public function onModuleConfigurationJavascript(HookRenderEvent $event): void
     {
         $event->add(
             $this->render(
-                'RewriteUrl/module-configuration-js.html',
+                'RewriteUrl/module-configuration-js.html.twig',
                 [
                     "isRewritingEnabled" => ConfigQuery::isRewritingEnable()
                 ]
@@ -51,10 +68,10 @@ class ConfigurationHook extends BaseHook
         );
     }
 
-    public function onConfigurationCatalogTop(HookRenderEvent $event)
+    public function onConfigurationCatalogTop(HookRenderEvent $event): void
     {
         $event->add($this->render(
-            'configuration-catalog.html'
+            'configuration-catalog.html.twig'
         ));
     }
 

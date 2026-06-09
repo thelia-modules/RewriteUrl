@@ -1,0 +1,101 @@
+{% extends '@BackOfficeDefaultTwig/base.html.twig' %}
+{% set d = 'rewriteurl.bo.default' %}
+
+{% block title %}{{ 'List of not rewriten urls'|trans({}, d) }}{% endblock %}
+
+{% set tabs = {
+    'categories': {'view': 'category', 'label': 'Categories', 'editPath': '/admin/categories/update?category_id='},
+    'products':   {'view': 'product',  'label': 'Products',   'editPath': '/admin/products/update?product_id='},
+    'brands':     {'view': 'brand',    'label': 'Brands',     'editPath': '/admin/brand/update/'},
+    'folders':    {'view': 'folder',   'label': 'Folders',    'editPath': '/admin/folders/update/'},
+    'contents':   {'view': 'content',  'label': 'Contents',   'editPath': '/admin/content/update/'}
+} %}
+
+{% block content %}
+<div class="container-fluid">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/admin/home">{{ 'Home'|trans({}, d) }}</a></li>
+            <li class="breadcrumb-item"><a href="/admin/configuration">{{ 'Configuration'|trans({}, d) }}</a></li>
+            <li class="breadcrumb-item active">{{ 'Not rewriten urls'|trans({}, d) }}</li>
+        </ol>
+    </nav>
+
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h1 class="h4 mb-0">{{ 'List of not rewriten urls'|trans({}, d) }}</h1>
+            <ul class="nav nav-pills">
+                {% for lang in langs %}
+                    <li class="nav-item">
+                        <a class="nav-link{% if edit_language_id is not null and lang.id == edit_language_id %} active{% endif %}"
+                           href="?edit_language_id={{ lang.id }}{% if current_tab %}&current_tab={{ current_tab }}{% endif %}"
+                           title="{{ 'Edit information in %lng'|trans({'%lng': lang.title}, d) }}">{{ lang.code|upper }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="card-body">
+            <ul class="nav nav-tabs" role="tablist">
+                {% for key, tab in tabs %}
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link{% if (current_tab == key) or (current_tab is empty and loop.first) %} active{% endif %}"
+                                data-bs-toggle="tab" data-bs-target="#tab-{{ key }}" type="button" role="tab">
+                            {{ tab.label|trans({}, d) }}
+                            <span class="badge text-bg-warning">({{ counts[tab.view] }})</span>
+                        </button>
+                    </li>
+                {% endfor %}
+            </ul>
+
+            <div class="tab-content pt-3">
+                {% for key, tab in tabs %}
+                    {% set list = lists[tab.view] %}
+                    <div class="tab-pane fade{% if (current_tab == key) or (current_tab is empty and loop.first) %} show active{% endif %}"
+                         id="tab-{{ key }}" role="tabpanel">
+                        {% if list.items|length > 0 %}
+                            <div class="table-responsive">
+                                <table class="table table-striped table-sm">
+                                    <caption>{{ tab.label|trans({}, d) }}</caption>
+                                    <thead>
+                                        <tr>
+                                            <th>{{ 'ID'|trans({}, d) }}</th>
+                                            <th>{{ 'Name'|trans({}, d) }}</th>
+                                            {% if tab.view == 'product' %}<th>{{ 'Reference'|trans({}, d) }}</th>{% endif %}
+                                            <th class="actions">{{ 'Actions'|trans({}, d) }}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for item in list.items %}
+                                            <tr>
+                                                <td>{{ item.ID }}</td>
+                                                <td><a href="{{ tab.editPath }}{{ item.ID }}">{{ item.NAME }}</a></td>
+                                                {% if tab.view == 'product' %}<td>{{ item.REF }}</td>{% endif %}
+                                                <td class="actions">
+                                                    <a class="btn btn-info btn-sm" href="{{ tab.editPath }}{{ item.ID }}"><i class="bi bi-pencil"></i></a>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            {% if list.pageCount > 1 %}
+                                <nav><ul class="pagination pagination-sm">
+                                    {% for p in 1..list.pageCount %}
+                                        <li class="page-item{% if p == list.page %} active{% endif %}">
+                                            <a class="page-link" href="?current_tab={{ key }}&edit_language_id={{ edit_language_id }}&page_{{ tab.view }}={{ p }}">{{ p }}</a>
+                                        </li>
+                                    {% endfor %}
+                                </ul></nav>
+                            {% endif %}
+                        {% else %}
+                            <div class="alert alert-info mt-2">
+                                {{ 'All your %label have rewriten urls'|trans({'%label': tab.label|trans({}, d)|lower}, d) }}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

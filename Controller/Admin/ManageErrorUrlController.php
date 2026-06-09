@@ -24,9 +24,48 @@ use Thelia\Tools\URL;
 class ManageErrorUrlController extends BaseAdminController
 {
     #[Route('', name: 'show', methods: ['GET'])]
-    public function manageErrorUrl(): Response|RedirectResponse
+    public function manageErrorUrl(Request $request): Response|RedirectResponse
     {
-        return $this->render('manage-errors-url');
+        $search = $request->query->get('search');
+        $page = max(1, (int) $request->query->get('page', 1));
+        $limit = 20;
+
+        $query = RewriteurlErrorUrlQuery::create()->orderByUpdatedAt();
+
+        if (!empty($search)) {
+            $query
+                ->filterByUrlSource('%' . $search . '%', \Propel\Runtime\ActiveQuery\Criteria::LIKE)
+                ->_or()
+                ->filterByUserAgent('%' . $search . '%', \Propel\Runtime\ActiveQuery\Criteria::LIKE);
+        }
+
+        $total = (clone $query)->count();
+
+        $errorUrls = [];
+        $rows = $query
+            ->offset(($page - 1) * $limit)
+            ->limit($limit)
+            ->find();
+
+        foreach ($rows as $errorUrl) {
+            $rule = $errorUrl->getRewriteUrlRule();
+            $errorUrls[] = [
+                'ID' => $errorUrl->getId(),
+                'URL_SOURCE' => $errorUrl->getUrlSource(),
+                'USER_AGENT' => $errorUrl->getUserAgent(),
+                'COUNT' => $errorUrl->getCount(),
+                'UPDATED_AT' => $errorUrl->getUpdatedAt(),
+                'REDIRECT' => $rule !== null ? $rule->getRedirectUrl() : '',
+            ];
+        }
+
+        return $this->render('manage-errors-url', [
+            'errorUrls' => $errorUrls,
+            'search' => $search,
+            'page' => $page,
+            'pageCount' => (int) ceil(max(1, $total) / $limit),
+            'updateForm' => $this->createForm(UpdateRewriteUrlForm::getName())->getForm()->createView(),
+        ]);
     }
 
     #[Route('/update/{id}', name: 'update', methods: ['POST'])]

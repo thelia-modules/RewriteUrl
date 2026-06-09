@@ -1,0 +1,40 @@
+<div class="js_regex_group input-group">
+    <span class="input-group-text" style="width: 1%;">/</span>
+    <input class="js_regex form-control" type="text" placeholder="^[a-z0-9_-]{3,16}$" value="{{ VALUE }}"/>
+    <span class="input-group-text" style="width: 1%;">/</span>
+</div>
+
+<div class="js_text_group input-group">
+    <span class="input-group-text" style="width: 1%;">/</span>
+    <input class="js_text form-control" type="text" value="{{ VALUE }}"/>
+    <span class="input-group-text" style="width: 1%;"></span>
+</div>
+
+<div class="js_param_rule_group">
+    {% for ruleParam in REWRITE_URL_PARAMS %}
+        <div class="js_param_rule" data-idparamrule="{{ ruleParam.id }}" data-idrule="{{ ID }}">
+            <form class="row g-2 align-items-center flex-nowrap">
+                <div class="col-auto">
+                    <input class="js_param_name form-control" type="text" placeholder="Param name" value="{{ ruleParam.paramName }}"/>
+                </div>
+                <div class="col-auto">
+                    <select class="js_param_condition form-select" data-idparamrule="{{ ruleParam.id }}" data-idrule="{{ ID }}">
+                        <option value="equals"{% if ruleParam.paramCondition == 'equals' %} selected{% endif %}>=</option>
+                        <option value="not_equals"{% if ruleParam.paramCondition == 'not_equals' %} selected{% endif %}>&ne;</option>
+                        <option value="exists"{% if ruleParam.paramCondition == 'exists' %} selected{% endif %}>{{ 'exists'|trans }}</option>
+                        <option value="missing"{% if ruleParam.paramCondition == 'missing' %} selected{% endif %}>{{ 'is missing'|trans }}</option>
+                        <option value="empty"{% if ruleParam.paramCondition == 'empty' %} selected{% endif %}>{{ 'is empty'|trans }}</option>
+                        <option value="not_empty"{% if ruleParam.paramCondition == 'not_empty' %} selected{% endif %}>{{ 'is not empty'|trans }}</option>
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <input class="js_param_value form-control" type="text" placeholder="Param value" value="{{ ruleParam.paramValue }}"/>
+                </div>
+                <div class="col-auto">
+                    <a href="#" class="js_btn_remove_param_rule btn btn-secondary" data-idparamrule="{{ ruleParam.id }}" data-idrule="{{ ID }}"><i class="bi bi-x-lg"></i></a>
+                    <a href="#" class="js_btn_add_param_rule btn btn-primary" data-idrule="{{ ID }}"><i class="bi bi-plus-lg"></i></a>
+                </div>
+            </form>
+        </div>
+    {% endfor %}
+</div>

@@ -1,0 +1,251 @@
+{# RewriteUrl configuration behaviour. NOTE: this screen relies on jQuery + DataTables
+   (server-side rule table). They are loaded from CDN here because the default-twig BO
+   ships neither. Flagged for a future Stimulus port. #}
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap5.min.css">
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.min.js"></script>
+
+<script>
+    (function () {
+        const urls = {
+            setRewritingEnable: '{{ path('rewrite.url.config.set-rewriting_enable') }}',
+            moveRulePosition: '{{ path('rewrite.url.rule.move-position') }}',
+            addRule: '{{ path('rewrite.url.rule.add') }}',
+            updateRule: '{{ path('rewrite.url.rule.update') }}',
+            removeRule: '{{ path('rewrite.url.rule.remove') }}',
+            getRules: '{{ path('rewrite.url.config.get.rules') }}'
+        };
+
+        function initSelectors() {
+            const $loader = $('<div class="loader"></div>');
+            $('body').append($loader);
+            const $alertError = $(".js_error_rule_management");
+            $alertError.hide();
+
+            $(".js_switch_rewrite_url").on("change", function () {
+                $loader.show();
+                const checkbox = this;
+                $.ajax({
+                    url: urls.setRewritingEnable,
+                    data: { rewriting_enable: (checkbox.checked ? 1 : 0) },
+                    type: 'post',
+                    success: function () { $loader.hide(); },
+                    error: function (jqXHR) {
+                        $alertError.html(jqXHR.responseText).show();
+                        checkbox.checked = !checkbox.checked;
+                        $loader.hide();
+                    }
+                });
+            });
+
+            $(".js_rule_type").on("change", function () {
+                const id_rule = this.dataset.idrule;
+                const selectedRuleType = $(this).val();
+                const $container = $('tr[data-idrule="' + id_rule + '"]');
+                $container.find(".js_regex_group").css('margin-bottom', '0px');
+                $container.find(".js_text_group, .js_param_rule_group, .js_regex_group").hide();
+                if (selectedRuleType === "regex") {
+                    $container.find(".js_regex_group").show();
+                } else if (selectedRuleType === "params") {
+                    $container.find(".js_param_rule_group").show();
+                } else if (selectedRuleType === "regex-params") {
+                    $container.find(".js_regex_group").css('margin-bottom', '5px').show();
+                    $container.find(".js_param_rule_group").show();
+                } else if (selectedRuleType === "text") {
+                    $container.find(".js_text_group").show();
+                }
+            });
+
+            $(".js_param_condition").on("change", function () { onChangeParamCondition(this); });
+            $(".js_btn_add_param_rule").on("click", function (e) { e.preventDefault(); onClickBtnAddParamRule(this); });
+            $(".js_btn_remove_param_rule").on("click", function (e) { e.preventDefault(); onClickBtnRemoveParamRule(this); });
+
+            $(".js_move_rule_position_up").on("click", function (e) {
+                e.preventDefault();
+                moveRulePosition(this.dataset.idrule, "up");
+            });
+            $(".js_move_rule_position_down").on("click", function (e) {
+                e.preventDefault();
+                moveRulePosition(this.dataset.idrule, "down");
+            });
+
+            function onChangeParamCondition(element) {
+                const selectedParamCondition = $(element).val();
+                const $container = $('.js_param_rule[data-idrule="' + element.dataset.idrule + '"][data-idparamrule="' + element.dataset.idparamrule + '"]');
+                const disabled = !(selectedParamCondition === "equals" || selectedParamCondition === "not_equals");
+                $container.find(".js_param_value").prop('disabled', disabled);
+            }
+
+            function onClickBtnAddParamRule(element) { addEmptyParamRule(element.dataset.idrule); }
+
+            function addEmptyParamRule(idrule) {
+                const htmlToCopy = document.querySelector('.js_param_rule[data-idrule="new_hidden"][data-idparamrule="new_hidden"]').innerHTML;
+                let maxId = 1;
+                document.querySelectorAll('tr[data-idrule="' + idrule + '"] .js_param_rule').forEach(function (item) {
+                    const idparamrule = parseInt(item.dataset.idparamrule);
+                    if (idparamrule > maxId) { maxId = idparamrule; }
+                });
+                maxId++;
+                const newParamRule = document.createElement("div");
+                newParamRule.classList.add("js_param_rule");
+                newParamRule.dataset.idrule = idrule;
+                newParamRule.dataset.idparamrule = maxId;
+                newParamRule.innerHTML = htmlToCopy;
+                document.querySelector('tr[data-idrule="' + idrule + '"] .js_param_rule_group').appendChild(newParamRule);
+                newParamRule.querySelector(".js_btn_remove_param_rule").dataset.idrule = idrule;
+                newParamRule.querySelector(".js_btn_add_param_rule").dataset.idrule = idrule;
+                newParamRule.querySelector(".js_param_condition").dataset.idrule = idrule;
+                newParamRule.querySelector(".js_param_condition").dataset.idparamrule = maxId;
+                newParamRule.querySelector(".js_btn_remove_param_rule").dataset.idparamrule = maxId;
+                const $new = $(newParamRule);
+                $new.find(".js_param_condition").on("change", function () { onChangeParamCondition(this); });
+                $new.find(".js_btn_remove_param_rule").on("click", function (e) { e.preventDefault(); onClickBtnRemoveParamRule(this); });
+                $new.find(".js_btn_add_param_rule").on("click", function (e) { e.preventDefault(); onClickBtnAddParamRule(this); });
+                $new.find("input").val("");
+                showOrHideParamRulesButtons();
+            }
+
+            function onClickBtnRemoveParamRule(element) {
+                const idparamrule = element.dataset.idparamrule;
+                const idrule = element.dataset.idrule;
+                if ($('.js_param_rule[data-idrule="' + idrule + '"]').length > 1) {
+                    $('.js_param_rule[data-idrule="' + idrule + '"][data-idparamrule="' + idparamrule + '"]').remove();
+                }
+                showOrHideParamRulesButtons();
+            }
+
+            function addEmptyParamRuleIfNoneIsFound() {
+                $("tr[data-idrule]").each(function () {
+                    const idrule = this.dataset.idrule;
+                    if ($(this).find(".js_param_rule").length === 0) { addEmptyParamRule(idrule); }
+                });
+            }
+
+            function moveRulePosition(id, type, position) {
+                $loader.show();
+                const dataToSend = { id: id, type: type };
+                if (type === "absolute") { dataToSend.position = position; }
+                $.ajax({
+                    url: urls.moveRulePosition,
+                    data: dataToSend,
+                    type: 'post',
+                    success: function () { window.location.reload(true); },
+                    error: function (jqXHR) { $alertError.html(jqXHR.responseText).show(); $loader.hide(); }
+                });
+            }
+
+            function getPackedData(ruleid) {
+                const data = {};
+                const $tr = $('tr[data-idrule="' + ruleid + '"]');
+                data.id = ruleid;
+                data.ruleType = $tr.find(".js_rule_type").val();
+                data.value = $tr.find(".js_regex").val();
+                data.textValue = $tr.find(".js_text").val();
+                data.only404 = $tr.find(".js_only404").prop("checked") ? 1 : 0;
+                data.redirectUrl = $tr.find(".js_url_to_redirect").val();
+                data.paramRules = [];
+                $tr.find(".js_param_rule").each(function () {
+                    const $this = $(this);
+                    data.paramRules.push({
+                        id: this.dataset.idparamrule,
+                        paramName: $this.find(".js_param_name").val(),
+                        condition: $this.find(".js_param_condition").val(),
+                        paramValue: $this.find(".js_param_value").val()
+                    });
+                });
+                return data;
+            }
+
+            $(".js_btn_add_rule").on("click", function (e) {
+                e.preventDefault();
+                $loader.show();
+                $alertError.hide();
+                $.ajax({
+                    url: urls.addRule,
+                    data: getPackedData("new"),
+                    type: 'post',
+                    success: function () { window.location.reload(true); },
+                    error: function (jqXHR) { $alertError.html(jqXHR.responseText).show(); $loader.hide(); }
+                });
+            });
+
+            $(".js_btn_update_rule").on("click", function (e) {
+                e.preventDefault();
+                $loader.show();
+                $alertError.hide();
+                $.ajax({
+                    url: urls.updateRule,
+                    data: getPackedData(this.dataset.idrule),
+                    type: 'post',
+                    success: function () { $loader.hide(); },
+                    error: function (jqXHR) { $alertError.html(jqXHR.responseText).show(); $loader.hide(); }
+                });
+            });
+
+            $(".js_btn_remove_rule").on("click", function (e) {
+                e.preventDefault();
+                const ruleid = this.dataset.idrule;
+                $loader.show();
+                $alertError.hide();
+                $.ajax({
+                    url: urls.removeRule,
+                    data: { id: ruleid },
+                    type: 'post',
+                    success: function () { $('tr[data-idrule="' + ruleid + '"]').remove(); $loader.hide(); },
+                    error: function (jqXHR) { $alertError.html(jqXHR.responseText).show(); $loader.hide(); }
+                });
+            });
+
+            function showOrHideParamRulesButtons() {
+                $(".js_param_rule_group").each(function () {
+                    const $paramRules = $(this).find(".js_param_rule");
+                    const count = $paramRules.length;
+                    let $last;
+                    $paramRules.each(function () {
+                        const $this = $(this);
+                        $this.find(".js_btn_remove_param_rule").css('display', 'inline-block');
+                        $this.find(".js_btn_add_param_rule").css('display', 'none');
+                        $last = $this;
+                    });
+                    if ($last) {
+                        if (count === 1) { $last.find(".js_btn_remove_param_rule").css('display', 'none'); }
+                        $last.find(".js_btn_add_param_rule").css('display', 'inline-block');
+                    }
+                });
+            }
+
+            addEmptyParamRuleIfNoneIsFound();
+            showOrHideParamRulesButtons();
+            $(".js_rule_type").trigger("change");
+            $(".js_param_condition").trigger("change");
+        }
+
+        function boot() {
+            const table = $("#redirection-table").DataTable({
+                'order': [[4, "asc"]],
+                "paging": true,
+                "pagingType": "full_numbers",
+                "pageLength": 25,
+                'serverSide': true,
+                'ajax': { 'url': urls.getRules, 'dataSrc': 'data', 'type': 'POST' },
+                "rowCallback": function (row, data) { $(row).attr('data-idrule', data.Id); },
+                "columns": [
+                    { 'className': 'text-center', 'data': 'RuleType', "width": "15%", "searchable": false },
+                    { 'data': 'Value', "width": "30%" },
+                    { 'className': 'text-center', 'data': 'Only404', "width": "5%", "searchable": false },
+                    { 'className': 'text-center', 'data': 'RedirectUrl', "width": "40%" },
+                    { 'className': 'text-center', 'data': 'Position', "width": "5%", "searchable": false },
+                    { 'className': 'text-center text-nowrap', 'data': 'Actions', "width": "10%", "orderable": false, "searchable": false }
+                ]
+            });
+            table.on('draw', function () { initSelectors(); });
+        }
+
+        if (window.jQuery) {
+            jQuery(boot);
+        } else {
+            document.addEventListener('DOMContentLoaded', boot);
+        }
+    })();
+</script>
