@@ -1,0 +1,376 @@
+{# URL rewriting management (301/302 redirects) for the default-twig back office.
+   Rendered through the {product,category,folder,content,brand}.tab-content hooks. #}
+{% set d = 'rewriteurl.bo.default' %}
+{% set add_form = getForm('rewriteurl_add_form') %}
+{% set reassign_form = getForm('rewriteurl_reassign_form') %}
+
+<div id="module-RewriteUrl-{{ view }}"
+     class="bo-rewriteurl"
+     data-search-url="{{ path('rewrite.url.search') }}"
+     data-exist-url="{{ path('rewrite.url.exist') }}"
+     data-change-type-url="{{ path('rewrite.url.change-redirect-type') }}"
+     data-reassign-label="{{ 'Reassign the url'|trans({}, d) }}"
+     data-reassign-all-label="{{ 'Reassign all urls'|trans({}, d) }}"
+     data-exist-error="{{ 'This URL already exists. You can reassign it from the list above.'|trans({}, d) }}">
+
+    <h3 class="h5 mt-2">{{ 'Current URLs'|trans({}, d) }}</h3>
+    <div class="table-responsive mb-4">
+        <table class="table table-sm align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th style="width:1%">#</th>
+                    <th style="width:1%">{{ 'Language'|trans({}, d) }}</th>
+                    <th>{{ 'URL'|trans({}, d) }}</th>
+                    <th class="text-end">{{ 'Actions'|trans({}, d) }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in urls %}
+                    <tr data-id="{{ row.id }}">
+                        <td>{{ row.id }}</td>
+                        <td><span class="badge text-bg-secondary text-uppercase">{{ row.lang }}</span></td>
+                        <td><code>/{{ row.url }}</code></td>
+                        <td class="text-end text-nowrap">
+                            <button type="button" class="btn btn-outline-info btn-sm js-reassign"
+                                    data-id="{{ row.id }}" data-url="{{ row.url }}" title="{{ 'Reassign this redirect'|trans({}, d) }}">
+                                <i class="bi bi-arrow-repeat" aria-hidden="true"></i>
+                            </button>
+                            <button type="button" class="btn btn-outline-danger btn-sm js-delete"
+                                    data-id="{{ row.id }}" data-url="{{ row.url }}" title="{{ 'Delete this redirect'|trans({}, d) }}">
+                                <i class="bi bi-trash" aria-hidden="true"></i>
+                            </button>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr><td colspan="4"><div class="alert alert-info mb-0">{{ 'No URL yet.'|trans({}, d) }}</div></td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <h3 class="h5">{{ 'Redirected URLs'|trans({}, d) }}</h3>
+    <div class="table-responsive mb-3">
+        <table class="table table-sm align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th style="width:1%">#</th>
+                    <th style="width:1%">{{ 'Language'|trans({}, d) }}</th>
+                    <th>{{ 'URL'|trans({}, d) }}</th>
+                    <th>{{ 'Redirected to'|trans({}, d) }}</th>
+                    <th style="width:1%">{{ 'Type'|trans({}, d) }}</th>
+                    <th class="text-end">{{ 'Actions'|trans({}, d) }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in redirected %}
+                    <tr data-id="{{ row.id }}">
+                        <td>{{ row.id }}</td>
+                        <td><span class="badge text-bg-secondary text-uppercase">{{ row.lang }}</span></td>
+                        <td><code>/{{ row.url }}</code></td>
+                        <td><code>/{{ row.redirected }}</code></td>
+                        <td>
+                            <select class="form-select form-select-sm js-redirect-type" data-id="{{ row.id }}">
+                                <option value="301"{% if row.httpcode == 301 %} selected{% endif %}>301</option>
+                                <option value="302"{% if row.httpcode == 302 %} selected{% endif %}>302</option>
+                            </select>
+                        </td>
+                        <td class="text-end text-nowrap">
+                            <button type="button" class="btn btn-outline-primary btn-sm js-default"
+                                    data-id="{{ row.id }}" data-url="{{ row.url }}" title="{{ 'Set this redirect to default'|trans({}, d) }}">
+                                <i class="bi bi-house" aria-hidden="true"></i>
+                            </button>
+                            <button type="button" class="btn btn-outline-info btn-sm js-reassign"
+                                    data-id="{{ row.id }}" data-url="{{ row.url }}" title="{{ 'Reassign this redirect'|trans({}, d) }}">
+                                <i class="bi bi-arrow-repeat" aria-hidden="true"></i>
+                            </button>
+                            <button type="button" class="btn btn-outline-danger btn-sm js-delete"
+                                    data-id="{{ row.id }}" data-url="{{ row.url }}" title="{{ 'Delete this redirect'|trans({}, d) }}">
+                                <i class="bi bi-trash" aria-hidden="true"></i>
+                            </button>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr><td colspan="6"><div class="alert alert-info mb-0">{{ 'No redirected URL.'|trans({}, d) }}</div></td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <h3 class="h5">{{ 'New URL'|trans({}, d) }}</h3>
+    <form class="js-form-add row g-2 align-items-end mb-3" method="post" action="{{ path('rewrite.url.add') }}">
+        {{ form_widget(add_form._token) }}
+        <input type="hidden" name="{{ field_name(add_form.success_url) }}" value="{{ success_url }}">
+        <input type="hidden" name="{{ field_name(add_form.view) }}" value="{{ view }}">
+        <input type="hidden" name="{{ field_name(add_form['view-id']) }}" value="{{ view_id }}">
+
+        <div class="col-md-2">
+            <label class="form-label">{{ 'Language'|trans({}, d) }}</label>
+            <select class="form-select" name="{{ field_name(add_form.locale) }}">
+                {% for lang in langs %}
+                    <option value="{{ lang.locale }}">{{ lang.title }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">{{ 'URL'|trans({}, d) }}</label>
+            <div class="input-group">
+                <span class="input-group-text">{{ url_site }}/</span>
+                <input type="text" class="form-control js-input-url-add" name="{{ field_name(add_form.url) }}" placeholder="my-url.html" required>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">{{ 'Behaviour'|trans({}, d) }}</label>
+            <select class="form-select" name="{{ field_name(add_form.default) }}">
+                <option value="0">{{ 'Redirect to default'|trans({}, d) }}</option>
+                <option value="1">{{ 'Default'|trans({}, d) }}</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">{{ 'Type'|trans({}, d) }}</label>
+            <select class="form-select" name="{{ field_name(add_form.httpcode) }}">
+                <option value="301">301</option>
+                <option value="302">302</option>
+            </select>
+        </div>
+        <div class="col-md-1">
+            <button type="submit" class="btn btn-primary js-action-add w-100">{{ 'Add'|trans({}, d) }}</button>
+        </div>
+        <div class="col-12">
+            <div class="alert alert-danger d-none js-alert-error mb-0" role="alert"></div>
+        </div>
+    </form>
+
+    {% if urls is not empty %}
+        <div class="alert alert-warning">
+            <div class="d-flex justify-content-between align-items-center gap-3 flex-wrap">
+                <div>
+                    {{ 'Redirect every URL of this object to another (category, product, folder, content, brand).'|trans({}, d) }}
+                    <br><strong>{{ 'This action is irreversible once confirmed.'|trans({}, d) }}</strong>
+                </div>
+                <button type="button" class="btn btn-danger js-redirect-all" data-id="{{ urls[0].id }}">
+                    {{ 'Redirect all URLs'|trans({}, d) }}
+                </button>
+            </div>
+        </div>
+    {% endif %}
+
+    {# ---- Reassign / redirect-all search modal ---- #}
+    <div class="modal fade js-modal-search" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title js-modal-title"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ 'Close'|trans({}, d) }}"></button>
+                </div>
+                <form class="js-form-reassign" method="post" action="{{ path('rewrite.url.reassign') }}">
+                    {{ form_widget(reassign_form._token) }}
+                    <input type="hidden" name="{{ field_name(reassign_form.success_url) }}" value="{{ success_url }}">
+                    <input type="hidden" name="{{ field_name(reassign_form['rewrite-id']) }}" class="js-input-rewrite-id" value="">
+                    <input type="hidden" name="{{ field_name(reassign_form['select-reassign']) }}" class="js-input-reassign" value="">
+                    <input type="hidden" name="{{ field_name(reassign_form.all) }}" class="js-input-all" value="0">
+                    <div class="modal-body">
+                        <p class="js-info-redirected">{{ 'Redirect to:'|trans({}, d) }} <code class="js-target-url"></code></p>
+                        <div class="input-group mb-2">
+                            <span class="input-group-text"><i class="bi bi-search"></i></span>
+                            <input type="text" class="form-control js-input-search" placeholder="{{ 'Title, reference…'|trans({}, d) }}">
+                        </div>
+                        <div class="text-center text-muted d-none js-loader">{{ 'Please wait…'|trans({}, d) }}</div>
+                        <div class="alert alert-warning d-none js-alert-no-result">{{ 'No result found for your search.'|trans({}, d) }}</div>
+                        <select class="form-select d-none js-search-result" size="8"></select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ 'Close'|trans({}, d) }}</button>
+                        <button type="submit" class="btn btn-primary">{{ 'Validate'|trans({}, d) }}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {# ---- Delete confirmation modal ---- #}
+    <div class="modal fade js-modal-delete" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <form class="modal-content" method="post" action="{{ path('rewrite.url.delete') }}">
+                <input type="hidden" name="id_url" class="js-input-delete" value="">
+                <div class="modal-header">
+                    <h5 class="modal-title">{{ 'Delete URL'|trans({}, d) }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ 'Close'|trans({}, d) }}"></button>
+                </div>
+                <div class="modal-body">
+                    {{ 'Do you really want to delete the URL'|trans({}, d) }} <code class="js-target-url"></code> ?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ 'Cancel'|trans({}, d) }}</button>
+                    <button type="submit" class="btn btn-danger">{{ 'Delete'|trans({}, d) }}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {# ---- Set-default confirmation modal ---- #}
+    <div class="modal fade js-modal-default" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <form class="modal-content" method="post" action="{{ path('rewrite.url.setdefault') }}">
+                <input type="hidden" name="id_url" class="js-input-default" value="">
+                <div class="modal-header">
+                    <h5 class="modal-title">{{ 'Default URL'|trans({}, d) }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ 'Close'|trans({}, d) }}"></button>
+                </div>
+                <div class="modal-body">
+                    {{ 'Do you really want to set the URL'|trans({}, d) }} <code class="js-target-url"></code> {{ 'as default?'|trans({}, d) }}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ 'Cancel'|trans({}, d) }}</button>
+                    <button type="submit" class="btn btn-primary">{{ 'Confirm'|trans({}, d) }}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+(function () {
+    "use strict";
+    var root = document.getElementById('module-RewriteUrl-{{ view }}');
+    if (!root || root.dataset.rewriteurlBound === '1') { return; }
+    root.dataset.rewriteurlBound = '1';
+
+    var cfg = root.dataset;
+    var modalSearchEl = root.querySelector('.js-modal-search');
+    var modalDeleteEl = root.querySelector('.js-modal-delete');
+    var modalDefaultEl = root.querySelector('.js-modal-default');
+    var Modal = window.bootstrap ? window.bootstrap.Modal : null;
+    var show = function (el) { if (Modal && el) { Modal.getOrCreateInstance(el).show(); } };
+
+    // Change redirect type (301/302) — AJAX, no reload.
+    root.querySelectorAll('.js-redirect-type').forEach(function (sel) {
+        sel.addEventListener('change', function () {
+            var body = new URLSearchParams({ id_url: sel.dataset.id, httpcode: sel.value });
+            fetch(cfg.changeTypeUrl, {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
+                body: body.toString(),
+            });
+        });
+    });
+
+    // Delete / set-default — fill the confirm modal then show it.
+    root.addEventListener('click', function (event) {
+        var del = event.target.closest('.js-delete');
+        if (del) {
+            modalDeleteEl.querySelector('.js-input-delete').value = del.dataset.id;
+            modalDeleteEl.querySelector('.js-target-url').textContent = '/' + del.dataset.url;
+            show(modalDeleteEl);
+            return;
+        }
+        var def = event.target.closest('.js-default');
+        if (def) {
+            modalDefaultEl.querySelector('.js-input-default').value = def.dataset.id;
+            modalDefaultEl.querySelector('.js-target-url').textContent = '/' + def.dataset.url;
+            show(modalDefaultEl);
+            return;
+        }
+        var rea = event.target.closest('.js-reassign');
+        if (rea) {
+            openSearch(rea.dataset.id, '/' + rea.dataset.url, 0, cfg.reassignLabel, true);
+            return;
+        }
+        var all = event.target.closest('.js-redirect-all');
+        if (all) {
+            openSearch(all.dataset.id, '', 1, cfg.reassignAllLabel, false);
+            return;
+        }
+    });
+
+    function openSearch(rewriteId, targetUrl, isAll, title, showInfo) {
+        modalSearchEl.querySelector('.js-input-rewrite-id').value = rewriteId;
+        modalSearchEl.querySelector('.js-input-all').value = isAll;
+        modalSearchEl.querySelector('.js-target-url').textContent = targetUrl;
+        modalSearchEl.querySelector('.js-modal-title').textContent = title;
+        modalSearchEl.querySelector('.js-info-redirected').classList.toggle('d-none', !showInfo);
+        var result = modalSearchEl.querySelector('.js-search-result');
+        result.classList.add('d-none');
+        result.innerHTML = '';
+        modalSearchEl.querySelector('.js-input-reassign').value = '';
+        show(modalSearchEl);
+    }
+
+    // Reassign search — debounced AJAX.
+    var searchTimer = null;
+    var searchInput = modalSearchEl.querySelector('.js-input-search');
+    var loader = modalSearchEl.querySelector('.js-loader');
+    var noResult = modalSearchEl.querySelector('.js-alert-no-result');
+    var resultSelect = modalSearchEl.querySelector('.js-search-result');
+
+    searchInput.addEventListener('keyup', function () {
+        var val = searchInput.value;
+        if (searchTimer) { clearTimeout(searchTimer); }
+        noResult.classList.add('d-none');
+        if (val.length <= 3) {
+            loader.classList.add('d-none');
+            resultSelect.classList.add('d-none');
+            return;
+        }
+        loader.classList.remove('d-none');
+        searchTimer = setTimeout(function () {
+            fetch(cfg.searchUrl + '?q=' + encodeURIComponent(val), {
+                credentials: 'same-origin',
+                headers: { 'X-Requested-With': 'XMLHttpRequest', Accept: 'application/json' },
+            })
+                .then(function (r) { return r.json(); })
+                .then(function (data) {
+                    loader.classList.add('d-none');
+                    var options = [];
+                    Object.keys(data || {}).forEach(function (type) {
+                        options.push('<optgroup label="' + type + '">');
+                        Object.keys(data[type]).forEach(function (id) {
+                            options.push('<option value="' + id + '::' + type + '">' + data[type][id] + '</option>');
+                        });
+                        options.push('</optgroup>');
+                    });
+                    if (options.length) {
+                        resultSelect.innerHTML = options.join('');
+                        resultSelect.classList.remove('d-none');
+                    } else {
+                        resultSelect.classList.add('d-none');
+                        noResult.classList.remove('d-none');
+                    }
+                })
+                .catch(function () {
+                    loader.classList.add('d-none');
+                    resultSelect.classList.add('d-none');
+                    noResult.classList.remove('d-none');
+                });
+        }, 350);
+    });
+
+    resultSelect.addEventListener('change', function () {
+        modalSearchEl.querySelector('.js-input-reassign').value = resultSelect.value;
+    });
+
+    // Add — check the URL does not already exist before submitting.
+    var addForm = root.querySelector('.js-form-add');
+    var addError = root.querySelector('.js-alert-error');
+    root.querySelector('.js-action-add').addEventListener('click', function (event) {
+        event.preventDefault();
+        addError.classList.add('d-none');
+        var val = root.querySelector('.js-input-url-add').value;
+        if (val === '') { return; }
+        fetch(cfg.existUrl + '?q=' + encodeURIComponent(val), {
+            credentials: 'same-origin',
+            headers: { 'X-Requested-With': 'XMLHttpRequest', Accept: 'application/json' },
+        })
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                if (data === false) {
+                    addForm.submit();
+                } else {
+                    addError.classList.remove('d-none');
+                    addError.textContent = cfg.existError;
+                }
+            })
+            .catch(function () { addForm.submit(); });
+    });
+}());
+</script>
