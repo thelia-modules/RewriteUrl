@@ -239,8 +239,13 @@
     var modalSearchEl = root.querySelector('.js-modal-search');
     var modalDeleteEl = root.querySelector('.js-modal-delete');
     var modalDefaultEl = root.querySelector('.js-modal-default');
-    var Modal = window.bootstrap ? window.bootstrap.Modal : null;
-    var show = function (el) { if (Modal && el) { Modal.getOrCreateInstance(el).show(); } };
+    // Resolve Bootstrap lazily at click time: this inline script runs while the page is
+    // parsed, before the deferred app bundle has set window.bootstrap. Capturing it now
+    // would freeze a null Modal in the closure and silently kill every action button.
+    var show = function (el) {
+        var Modal = window.bootstrap ? window.bootstrap.Modal : null;
+        if (Modal && el) { Modal.getOrCreateInstance(el).show(); }
+    };
 
     // Change redirect type (301/302) — AJAX, no reload.
     root.querySelectorAll('.js-redirect-type').forEach(function (sel) {
