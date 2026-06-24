@@ -23,46 +23,46 @@ use Thelia\Model\ConfigQuery;
 use Thelia\Model\LangQuery;
 
 /**
- * Renders the URL rewriting management UI (redirects 301/302) inside the
- * "Modules" tab of the product, category, folder, content and brand edit
- * pages of the default-twig back office.
+ * Renders the URL rewriting management UI (redirects 301/302) at the bottom of
+ * the SEO tab of the product, category, folder, content and brand edit pages of
+ * the default-twig back office, right under the rewritten URL field, the same way
+ * the legacy Smarty back office grouped URL management with the SEO settings.
  */
 class UrlRewritingTabHook extends BaseHook
 {
+    private const VIEWS = ['product', 'category', 'folder', 'content', 'brand'];
+
     public static function getSubscribedHooks(): array
     {
         return [
-            'product.tab-content' => [['type' => 'back', 'method' => 'onProductTabContent']],
-            'category.tab-content' => [['type' => 'back', 'method' => 'onCategoryTabContent']],
-            'folder.tab-content' => [['type' => 'back', 'method' => 'onFolderTabContent']],
-            'content.tab-content' => [['type' => 'back', 'method' => 'onContentTabContent']],
-            'brand.tab-content' => [['type' => 'back', 'method' => 'onBrandTabContent']],
+            'tab-seo.bottom' => [['type' => 'back', 'method' => 'onTabSeoBottom']],
         ];
     }
 
-    public function onProductTabContent(HookRenderEvent $event): void
+    public function onTabSeoBottom(HookRenderEvent $event): void
     {
-        $this->renderTab($event, 'product', (int) $event->getArgument('product'));
-    }
+        // The SEO tab forwards the edited object as `type` + `id`. Fall back to the
+        // entity-specific argument so the block keeps rendering on templates that do
+        // not forward the type yet.
+        $view = (string) $event->getArgument('type');
+        $viewId = (int) $event->getArgument('id');
 
-    public function onCategoryTabContent(HookRenderEvent $event): void
-    {
-        $this->renderTab($event, 'category', (int) $event->getArgument('category'));
-    }
+        if (!in_array($view, self::VIEWS, true)) {
+            foreach (self::VIEWS as $candidate) {
+                $arg = $event->getArgument($candidate) ?? $event->getArgument($candidate.'_id');
+                if (!empty($arg)) {
+                    $view = $candidate;
+                    $viewId = (int) $arg;
+                    break;
+                }
+            }
+        }
 
-    public function onFolderTabContent(HookRenderEvent $event): void
-    {
-        $this->renderTab($event, 'folder', (int) $event->getArgument('folder'));
-    }
+        if (!in_array($view, self::VIEWS, true)) {
+            return;
+        }
 
-    public function onContentTabContent(HookRenderEvent $event): void
-    {
-        $this->renderTab($event, 'content', (int) $event->getArgument('content'));
-    }
-
-    public function onBrandTabContent(HookRenderEvent $event): void
-    {
-        $this->renderTab($event, 'brand', (int) $event->getArgument('brand'));
+        $this->renderTab($event, $view, $viewId);
     }
 
     private function renderTab(HookRenderEvent $event, string $view, int $viewId): void
