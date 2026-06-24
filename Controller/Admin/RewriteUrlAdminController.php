@@ -82,7 +82,7 @@ class RewriteUrlAdminController extends BaseAdminController
             'admin.'.$this->correspondence[$rewritingUrl->getView()].'.update',
             [
                 $rewritingUrl->getView().'_id'=>$rewritingUrl->getViewId(),
-                'current_tab' => 'modules'
+                'current_tab' => 'seo'
             ],
             [
                 $rewritingUrl->getView().'_id'=>$rewritingUrl->getViewId()
@@ -196,7 +196,7 @@ class RewriteUrlAdminController extends BaseAdminController
             'admin.'.$this->correspondence[$rewritingUrl->getView()].'.update',
             [
                 $rewritingUrl->getView().'_id'=>$rewritingUrl->getViewId(),
-                'current_tab' => 'modules'
+                'current_tab' => 'seo'
             ],
             [
                 $rewritingUrl->getView().'_id'=>$rewritingUrl->getViewId()
@@ -471,7 +471,7 @@ class RewriteUrlAdminController extends BaseAdminController
             );
             return URL::getInstance()->absoluteUrl(
                 $route,
-                [$rewritingUrl->getView().'_id' => $rewritingUrl->getViewId(), 'current_tab' => 'modules']
+                [$rewritingUrl->getView().'_id' => $rewritingUrl->getViewId(), 'current_tab' => 'seo']
             );
         }
 

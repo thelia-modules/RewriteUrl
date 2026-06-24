@@ -138,7 +138,7 @@ class UrlRewritingTabHook extends BaseHook
         }
 
         $params = $request->query->all();
-        $params['current_tab'] = 'modules';
+        $params['current_tab'] = 'seo';
 
         return $request->getPathInfo().'?'.http_build_query($params);
     }
