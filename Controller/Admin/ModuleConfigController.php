@@ -112,16 +112,17 @@ class ModuleConfigController extends BaseAdminController
                         'VALUE' => $row['Value'],
                     ]
                 ),
-                'Only404' => '<input class="js_only404 form-control" type="checkbox" style="width: 100%!important;" ' . $isOnly404Checked . '/>',
+                'Only404' => '<input class="js_only404 form-check-input" type="checkbox"' . $isOnly404Checked . '/>',
                 'RedirectUrl' => '<div class="col-md-12 input-group">
                                     <input class="js_url_to_redirect form-control" type="text" placeholder="/path/mypage.html" value="' . $row['RedirectUrl'] . '"/>
                                   </div>',
-                'Position' => '<a href="#" class="u-position-up js_move_rule_position_up" data-idrule="' . $id . '"><i class="glyphicon glyphicon-arrow-up"></i></a>
-                                <span class="js_editable_rule_position editable editable-click" data-idrule="' . $id . '">' . $row['Position'] . '</span>
-                               <a href="#" class="u-position-down js_move_rule_position_down" data-idrule="' . $id . '"><i class="glyphicon glyphicon-arrow-down"></i></a>',
-                'Actions' => '<a href="#" class="js_btn_update_rule btn btn-success" data-idrule="' . $id . '"><span class="glyphicon glyphicon-check"></span></a>
-                              <a href="#" class="js_btn_remove_rule btn btn-danger" data-idrule="' . $id . '"><span class="glyphicon glyphicon-remove"></span></a>
-',
+                'Position' => '<a href="#" class="u-position-up js_move_rule_position_up" data-idrule="' . $id . '"><i class="bi bi-arrow-up" aria-hidden="true"></i></a>'
+                    . ' <span class="js_editable_rule_position editable editable-click" data-idrule="' . $id . '">' . $row['Position'] . '</span> '
+                    . '<a href="#" class="u-position-down js_move_rule_position_down" data-idrule="' . $id . '"><i class="bi bi-arrow-down" aria-hidden="true"></i></a>',
+                'Actions' => '<div class="btn-group btn-group-sm" role="group" aria-label="' . Translator::getInstance()->trans('Row actions') . '">'
+                    . '<a href="#" class="btn btn-sm btn-outline-primary bo-action bo-action--edit js_btn_update_rule" data-idrule="' . $id . '" title="' . Translator::getInstance()->trans('Save rule', [], RewriteUrl::MODULE_DOMAIN) . '" aria-label="' . Translator::getInstance()->trans('Save rule', [], RewriteUrl::MODULE_DOMAIN) . '" data-testid="datatable-action-edit"><i class="bi bi-pencil-square" aria-hidden="true"></i><span class="visually-hidden">' . Translator::getInstance()->trans('Save rule', [], RewriteUrl::MODULE_DOMAIN) . '</span></a>'
+                    . '<a href="#" class="btn btn-sm btn-outline-danger bo-action bo-action--delete js_btn_remove_rule" data-idrule="' . $id . '" title="' . Translator::getInstance()->trans('Delete rule', [], RewriteUrl::MODULE_DOMAIN) . '" aria-label="' . Translator::getInstance()->trans('Delete rule', [], RewriteUrl::MODULE_DOMAIN) . '" data-testid="datatable-action-delete"><i class="bi bi-trash" aria-hidden="true"></i><span class="visually-hidden">' . Translator::getInstance()->trans('Delete rule', [], RewriteUrl::MODULE_DOMAIN) . '</span></a>'
+                    . '</div>',
             ];
         }
 

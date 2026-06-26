@@ -14,87 +14,86 @@
      data-exist-error="{{ 'This URL already exists. You can reassign it from the list above.'|trans({}, d) }}">
 
     <h3 class="h5 mt-2">{{ 'Current URLs'|trans({}, d) }}</h3>
-    <div class="table-responsive mb-4">
-        <table class="table table-sm align-middle">
-            <thead class="table-light">
-                <tr>
-                    <th style="width:1%">#</th>
-                    <th style="width:1%">{{ 'Language'|trans({}, d) }}</th>
-                    <th>{{ 'URL'|trans({}, d) }}</th>
-                    <th class="text-end">{{ 'Actions'|trans({}, d) }}</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for row in urls %}
-                    <tr data-id="{{ row.id }}">
-                        <td>{{ row.id }}</td>
-                        <td><span class="badge text-bg-secondary text-uppercase">{{ row.lang }}</span></td>
-                        <td><code>/{{ row.url }}</code></td>
-                        <td class="text-end text-nowrap">
-                            <button type="button" class="btn btn-outline-info btn-sm js-reassign"
-                                    data-id="{{ row.id }}" data-url="{{ row.url }}" title="{{ 'Reassign this redirect'|trans({}, d) }}">
-                                <i class="bi bi-arrow-repeat" aria-hidden="true"></i>
-                            </button>
-                            <button type="button" class="btn btn-outline-danger btn-sm js-delete"
-                                    data-id="{{ row.id }}" data-url="{{ row.url }}" title="{{ 'Delete this redirect'|trans({}, d) }}">
-                                <i class="bi bi-trash" aria-hidden="true"></i>
-                            </button>
-                        </td>
-                    </tr>
-                {% else %}
-                    <tr><td colspan="4"><div class="alert alert-info mb-0">{{ 'No URL yet.'|trans({}, d) }}</div></td></tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
 
-    <h3 class="h5">{{ 'Redirected URLs'|trans({}, d) }}</h3>
-    <div class="table-responsive mb-3">
-        <table class="table table-sm align-middle">
-            <thead class="table-light">
-                <tr>
-                    <th style="width:1%">#</th>
-                    <th style="width:1%">{{ 'Language'|trans({}, d) }}</th>
-                    <th>{{ 'URL'|trans({}, d) }}</th>
-                    <th>{{ 'Redirected to'|trans({}, d) }}</th>
-                    <th style="width:1%">{{ 'Type'|trans({}, d) }}</th>
-                    <th class="text-end">{{ 'Actions'|trans({}, d) }}</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for row in redirected %}
-                    <tr data-id="{{ row.id }}">
-                        <td>{{ row.id }}</td>
-                        <td><span class="badge text-bg-secondary text-uppercase">{{ row.lang }}</span></td>
-                        <td><code>/{{ row.url }}</code></td>
-                        <td><code>/{{ row.redirected }}</code></td>
-                        <td>
-                            <select class="form-select form-select-sm js-redirect-type" data-id="{{ row.id }}">
-                                <option value="301"{% if row.httpcode == 301 %} selected{% endif %}>301</option>
-                                <option value="302"{% if row.httpcode == 302 %} selected{% endif %}>302</option>
-                            </select>
-                        </td>
-                        <td class="text-end text-nowrap">
-                            <button type="button" class="btn btn-outline-primary btn-sm js-default"
-                                    data-id="{{ row.id }}" data-url="{{ row.url }}" title="{{ 'Set this redirect to default'|trans({}, d) }}">
-                                <i class="bi bi-house" aria-hidden="true"></i>
-                            </button>
-                            <button type="button" class="btn btn-outline-info btn-sm js-reassign"
-                                    data-id="{{ row.id }}" data-url="{{ row.url }}" title="{{ 'Reassign this redirect'|trans({}, d) }}">
-                                <i class="bi bi-arrow-repeat" aria-hidden="true"></i>
-                            </button>
-                            <button type="button" class="btn btn-outline-danger btn-sm js-delete"
-                                    data-id="{{ row.id }}" data-url="{{ row.url }}" title="{{ 'Delete this redirect'|trans({}, d) }}">
-                                <i class="bi bi-trash" aria-hidden="true"></i>
-                            </button>
-                        </td>
-                    </tr>
-                {% else %}
-                    <tr><td colspan="6"><div class="alert alert-info mb-0">{{ 'No redirected URL.'|trans({}, d) }}</div></td></tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+    {% set current_url_rows = [] %}
+    {% for row in urls %}
+        {% set action_html %}
+            <button type="button" class="btn btn-outline-info btn-sm js-reassign"
+                    data-id="{{ row.id }}" data-url="{{ row.url }}" title="{{ 'Reassign this redirect'|trans({}, d) }}">
+                <i class="bi bi-arrow-repeat" aria-hidden="true"></i>
+            </button>
+            <button type="button" class="btn btn-outline-danger btn-sm js-delete"
+                    data-id="{{ row.id }}" data-url="{{ row.url }}" title="{{ 'Delete this redirect'|trans({}, d) }}">
+                <i class="bi bi-trash" aria-hidden="true"></i>
+            </button>
+        {% endset %}
+        {% set current_url_rows = current_url_rows|merge([{
+            'id':      row.id,
+            'lang':    '<span class="badge text-bg-secondary text-uppercase">' ~ row.lang|e ~ '</span>',
+            'url':     '<code>/' ~ row.url|e ~ '</code>',
+            '_action': action_html,
+        }]) %}
+    {% endfor %}
+
+    {{ component('BoDataTable', {
+        id: 'rewrite-current-urls',
+        columns: [
+            column_text('id',      '#',                          'start'),
+            column_html('lang',    'Language'|trans({}, d),       'start'),
+            column_html('url',     'URL'|trans({}, d)),
+            column_html('_action', 'Actions'|trans({}, d),        'end'),
+        ],
+        rows: current_url_rows,
+        emptyMessage: 'No URL yet.'|trans({}, d),
+    }) }}
+
+    <h3 class="h5 mt-4">{{ 'Redirected URLs'|trans({}, d) }}</h3>
+
+    {% set redirected_rows = [] %}
+    {% for row in redirected %}
+        {% set type_html %}
+            <select class="form-select form-select-sm js-redirect-type" data-id="{{ row.id }}">
+                <option value="301"{% if row.httpcode == 301 %} selected{% endif %}>301</option>
+                <option value="302"{% if row.httpcode == 302 %} selected{% endif %}>302</option>
+            </select>
+        {% endset %}
+        {% set action_html %}
+            <button type="button" class="btn btn-outline-primary btn-sm js-default"
+                    data-id="{{ row.id }}" data-url="{{ row.url }}" title="{{ 'Set this redirect to default'|trans({}, d) }}">
+                <i class="bi bi-house" aria-hidden="true"></i>
+            </button>
+            <button type="button" class="btn btn-outline-info btn-sm js-reassign"
+                    data-id="{{ row.id }}" data-url="{{ row.url }}" title="{{ 'Reassign this redirect'|trans({}, d) }}">
+                <i class="bi bi-arrow-repeat" aria-hidden="true"></i>
+            </button>
+            <button type="button" class="btn btn-outline-danger btn-sm js-delete"
+                    data-id="{{ row.id }}" data-url="{{ row.url }}" title="{{ 'Delete this redirect'|trans({}, d) }}">
+                <i class="bi bi-trash" aria-hidden="true"></i>
+            </button>
+        {% endset %}
+        {% set redirected_rows = redirected_rows|merge([{
+            'id':         row.id,
+            'lang':       '<span class="badge text-bg-secondary text-uppercase">' ~ row.lang|e ~ '</span>',
+            'url':        '<code>/' ~ row.url|e ~ '</code>',
+            'redirected': '<code>/' ~ row.redirected|e ~ '</code>',
+            'type':       type_html,
+            '_action':    action_html,
+        }]) %}
+    {% endfor %}
+
+    {{ component('BoDataTable', {
+        id: 'rewrite-redirected-urls',
+        columns: [
+            column_text('id',         '#',                               'start'),
+            column_html('lang',       'Language'|trans({}, d),            'start'),
+            column_html('url',        'URL'|trans({}, d)),
+            column_html('redirected', 'Redirected to'|trans({}, d)),
+            column_html('type',       'Type'|trans({}, d),                'center'),
+            column_html('_action',    'Actions'|trans({}, d),             'end'),
+        ],
+        rows: redirected_rows,
+        emptyMessage: 'No redirected URL.'|trans({}, d),
+    }) }}
 
     <h3 class="h5">{{ 'New URL'|trans({}, d) }}</h3>
     <form class="js-form-add row g-2 align-items-end mb-3" method="post" action="{{ path('rewrite.url.add') }}">

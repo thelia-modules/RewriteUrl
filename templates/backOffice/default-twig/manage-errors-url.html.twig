@@ -3,6 +3,15 @@
 
 {% block title %}{{ 'List of 404 Error URLs'|trans({}, d) }}{% endblock %}
 
+{% block breadcrumb %}
+    <nav aria-label="breadcrumb" class="mb-1">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a href="{{ path('admin.home') }}">{{ 'Home'|trans({}, d) }}</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ 'Manage 404 Error URLs'|trans({}, d) }}</li>
+        </ol>
+    </nav>
+{% endblock %}
+
 {% block content %}
 <div class="container-fluid">
     <div class="card">
@@ -20,44 +29,42 @@
             </div>
         </div>
         <div class="card-body">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>{{ 'URL Source'|trans({}, d) }}</th>
-                        <th>{{ 'User Agent'|trans({}, d) }}</th>
-                        <th class="text-center">{{ 'Hit Count'|trans({}, d) }}</th>
-                        <th class="text-center">{{ 'Lastest Hit'|trans({}, d) }}</th>
-                        <th class="actions">{{ 'Actions'|trans({}, d) }}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for error in errorUrls %}
-                        <tr data-id="{{ error.ID }}">
-                            <td><a href="/{{ error.URL_SOURCE }}" target="_blank">{{ error.URL_SOURCE }}</a></td>
-                            <td>{{ error.USER_AGENT }}</td>
-                            <td class="text-center">{{ error.COUNT }}</td>
-                            <td class="text-center">{{ error.UPDATED_AT ? error.UPDATED_AT|date('d/m/y') : '' }}</td>
-                            <td class="text-end">
-                                <button type="button"
-                                        class="btn btn-primary btn-sm redirection-button"
-                                        data-bs-toggle="modal" data-bs-target="#edit_error_redirection_dialog"
-                                        data-id="{{ error.ID }}" data-redirect="{{ error.REDIRECT }}"
-                                        title="{{ 'Redirection'|trans({}, d) }}">{{ 'Redirection'|trans({}, d) }}</button>
-                                <button type="button"
-                                        class="btn btn-info btn-sm referer-list-button"
-                                        data-bs-toggle="modal" data-bs-target="#referer_list_dialog"
-                                        data-id="{{ error.ID }}"
-                                        title="{{ 'Sources'|trans({}, d) }}">{{ 'Sources'|trans({}, d) }}</button>
-                            </td>
-                        </tr>
-                    {% else %}
-                        <tr><td colspan="5"><div class="alert alert-info mb-0">{{ 'No error url.'|trans({}, d) }}</div></td></tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+            {% set table_rows = [] %}
+            {% for error in errorUrls %}
+                {% set action_html %}
+                    <button type="button" class="btn btn-primary btn-sm redirection-button"
+                            data-bs-toggle="modal" data-bs-target="#edit_error_redirection_dialog"
+                            data-id="{{ error.ID }}" data-redirect="{{ error.REDIRECT }}"
+                            title="{{ 'Redirection'|trans({}, d) }}">{{ 'Redirection'|trans({}, d) }}</button>
+                    <button type="button" class="btn btn-info btn-sm referer-list-button"
+                            data-bs-toggle="modal" data-bs-target="#referer_list_dialog"
+                            data-id="{{ error.ID }}"
+                            title="{{ 'Sources'|trans({}, d) }}">{{ 'Sources'|trans({}, d) }}</button>
+                {% endset %}
+                {% set table_rows = table_rows|merge([{
+                    'url_source': '<a href="/' ~ error.URL_SOURCE|e ~ '" target="_blank">' ~ error.URL_SOURCE|e ~ '</a>',
+                    'user_agent': error.USER_AGENT,
+                    'count':      error.COUNT,
+                    'updated_at': error.UPDATED_AT ? error.UPDATED_AT|date('d/m/y') : '',
+                    '_action':    action_html,
+                }]) %}
+            {% endfor %}
+
+            {{ component('BoDataTable', {
+                id: 'error-urls',
+                columns: [
+                    column_html('url_source', 'URL Source'|trans({}, d)),
+                    column_text('user_agent', 'User Agent'|trans({}, d)),
+                    column_text('count',      'Hit Count'|trans({}, d),   'center'),
+                    column_text('updated_at', 'Lastest Hit'|trans({}, d), 'center'),
+                    column_html('_action',    'Actions'|trans({}, d),     'end'),
+                ],
+                rows: table_rows,
+                emptyMessage: 'No error url.'|trans({}, d),
+            }) }}
 
             {% if pageCount > 1 %}
-                <nav><ul class="pagination pagination-sm">
+                <nav class="mt-3"><ul class="pagination pagination-sm">
                     {% for p in 1..pageCount %}
                         <li class="page-item{% if p == page %} active{% endif %}">
                             <a class="page-link" href="?page={{ p }}{% if search %}&search={{ search }}{% endif %}">{{ p }}</a>
