@@ -22,15 +22,16 @@
         <div class="card-body">
             <div class="js_error_rule_management alert alert-danger" style="display:none"></div>
 
-            <table class="table table-sm table-striped">
-                <thead>
+            <div class="table-responsive">
+            <table class="table table-striped table-hover align-middle mb-0">
+                <thead class="table-light">
                     <tr>
-                        <th class="text-center"><span class="form-label">{{ 'Rule type'|trans({}, d) }}</span></th>
-                        <th class="text-center"><span class="form-label">{{ 'Condition'|trans({}, d) }} <a href="#" data-bs-toggle="tooltip" title="{{ "For the regex, your input is compare to URL without the domain name and without any GET params. Ex : for 'www.mysite.com/one/two?three=four', your regex will be compare to '/one/two'."|trans({}, d) }}"><i class="bi bi-question-circle"></i></a></span></th>
-                        <th class="text-center"><span class="form-label">{{ '404 only'|trans({}, d) }}</span></th>
-                        <th class="text-center"><span class="form-label">{{ 'Redirect to'|trans({}, d) }} <a href="#" data-bs-toggle="tooltip" title="{{ "Enter a URL with a leading '/' and no domain name. Ex : for 'www.mysite.com/one/two', enter '/one/two'."|trans({}, d) }}"><i class="bi bi-question-circle"></i></a></span></th>
-                        <th class="text-center"><span class="form-label">{{ 'Position'|trans({}, d) }}</span></th>
-                        <th class="text-center"><span class="form-label">{{ 'Actions'|trans({}, d) }}</span></th>
+                        <th scope="col" class="text-center"><span class="form-label">{{ 'Rule type'|trans({}, d) }}</span></th>
+                        <th scope="col" class="text-center"><span class="form-label">{{ 'Condition'|trans({}, d) }} <a href="#" data-bs-toggle="tooltip" title="{{ "For the regex, your input is compare to URL without the domain name and without any GET params. Ex : for 'www.mysite.com/one/two?three=four', your regex will be compare to '/one/two'."|trans({}, d) }}"><i class="bi bi-question-circle"></i></a></span></th>
+                        <th scope="col" class="text-center"><span class="form-label">{{ '404 only'|trans({}, d) }}</span></th>
+                        <th scope="col" class="text-center"><span class="form-label">{{ 'Redirect to'|trans({}, d) }} <a href="#" data-bs-toggle="tooltip" title="{{ "Enter a URL with a leading '/' and no domain name. Ex : for 'www.mysite.com/one/two', enter '/one/two'."|trans({}, d) }}"><i class="bi bi-question-circle"></i></a></span></th>
+                        <th scope="col" class="text-center"><span class="form-label">{{ 'Position'|trans({}, d) }}</span></th>
+                        <th scope="col" class="text-center"><span class="form-label">{{ 'Actions'|trans({}, d) }}</span></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -64,7 +65,14 @@
                         </td>
                         <td class="text-center"></td>
                         <td class="text-center">
-                            <a href="#" class="js_btn_add_rule btn btn-primary"><i class="bi bi-plus-lg"></i></a>
+                            <a href="#"
+                               class="js_btn_add_rule btn btn-sm btn-outline-primary bo-action bo-action--custom"
+                               title="{{ 'Add rule'|trans({}, d) }}"
+                               aria-label="{{ 'Add rule'|trans({}, d) }}"
+                               data-testid="datatable-action-add">
+                                <i class="bi bi-plus-lg" aria-hidden="true"></i>
+                                <span class="visually-hidden">{{ 'Add rule'|trans({}, d) }}</span>
+                            </a>
                         </td>
                     </tr>
                     <tr>
@@ -72,19 +80,22 @@
                     </tr>
                 </tbody>
             </table>
+            </div>
 
-            <table class="table table-sm table-striped" id="redirection-table">
-                <thead>
+            <div class="table-responsive mt-3">
+            <table class="table table-striped table-hover align-middle mb-0" id="redirection-table">
+                <thead class="table-light">
                     <tr>
-                        <th class="text-center"><span class="form-label">{{ 'Rule type'|trans({}, d) }}</span></th>
-                        <th class="text-center"><span class="form-label">{{ 'Condition'|trans({}, d) }}</span></th>
-                        <th class="text-center"><span class="form-label">{{ '404 only'|trans({}, d) }}</span></th>
-                        <th class="text-center"><span class="form-label">{{ 'Redirect to'|trans({}, d) }}</span></th>
-                        <th class="text-center"><span class="form-label">{{ 'Position'|trans({}, d) }}</span></th>
-                        <th class="text-center"><span class="form-label">{{ 'Actions'|trans({}, d) }}</span></th>
+                        <th scope="col" class="text-center"><span class="form-label">{{ 'Rule type'|trans({}, d) }}</span></th>
+                        <th scope="col" class="text-center"><span class="form-label">{{ 'Condition'|trans({}, d) }}</span></th>
+                        <th scope="col" class="text-center"><span class="form-label">{{ '404 only'|trans({}, d) }}</span></th>
+                        <th scope="col" class="text-center"><span class="form-label">{{ 'Redirect to'|trans({}, d) }}</span></th>
+                        <th scope="col" class="text-center"><span class="form-label">{{ 'Position'|trans({}, d) }}</span></th>
+                        <th scope="col" class="text-center"><span class="form-label">{{ 'Actions'|trans({}, d) }}</span></th>
                     </tr>
                 </thead>
             </table>
+            </div>
         </div>
     </div>
 
