@@ -1,6 +1,13 @@
 {% if is_granted('VIEW', {resource: 'admin.module', module: 'RewriteUrl'}) %}
-<tr>
-    <td><a href="{{ path('rewrite.url.list-notrewritenurls') }}">{{ 'Not rewriten urls'|trans({}, 'rewriteurl.bo.default') }}</a></td>
-    <td><a class="btn btn-secondary btn-sm" href="{{ path('rewrite.url.list-notrewritenurls') }}"><i class="bi bi-pencil"></i></a></td>
-</tr>
+  <div class="col-md-3">
+      <a
+        href="{{ path('rewrite.url.list-notrewritenurls') }}"
+        class="card text-decoration-none h-100"
+      >
+          <div class="card-body d-flex align-items-center gap-3">
+              <i class="bi bi-pencil fs-3 text-primary" aria-hidden="true"></i>
+              <span class="fw-medium text-body">{{ 'Not rewriten urls'|trans({}, 'rewriteurl.bo.default') }}</span>
+          </div>
+      </a>
+  </div>
 {% endif %}
