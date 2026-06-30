@@ -9,11 +9,11 @@
 <script>
     (function () {
         const urls = {
-            setRewritingEnable: '{{ path('rewrite.url.config.set-rewriting_enable') }}',
-            moveRulePosition: '{{ path('rewrite.url.rule.move-position') }}',
-            addRule: '{{ path('rewrite.url.rule.add') }}',
-            updateRule: '{{ path('rewrite.url.rule.update') }}',
-            removeRule: '{{ path('rewrite.url.rule.remove') }}',
+            setRewritingEnable: '{{ path('rewrite.url.config.set-rewriting_enable') }}?_token={{ assignToken() }}',
+            moveRulePosition: '{{ path('rewrite.url.rule.move-position') }}?_token={{ assignToken() }}',
+            addRule: '{{ path('rewrite.url.rule.add') }}?_token={{ assignToken() }}',
+            updateRule: '{{ path('rewrite.url.rule.update') }}?_token={{ assignToken() }}',
+            removeRule: '{{ path('rewrite.url.rule.remove') }}?_token={{ assignToken() }}',
             getRules: '{{ path('rewrite.url.config.get.rules') }}'
         };
 

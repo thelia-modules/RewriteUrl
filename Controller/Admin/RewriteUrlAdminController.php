@@ -39,6 +39,7 @@ use Thelia\Model\ProductI18nQuery;
 use Thelia\Model\ProductQuery;
 use Thelia\Model\RewritingUrl;
 use Thelia\Model\RewritingUrlQuery;
+use Thelia\Tools\TokenProvider;
 use Thelia\Tools\URL;
 use Thelia\Log\Tlog;
 
@@ -205,11 +206,13 @@ class RewriteUrlAdminController extends BaseAdminController
     }
 
 
-    public function changeRedirectTypeAction(Request $request, EventDispatcherInterface $dispatcher)
+    public function changeRedirectTypeAction(Request $request, EventDispatcherInterface $dispatcher, TokenProvider $tokenProvider)
     {
         if (null !== $response = $this->checkAuth(AdminResources::MODULE, 'RewriteUrl', AccessManager::UPDATE)) {
             return $response;
         }
+
+        $tokenProvider->checkToken((string) $request->query->get('_token'));
 
         $urlId = $request->attributes->get('id_url', $request->query->get('id_url', $request->request->get('id_url')));
         $httpcode = $request->attributes->get('httpcode', $request->query->get('httpcode', $request->request->get('httpcode')));

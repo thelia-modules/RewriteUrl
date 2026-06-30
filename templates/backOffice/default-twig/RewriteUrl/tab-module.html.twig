@@ -8,7 +8,7 @@
      class="bo-rewriteurl"
      data-search-url="{{ path('rewrite.url.search') }}"
      data-exist-url="{{ path('rewrite.url.exist') }}"
-     data-change-type-url="{{ path('rewrite.url.change-redirect-type') }}"
+     data-change-type-url="{{ path('rewrite.url.change-redirect-type') }}?_token={{ assignToken() }}"
      data-reassign-label="{{ 'Reassign the url'|trans({}, d) }}"
      data-reassign-all-label="{{ 'Reassign all urls'|trans({}, d) }}"
      data-exist-error="{{ 'This URL already exists. You can reassign it from the list above.'|trans({}, d) }}">
