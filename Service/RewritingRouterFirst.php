@@ -71,7 +71,7 @@ class RewritingRouterFirst extends RewritingRouter
 
             // If we have a "lang" parameter, whe have to check if the found URL has the proper locale
             // If it's not the case, find the rewritten URL with the requested locale, and redirect to it.
-            if (null == !$requestedLocale = $request->get('lang')) {
+            if (null == !$requestedLocale = $request->attributes->get('lang', $request->query->get('lang', $request->request->get('lang')))) {
                 if (null !== $requestedLang = LangQuery::create()->findOneByLocale($requestedLocale)) {
                     if ($requestedLang->getLocale() != $rewrittenUrlData->locale) {
                         $localizedUrl = $urlTool->retrieve(

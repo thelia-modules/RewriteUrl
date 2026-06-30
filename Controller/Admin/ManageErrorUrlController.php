@@ -154,6 +154,6 @@ class ManageErrorUrlController extends BaseAdminController
     #[Route('/search', name: 'search_url')]
     public function search(Request $request): Response|RedirectResponse
     {
-        return $this->generateRedirect(URL::getInstance()?->absoluteUrl($request->get('success_url'), ['search'=>$request->get('search_term')]));
+        return $this->generateRedirect(URL::getInstance()?->absoluteUrl($request->attributes->get('success_url', $request->query->get('success_url', $request->request->get('success_url'))), ['search'=>$request->attributes->get('search_term', $request->query->get('search_term', $request->request->get('search_term')))]));
     }
 }

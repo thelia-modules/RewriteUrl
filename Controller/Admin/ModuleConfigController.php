@@ -47,7 +47,8 @@ class ModuleConfigController extends BaseAdminController
 
     public function getDatatableRules(Request $request)
     {
-        $requestSearchValue = $request->get('search') ? '%' . $request->get('search')['value'] . '%' : '';
+        $searchParam = $request->attributes->get('search', $request->query->get('search', $request->request->get('search')));
+        $requestSearchValue = $searchParam ? '%' . $searchParam['value'] . '%' : '';
         $recordsTotal = RewriteurlRuleQuery::create()->count();
         $search = RewriteurlRuleQuery::create();
         if ('' !== $requestSearchValue) {
@@ -59,8 +60,9 @@ class ModuleConfigController extends BaseAdminController
 
         $recordsFiltered = $search->count();
 
-        $orderColumn = $request->get('order')[0]['column'];
-        $orderDirection = $request->get('order')[0]['dir'];
+        $orderParam = $request->attributes->get('order', $request->query->get('order', $request->request->get('order')));
+        $orderColumn = $orderParam[0]['column'];
+        $orderDirection = $orderParam[0]['dir'];
         switch ($orderColumn) {
             case '0':
                 $search->orderByRuleType($orderDirection);
@@ -83,8 +85,8 @@ class ModuleConfigController extends BaseAdminController
         }
 
         $search
-            ->offset($request->get('start'))
-            ->limit($request->get('length'));
+            ->offset($request->attributes->get('start', $request->query->get('start', $request->request->get('start'))))
+            ->limit($request->attributes->get('length', $request->query->get('length', $request->request->get('length'))));
         $searchArray = $search->find()->toArray();
 
         $resultsArray = [];
@@ -127,7 +129,7 @@ class ModuleConfigController extends BaseAdminController
         }
 
         return new JsonResponse([
-            'draw' => $request->get('draw'),
+            'draw' => $request->attributes->get('draw', $request->query->get('draw', $request->request->get('draw'))),
             'recordsTotal' => $recordsTotal,
             'recordsFiltered' => $recordsFiltered,
             'data' => $resultsArray,
@@ -136,7 +138,7 @@ class ModuleConfigController extends BaseAdminController
 
     public function setRewritingEnableAction(Request $request): Response
     {
-        $isRewritingEnable = $request->get('rewriting_enable', null);
+        $isRewritingEnable = $request->attributes->get('rewriting_enable', $request->query->get('rewriting_enable', $request->request->get('rewriting_enable', null)));
 
         if ($isRewritingEnable !== null) {
             ConfigQuery::write('rewriting_enable', $isRewritingEnable ? 1 : 0);
@@ -167,7 +169,7 @@ class ModuleConfigController extends BaseAdminController
     public function updateRuleAction(Request $request)
     {
         try {
-            $rule = RewriteurlRuleQuery::create()->findOneById($request->get('id'));
+            $rule = RewriteurlRuleQuery::create()->findOneById($request->attributes->get('id', $request->query->get('id', $request->request->get('id'))));
 
             if ($rule === null) {
                 throw new \Exception(Translator::getInstance()->trans(
@@ -188,7 +190,7 @@ class ModuleConfigController extends BaseAdminController
     public function removeRuleAction(Request $request)
     {
         try {
-            $rule = RewriteurlRuleQuery::create()->findOneById($request->get('id'));
+            $rule = RewriteurlRuleQuery::create()->findOneById($request->attributes->get('id', $request->query->get('id', $request->request->get('id'))));
 
             if ($rule === null) {
                 throw new \Exception(Translator::getInstance()->trans(
@@ -209,7 +211,7 @@ class ModuleConfigController extends BaseAdminController
     public function moveRulePositionAction(Request $request)
     {
         try {
-            $rule = RewriteurlRuleQuery::create()->findOneById($request->get('id'));
+            $rule = RewriteurlRuleQuery::create()->findOneById($request->attributes->get('id', $request->query->get('id', $request->request->get('id'))));
 
             if ($rule === null) {
                 throw new \Exception(Translator::getInstance()->trans(
@@ -219,14 +221,14 @@ class ModuleConfigController extends BaseAdminController
                 ));
             }
 
-            $type = $request->get('type', null);
+            $type = $request->attributes->get('type', $request->query->get('type', $request->request->get('type', null)));
 
             if ($type === 'up') {
                 $rule->movePositionUp();
             } elseif ($type === 'down') {
                 $rule->movePositionDown();
             } elseif ($type === 'absolute') {
-                $position = $request->get('position', null);
+                $position = $request->attributes->get('position', $request->query->get('position', $request->request->get('position', null)));
                 if (!empty($position)) {
                     $rule->changeAbsolutePosition($position);
                 }
@@ -244,7 +246,7 @@ class ModuleConfigController extends BaseAdminController
     protected function fillRuleObjectFields(RewriteurlRule $rule, Request $request): void
     {
         $textValue = "";
-        $ruleType = $request->get('ruleType', null);
+        $ruleType = $request->attributes->get('ruleType', $request->query->get('ruleType', $request->request->get('ruleType', null)));
 
         $isParamRule = $ruleType === RewriteurlRule::TYPE_GET_PARAMS || $ruleType === RewriteurlRule::TYPE_REGEX_GET_PARAMS;
         $isRegexRule = $ruleType === RewriteurlRule::TYPE_REGEX || $ruleType === RewriteurlRule::TYPE_REGEX_GET_PARAMS;
@@ -254,17 +256,17 @@ class ModuleConfigController extends BaseAdminController
             throw new TheliaProcessException(Translator::getInstance()->trans('Unknown rule type.', [], RewriteUrl::MODULE_DOMAIN));
         }
 
-        if ($isTextRule && !$textValue = $request->get('textValue')) {
+        if ($isTextRule && !$textValue = $request->attributes->get('textValue', $request->query->get('textValue', $request->request->get('textValue')))) {
             throw new TheliaProcessException(Translator::getInstance()->trans('Text value cannot be empty.', [], RewriteUrl::MODULE_DOMAIN));
         }
 
-        $regexValue = $request->get('value', null);
+        $regexValue = $request->attributes->get('value', $request->query->get('value', $request->request->get('value', null)));
 
         if ($isRegexRule && empty($regexValue)) {
             throw new TheliaProcessException(Translator::getInstance()->trans('Regex value cannot be empty.', [], RewriteUrl::MODULE_DOMAIN));
         }
 
-        $redirectUrl = $request->get('redirectUrl', null);
+        $redirectUrl = $request->attributes->get('redirectUrl', $request->query->get('redirectUrl', $request->request->get('redirectUrl', null)));
 
         if (empty($redirectUrl)) {
             throw new TheliaProcessException(Translator::getInstance()->trans('Redirect url cannot be empty.', [], RewriteUrl::MODULE_DOMAIN));
@@ -275,7 +277,7 @@ class ModuleConfigController extends BaseAdminController
         $paramRuleArray = [];
 
         if ($isParamRule) {
-            $paramRuleArray = $request->get('paramRules', null);
+            $paramRuleArray = $request->attributes->get('paramRules', $request->query->get('paramRules', $request->request->get('paramRules', null)));
             if (empty($paramRuleArray)) {
                 throw new TheliaProcessException(Translator::getInstance()->trans('At least one GET parameter is required.', [], RewriteUrl::MODULE_DOMAIN));
             }
@@ -283,7 +285,7 @@ class ModuleConfigController extends BaseAdminController
 
         $rule->setRuleType($ruleType)
             ->setValue($value)
-            ->setOnly404($request->get('only404', 1))
+            ->setOnly404($request->attributes->get('only404', $request->query->get('only404', $request->request->get('only404', 1))))
             ->setRedirectUrl($redirectUrl);
 
         if (empty($rule->getPosition())) {

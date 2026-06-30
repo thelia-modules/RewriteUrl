@@ -211,8 +211,8 @@ class RewriteUrlAdminController extends BaseAdminController
             return $response;
         }
 
-        $urlId = $request->get('id_url');
-        $httpcode = $request->get('httpcode');
+        $urlId = $request->attributes->get('id_url', $request->query->get('id_url', $request->request->get('id_url')));
+        $httpcode = $request->attributes->get('httpcode', $request->query->get('httpcode', $request->request->get('httpcode')));
         $rewritingUrl = RewritingUrlQuery::create()->findOneById($urlId);
 
         if ($rewritingUrl !== null) {
