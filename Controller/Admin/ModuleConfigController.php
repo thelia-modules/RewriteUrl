@@ -48,7 +48,8 @@ class ModuleConfigController extends BaseAdminController
 
     public function getDatatableRules(Request $request)
     {
-        $searchParam = $request->attributes->get('search', $request->query->get('search', $request->request->get('search')));
+        // DataTables sends search/order as arrays; InputBag::get() throws on non-scalar values, so read them with all().
+        $searchParam = $request->attributes->get('search', $request->query->all()['search'] ?? $request->request->all()['search'] ?? null);
         $requestSearchValue = $searchParam ? '%' . $searchParam['value'] . '%' : '';
         $recordsTotal = RewriteurlRuleQuery::create()->count();
         $search = RewriteurlRuleQuery::create();
@@ -61,7 +62,7 @@ class ModuleConfigController extends BaseAdminController
 
         $recordsFiltered = $search->count();
 
-        $orderParam = $request->attributes->get('order', $request->query->get('order', $request->request->get('order')));
+        $orderParam = $request->attributes->get('order', $request->query->all()['order'] ?? $request->request->all()['order'] ?? null);
         $orderColumn = $orderParam[0]['column'];
         $orderDirection = $orderParam[0]['dir'];
         switch ($orderColumn) {
