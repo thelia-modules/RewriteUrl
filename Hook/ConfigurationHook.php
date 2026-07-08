@@ -46,9 +46,11 @@ class ConfigurationHook extends BaseHook
 
     public function onModuleConfiguration(HookRenderEvent $event): void
     {
+        $extension = $this->getParser()->getFileExtension();
+
         $event->add(
             $this->render(
-                'RewriteUrl/module-configuration.html.twig',
+                'RewriteUrl/module-configuration.'.$extension,
                 [
                     "isRewritingEnabled" => ConfigQuery::isRewritingEnable()
                 ]
@@ -58,9 +60,11 @@ class ConfigurationHook extends BaseHook
 
     public function onModuleConfigurationJavascript(HookRenderEvent $event): void
     {
+        $extension = $this->getParser()->getFileExtension();
+
         $event->add(
             $this->render(
-                'RewriteUrl/module-configuration-js.html.twig',
+                'RewriteUrl/module-configuration-js.'.$extension,
                 [
                     "isRewritingEnabled" => ConfigQuery::isRewritingEnable()
                 ]
@@ -71,7 +75,7 @@ class ConfigurationHook extends BaseHook
     public function onConfigurationCatalogTop(HookRenderEvent $event): void
     {
         $event->add($this->render(
-            'configuration-catalog.html.twig'
+            'configuration-catalog.'.$this->getParser()->getFileExtension()
         ));
     }
 
