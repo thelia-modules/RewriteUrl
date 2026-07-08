@@ -41,6 +41,13 @@ class UrlRewritingTabHook extends BaseHook
 
     public function onTabSeoBottom(HookRenderEvent $event): void
     {
+        // This UI is only implemented for the Twig back office (tab-module.html.twig).
+        // The legacy Smarty back office has no compatible template, so skip rendering
+        // there instead of emitting an "Unknown template" error on every edit page.
+        if ('html.twig' !== $this->getParser()->getFileExtension()) {
+            return;
+        }
+
         // The SEO tab forwards the edited object as `type` + `id`. Fall back to the
         // entity-specific argument so the block keeps rendering on templates that do
         // not forward the type yet.
