@@ -16,6 +16,9 @@ class RewriteUrlImport extends AbstractImport
     const COL_REDIRECT    = 'REDIRECT';
     const COL_GONE        = 'GONE';
 
+    /** @var int Number of warnings detailed in the report, the other ones being counted */
+    const MAX_DETAILED_WARNINGS = 20;
+
     protected $mandatoryColumns = [self::COL_URL, self::COL_REDIRECT, self::COL_GONE];
 
     protected ImportRewriteUrlService $importRewriteUrlService;
@@ -35,6 +38,9 @@ class RewriteUrlImport extends AbstractImport
 
     /** @var string[] Messages about the lines which could not be read at all */
     protected array $unreadableLineMessages = [];
+
+    /** @var string[] Messages about the lines imported in a way that needs an eye later */
+    protected array $warnings = [];
 
     public function __construct()
     {
@@ -149,8 +155,12 @@ class RewriteUrlImport extends AbstractImport
                 return null;
             }
 
-            $this->importRewriteUrlService->importRewriteUrl($url, $redirect);
+            $warning = $this->importRewriteUrlService->importRewriteUrl($url, $redirect);
             ++$this->importedRows;
+
+            if (null !== $warning) {
+                $this->warnings[] = $this->prefixWithLineNumber($warning);
+            }
 
             return null;
         } catch (ImportUrlConflictException $e) {
@@ -285,7 +295,20 @@ class RewriteUrlImport extends AbstractImport
             $report[] = $unreadableLineMessage;
         }
 
-        if (0 < $this->refusedLines + $this->unreadableLines + $this->completedLines) {
+        $detailedWarnings = \array_slice($this->warnings, 0, self::MAX_DETAILED_WARNINGS);
+
+        foreach ($detailedWarnings as $warning) {
+            $report[] = $warning;
+        }
+
+        if (\count($this->warnings) > \count($detailedWarnings)) {
+            $report[] = $this->trans(
+                'And %count% other line(s) in the same case: those rules can be deleted from the rules page of the module.',
+                ['%count%' => \count($this->warnings) - \count($detailedWarnings)]
+            );
+        }
+
+        if (0 < $this->refusedLines + $this->unreadableLines + $this->completedLines + \count($this->warnings)) {
             $report[] = $this->trans(
                 'Report: %total% data line(s) in the file, %imported% imported, %refused% refused, %unreadable% unreadable, %completed% completed with empty columns.',
                 [

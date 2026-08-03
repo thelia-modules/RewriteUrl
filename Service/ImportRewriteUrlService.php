@@ -88,10 +88,12 @@ class ImportRewriteUrlService
     }
 
     /**
+     * @return string|null Warning about the way the redirection had to be done, if any
+     *
      * @throws PropelException
      * @throws ImportUrlConflictException
      */
-    public function importRewriteUrl(string $url, string $redirect): void
+    public function importRewriteUrl(string $url, string $redirect): ?string
     {
         if ($url === $redirect) {
             throw new ImportUrlConflictException($this->trans('Redirect url cannot be the same as source url'));
@@ -128,7 +130,7 @@ class ImportRewriteUrlService
         // at all, and stays reversible (it can be deleted from the rules page).
         if (null !== $sourceRewritingUrl) {
             if ($this->isAlreadyRedirectedTo($sourceRewritingUrl, $redirectUrl)) {
-                return;
+                return null;
             }
 
             // Redirecting the URL of a page which is still online would make that page
@@ -153,7 +155,16 @@ class ImportRewriteUrlService
             $this->importRewriteRuleUrl($url, $redirectUrl);
             $this->restoreCanonicalUrl($sourceRewritingUrl);
 
-            return;
+            // The rule redirects the URL whatever the state of the object it belongs to:
+            // it has to be deleted if that object is put back online one day.
+            return $this->trans(
+                'A redirection rule has been created for "%url%", which is the URL of the %view% #%viewId%: if that %view% is put back online, delete the rule, otherwise its page will stay redirected.',
+                [
+                    '%url%' => $url,
+                    '%view%' => $sourceRewritingUrl->getView(),
+                    '%viewId%' => $sourceRewritingUrl->getViewId(),
+                ]
+            );
         }
 
         // The source URL is unknown: Thelia can handle the redirection natively. But the
@@ -164,7 +175,7 @@ class ImportRewriteUrlService
         if (null === $targetRewritingUrl || 1 !== $this->countCanonicalUrls($targetRewritingUrl)) {
             $this->importRewriteRuleUrl($url, $redirectUrl);
 
-            return;
+            return null;
         }
 
         $rewritingUrl = new RewritingUrl();
@@ -181,6 +192,8 @@ class ImportRewriteUrlService
         $rewritingUrl
             ->setRedirected($targetRewritingUrl->getId())
             ->save();
+
+        return null;
     }
 
     /**
