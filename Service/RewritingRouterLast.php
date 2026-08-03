@@ -16,6 +16,8 @@ use Thelia\Tools\URL;
  */
 class RewritingRouterLast extends RewritingRouter
 {
+    use TextRuleMatcherTrait;
+
     /**
      * @inheritdoc
      */
@@ -26,12 +28,7 @@ class RewritingRouterLast extends RewritingRouter
             $pathInfo = $request instanceof TheliaRequest ? $request->getRealPathInfo() : $request->getPathInfo();
 
             // Check RewriteUrl text rules
-            $textRule = RewriteurlRuleQuery::create()
-                ->filterByOnly404(1)
-                ->filterByValue(ltrim($pathInfo, '/'))
-                ->filterByRuleType('text')
-                ->orderByPosition()
-                ->findOne();
+            $textRule = $this->findTextRule(1, $pathInfo);
 
             if ($textRule) {
                 $this->redirect($urlTool->absoluteUrl($textRule->getRedirectUrl()), 301);

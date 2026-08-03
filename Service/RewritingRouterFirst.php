@@ -22,6 +22,8 @@ use Thelia\Tools\URL;
  */
 class RewritingRouterFirst extends RewritingRouter
 {
+    use TextRuleMatcherTrait;
+
     /**
      * @inheritdoc
      */
@@ -33,12 +35,7 @@ class RewritingRouterFirst extends RewritingRouter
             $pathInfo = $request instanceof TheliaRequest ? $request->getRealPathInfo() : $request->getPathInfo();
 
             // Check RewriteUrl text rules
-            $textRule = RewriteurlRuleQuery::create()
-                ->filterByOnly404(0)
-                ->filterByValue(ltrim($pathInfo, '/'))
-                ->filterByRuleType('text')
-                ->orderByPosition()
-                ->findOne();
+            $textRule = $this->findTextRule(0, $pathInfo);
 
             if ($textRule) {
                 $this->redirect($urlTool->absoluteUrl($textRule->getRedirectUrl()), 301);
@@ -104,7 +101,18 @@ class RewritingRouterFirst extends RewritingRouter
                 }
                 // End of differences
 
-                $this->redirect($urlTool->absoluteUrl($redirect->getUrl()), $httpRedirectCode);
+                // Every URL of the object may be flagged as redirected, leaving it without
+                // any canonical URL: use the target of the redirection instead of failing
+                // with "Call to a member function getUrl() on null".
+                $redirectUrl = $redirect?->getUrl() ?? $rewrittenUrlData->redirectedToUrl;
+
+                if ($redirectUrl === $rewrittenUrlData->rewrittenUrl) {
+                    // The URL redirects to itself: let the other routers have a chance to
+                    // match it, and end up on a 404 rather than on a redirection loop.
+                    throw new ResourceNotFoundException();
+                }
+
+                $this->redirect($urlTool->absoluteUrl($redirectUrl), $httpRedirectCode);
             }
 
             /* define GET arguments in request */
