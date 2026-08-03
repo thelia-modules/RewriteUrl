@@ -20,11 +20,53 @@ class RewriteUrlImport extends AbstractImport
 
     protected ImportRewriteUrlService $importRewriteUrlService;
 
-    protected int $lineNumber = 0;
+    protected int $rowIndex = 0;
+
+    protected int $refusedLines = 0;
+
+    protected int $unreadableLines = 0;
+
+    protected int $completedLines = 0;
+
+    protected int $dataLines = 0;
+
+    /** @var int[] Line number in the file of each row to import */
+    protected array $lineNumbers = [];
+
+    /** @var string[] Messages about the lines which could not be read at all */
+    protected array $unreadableLineMessages = [];
 
     public function __construct()
     {
         $this->importRewriteUrlService = new ImportRewriteUrlService();
+    }
+
+    /**
+     * The CSV serializer of Thelia silently drops every line which has not exactly as many
+     * columns as the header, so a missing trailing separator or a comma inside an URL makes
+     * the line disappear from the import without any message. The file is read again here,
+     * to import the lines which can be read without any doubt and to report the other ones.
+     */
+    public function setData(array $data)
+    {
+        $rows = $this->readFile();
+
+        if (null === $rows) {
+            return parent::setData($data);
+        }
+
+        if ([] === $rows) {
+            throw new \UnexpectedValueException(
+                $this->trans(
+                    'No usable line found in the file: check its header (%columns%) and its separator.',
+                    ['%columns%' => implode(', ', $this->mandatoryColumns)]
+                )
+            );
+        }
+
+        $this->lineNumbers = array_column($rows, 'line');
+
+        return parent::setData(array_column($rows, 'data'));
     }
 
     /**
@@ -38,8 +80,23 @@ class RewriteUrlImport extends AbstractImport
             throw new \Exception("UrlSanitizer module is activated. Please disable it before importing the file.");
         }
 
-        ++$this->lineNumber;
+        ++$this->rowIndex;
 
+        $message = $this->importRow($data);
+
+        if (null !== $message) {
+            ++$this->refusedLines;
+        }
+
+        if ($this->rowIndex < \count($this->getData())) {
+            return $message;
+        }
+
+        return $this->appendReport($message);
+    }
+
+    protected function importRow(array $data): ?string
+    {
         $url      = trim($data[self::COL_URL] ?? '');
         $redirect = trim($data[self::COL_REDIRECT] ?? '');
         $gone     = trim($data[self::COL_GONE] ?? '');
@@ -106,19 +163,159 @@ class RewriteUrlImport extends AbstractImport
         }
     }
 
+    /**
+     * Returns the lines to import with their line number in the file, or null when the file
+     * is not a CSV file holding the expected columns, to let Thelia read it.
+     */
+    protected function readFile(): ?array
+    {
+        $file = $this->getFile();
+
+        if (null === $file || !is_readable($file->getPathname())) {
+            return null;
+        }
+
+        $handle = fopen($file->getPathname(), 'r');
+
+        if (false === $handle) {
+            return null;
+        }
+
+        $firstLine = fgets($handle);
+
+        if (false === $firstLine) {
+            fclose($handle);
+
+            return null;
+        }
+
+        $delimiter = substr_count($firstLine, ';') > substr_count($firstLine, ',') ? ';' : ',';
+        rewind($handle);
+
+        $headers = null;
+        $lineNumber = 0;
+        $rows = [];
+
+        while (false !== $columns = fgetcsv($handle, 0, $delimiter)) {
+            ++$lineNumber;
+
+            if (!\is_array($columns) || '' === trim(implode('', array_map(static fn ($column) => (string) $column, $columns)))) {
+                continue;
+            }
+
+            if (null === $headers) {
+                $headers = $this->normalizeHeaders($columns);
+
+                if ([] !== array_diff($this->mandatoryColumns, $headers)) {
+                    fclose($handle);
+
+                    return null;
+                }
+
+                continue;
+            }
+
+            ++$this->dataLines;
+
+            if (\count($columns) > \count($headers)) {
+                ++$this->unreadableLines;
+                $this->unreadableLineMessages[] = $this->trans(
+                    'Line %line% could not be read: %found% columns found instead of %expected%, check the separators and the quotes of this line.',
+                    [
+                        '%line%' => $lineNumber,
+                        '%found%' => \count($columns),
+                        '%expected%' => \count($headers),
+                    ]
+                );
+
+                continue;
+            }
+
+            if (\count($columns) < \count($headers)) {
+                ++$this->completedLines;
+                $columns = array_pad($columns, \count($headers), '');
+            }
+
+            $rows[] = [
+                'line' => $lineNumber,
+                'data' => array_combine($headers, $columns),
+            ];
+        }
+
+        fclose($handle);
+
+        return $rows;
+    }
+
+    /**
+     * Removes the byte order mark added by spreadsheet softwares, and accepts the columns
+     * whatever their case.
+     */
+    protected function normalizeHeaders(array $columns): array
+    {
+        $headers = [];
+
+        foreach ($columns as $index => $column) {
+            $column = (string) $column;
+
+            if (0 === $index) {
+                $column = preg_replace('/^\x{FEFF}/u', '', $column);
+            }
+
+            $headers[] = strtoupper(trim($column));
+        }
+
+        return $headers;
+    }
+
+    /**
+     * Nothing else than the errors and the number of imported rows is displayed by Thelia,
+     * so the lines which have been left aside are reported here, with the totals allowing
+     * to check that every line of the file has been accounted for.
+     */
+    protected function appendReport(?string $message): ?string
+    {
+        $report = [];
+
+        if (null !== $message) {
+            $report[] = $message;
+        }
+
+        foreach ($this->unreadableLineMessages as $unreadableLineMessage) {
+            $report[] = $unreadableLineMessage;
+        }
+
+        if (0 < $this->refusedLines + $this->unreadableLines + $this->completedLines) {
+            $report[] = $this->trans(
+                'Report: %total% data line(s) in the file, %imported% imported, %refused% refused, %unreadable% unreadable, %completed% completed with empty columns.',
+                [
+                    '%total%' => $this->dataLines > 0 ? $this->dataLines : \count($this->getData()),
+                    '%imported%' => $this->importedRows,
+                    '%refused%' => $this->refusedLines,
+                    '%unreadable%' => $this->unreadableLines,
+                    '%completed%' => $this->completedLines,
+                ]
+            );
+        }
+
+        return [] === $report ? null : implode('<br />', $report);
+    }
+
     protected function error(string $message, array $parameters = []): string
     {
-        return $this->prefixWithLineNumber(
-            Translator::getInstance()->trans($message, $parameters, RewriteUrl::MODULE_DOMAIN)
-        );
+        return $this->prefixWithLineNumber($this->trans($message, $parameters));
     }
 
     protected function prefixWithLineNumber(string $message): string
     {
-        return Translator::getInstance()->trans(
+        return $this->trans(
             'Line %line%: %msg%',
-            ['%line%' => $this->lineNumber, '%msg%' => $message],
-            RewriteUrl::MODULE_DOMAIN
+            ['%line%' => $this->lineNumbers[$this->rowIndex - 1] ?? $this->rowIndex, '%msg%' => $message]
         );
+    }
+
+    protected function trans(string $message, array $parameters = []): string
+    {
+        return Translator::getInstance()->trans($message, $parameters, RewriteUrl::MODULE_DOMAIN);
     }
 }
