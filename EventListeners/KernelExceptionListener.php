@@ -44,7 +44,13 @@ class KernelExceptionListener implements EventSubscriberInterface
             $request = $this->requestStack->getCurrentRequest();
             $pathInfo = $request instanceof TheliaRequest ? $request->getRealPathInfo() : $request->getPathInfo();
 
-            $gone = RewriteurlGoneUrlQuery::create()->findOneByUrlSource(ltrim($request->getRequestUri(), '/'));
+            // Gone URLs are stored as a path, the way they are imported and typed in the
+            // back-office: the encoded and the decoded path are both looked up, and the
+            // request URI is kept for the URLs stored with their query string.
+            $gonePaths = [ltrim($pathInfo, '/'), ltrim($request->getRequestUri(), '/')];
+            $gonePaths[] = urldecode($gonePaths[0]);
+
+            $gone = RewriteurlGoneUrlQuery::create()->filterByUrlSource(array_unique($gonePaths))->findOne();
             if (null !== $gone) {
                 $event->setThrowable(new GoneHttpException());
                 return;

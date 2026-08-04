@@ -44,6 +44,28 @@ BackOffice :
 - in Configuration list not rewriten urls
 - in the module configuration page
 
+## Import of redirections and gone URLs
+
+CSV file with three columns: `URL`, `REDIRECT`, `GONE`. Fill in either `REDIRECT` with the
+target URL, or `GONE` with any marker (`X`, `1`, ...) to answer a 410 on `URL`. Domains are
+stripped, so both full URLs and paths are accepted.
+
+Existing rewritten URLs are never modified by the import:
+
+* a URL already known by Thelia (the URL of a product, a category, ...) is redirected by a
+  text rule, so that its object keeps its canonical URL. Turning it into a redirected URL
+  would leave that object without any URL, which breaks the front and the URL generation.
+* a URL unknown by Thelia is redirected with the native mechanism, provided the target has
+  a single canonical URL.
+
+A line is reported as an error, and nothing is written for it, when:
+
+* the URL is the one of a product, category, content, folder or brand which is online,
+* the target is offline, or is a redirection whose object has no canonical URL any more,
+* the target ends up on the URL itself,
+* both `REDIRECT` and `GONE` are filled in, or none of them,
+* the URL is already declared as gone and is being redirected, or the other way around.
+
 ## Screenshot
 
 #### In "Modules" tab
