@@ -22,14 +22,6 @@ class RewriteUrlImport extends AbstractImport
 
     protected int $rowIndex = 0;
 
-    protected int $refusedLines = 0;
-
-    protected int $unreadableLines = 0;
-
-    protected int $completedLines = 0;
-
-    protected int $dataLines = 0;
-
     /** @var int[] Line number in the file of each row to import */
     protected array $lineNumbers = [];
 
@@ -86,10 +78,6 @@ class RewriteUrlImport extends AbstractImport
         ++$this->rowIndex;
 
         $message = $this->importRow($data);
-
-        if (null !== $message) {
-            ++$this->refusedLines;
-        }
 
         if ($this->rowIndex < \count($this->getData())) {
             return $message;
@@ -222,10 +210,7 @@ class RewriteUrlImport extends AbstractImport
                 continue;
             }
 
-            ++$this->dataLines;
-
             if (\count($columns) > \count($headers)) {
-                ++$this->unreadableLines;
                 $this->unreadableLineMessages[] = $this->trans(
                     'Line %line% could not be read: %found% columns found instead of %expected%, check the separators and the quotes of this line.',
                     [
@@ -239,7 +224,6 @@ class RewriteUrlImport extends AbstractImport
             }
 
             if (\count($columns) < \count($headers)) {
-                ++$this->completedLines;
                 $columns = array_pad($columns, \count($headers), '');
             }
 
@@ -277,8 +261,8 @@ class RewriteUrlImport extends AbstractImport
 
     /**
      * Nothing else than the errors and the number of imported rows is displayed by Thelia,
-     * so the lines which have been left aside are reported here, with the totals allowing
-     * to check that every line of the file has been accounted for.
+     * so the lines which have been left aside and the ones needing an eye later are all
+     * reported on the last row of the import.
      */
     protected function appendReport(?string $message): ?string
     {
@@ -294,16 +278,6 @@ class RewriteUrlImport extends AbstractImport
 
         foreach ($this->warnings as $warning) {
             $report[] = $warning;
-        }
-
-        if (0 < $this->refusedLines + $this->unreadableLines + $this->completedLines + \count($this->warnings)) {
-            $report[] = $this->trans(
-                'Report: %imported% line(s) imported out of the %total% line(s) of the file.',
-                [
-                    '%imported%' => $this->importedRows,
-                    '%total%' => $this->dataLines > 0 ? $this->dataLines : \count($this->getData()),
-                ]
-            );
         }
 
         return [] === $report ? null : implode('<br />', $report);
