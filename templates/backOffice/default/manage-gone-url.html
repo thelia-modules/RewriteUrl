@@ -1,0 +1,174 @@
+{extends file="admin-layout.tpl"}
+
+{block name="no-return-functions"}
+    {$admin_current_location = 'configuration'}
+{/block}
+
+{block name="page-title"}{intl l='List of Gone (410) URLs' d="rewriteurl.bo.default"}{/block}
+
+{block name="main-content"}
+    {$order = $smarty.get.order|default:"created_at:desc"}
+    {$search = $smarty.get.search|default:null}
+    {$page = $smarty.get.page|default:1}
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="general-block-decorator">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="title col-md-9">
+                            {intl l="Manage Gone (410) URLs" d='rewriteurl.bo.default'}
+                        </div>
+
+                        <div class="text-right">
+                            <form action="{url path="/admin/module/RewriteUrl/manageGoneUrl/search"}">
+                                <div class="form-group input-group">
+                                    <input type="hidden" name="success_url" class="form-control" value="{url path='/admin/module/RewriteUrl/manageGoneUrl'}">
+                                    <input type="text" name="search_term" class="form-control" placeholder="{intl l="Search in URL" d='rewriteurl.bo.default'}" value="{$search}">
+                                    <span class="input-group-btn">
+                                        <button class="form-control btn btn-default" type="submit">
+                                            <span class="fas fa-search"></span>
+                                        </button>
+                                        {if $search}
+                                            <a href="{url path='/admin/module/RewriteUrl/manageGoneUrl'}" class="form-control btn btn-default" title="{intl l='Reset search' d='rewriteurl.bo.default'}">
+                                                <span class="fas fa-times"></span>
+                                            </a>
+                                        {/if}
+                                    </span>
+                                </div>
+                            </form>
+                            <form method="post" action="{url path='/admin/module/RewriteUrl/manageGoneUrl/clear'}" class="form-inline form-clear-gone-url">
+                                <button type="submit" class="btn btn-danger">
+                                    <span class="fas fa-trash"></span>
+                                    {intl l="Clear all gone URLs" d='rewriteurl.bo.default'}
+                                </button>
+                            </form>
+                        </div>
+
+                        <br>
+
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>
+                                    {admin_sortable_header
+                                    current_order=$order
+                                    order='url_source:asc'
+                                    reverse_order='url_source:desc'
+                                    path=$smarty.server.REQUEST_URI
+                                    label="{intl l='URL Source' d="rewriteurl.bo.default"}"
+                                    }
+                                </th>
+                                <th class="text-center">
+                                    {admin_sortable_header
+                                    current_order=$order
+                                    order='created_at:asc'
+                                    reverse_order='created_at:desc'
+                                    path=$smarty.server.REQUEST_URI
+                                    label="{intl l='Created At' d="rewriteurl.bo.default"}"
+                                    }
+                                </th>
+                                <th class="text-center">
+                                    {admin_sortable_header
+                                    current_order=$order
+                                    order='updated_at:asc'
+                                    reverse_order='updated_at:desc'
+                                    path=$smarty.server.REQUEST_URI
+                                    label="{intl l='Updated At' d="rewriteurl.bo.default"}"
+                                    }
+                                </th>
+                                <th class="text-center">{intl l="Actions" d="rewriteurl.bo.default"}</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {loop type="rewrite_url_gone_url_loop" name="rewriteurl_gone_url_loop" table_name="rewriteurl_gone_url" orders=$order search=$search page=$page limit=20}
+                                <tr data-id="{$ID}">
+                                    <td>
+                                        <a href="{url path="$URL_SOURCE"}" target="_blank">{$URL_SOURCE}</a>
+                                    </td>
+                                    <td class="text-center">{$CREATED_AT|date_format:"%d/%m/%Y"}</td>
+                                    <td class="text-center">{$UPDATED_AT|date_format:"%d/%m/%Y"}</td>
+                                    <td class="text-center">
+                                        <button
+                                            class="btn btn-danger btn-delete-gone-url"
+                                            data-id="{$ID}"
+                                            title="{intl l='Delete' d="rewriteurl.bo.default"}"
+                                        >
+                                            <span class="fas fa-trash"></span>
+                                        </button>
+                                    </td>
+                                </tr>
+                            {/loop}
+                            {elseloop rel="rewriteurl_gone_url_loop"}
+                                <tr>
+                                    <td colspan="4" class="text-center">
+                                        {if $search}
+                                            {intl l="No results found for your search." d='rewriteurl.bo.default'}
+                                        {else}
+                                            {intl l="No gone URL found." d='rewriteurl.bo.default'}
+                                        {/if}
+                                    </td>
+                                </tr>
+                            {/elseloop}
+                            </tbody>
+                            <tfoot>
+                            <tr>
+                                <td colspan="4">
+                                    {include
+                                    file="includes/pagination.html"
+                                    loop_ref="rewriteurl_gone_url_loop"
+                                    max_page_count=20
+                                    page_url={url path="/admin/module/RewriteUrl/manageGoneUrl" order=$order search=$search}
+                                    }
+                                </td>
+                            </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{/block}
+
+{block name="javascript-initialization"}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.btn-delete-gone-url').forEach(function (button) {
+                button.addEventListener('click', async function () {
+                    if (!confirm('{intl l="Are you sure you want to delete this URL?" d="rewriteurl.bo.default"}')) {
+                        return;
+                    }
+
+                    const id = this.dataset.id;
+
+                    await fetch('/admin/module/RewriteUrl/manageGoneUrl/delete/' + id, {
+                        method: 'POST',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Content-Type': 'application/json',
+                        }
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                document.querySelector('tr[data-id="' + id + '"]').remove();
+                            } else {
+                                alert('Erreur lors de la suppression.');
+                            }
+                        })
+                        .catch(error => console.error('Erreur:', error));
+                });
+            });
+
+            const clearForm = document.querySelector('.form-clear-gone-url');
+            if (clearForm) {
+                clearForm.addEventListener('submit', function (event) {
+                    if (!confirm('{intl l="Are you sure you want to clear all gone URLs? This action is irreversible." d="rewriteurl.bo.default"}')) {
+                        event.preventDefault();
+                    }
+                });
+            }
+        });
+    </script>
+{/block}

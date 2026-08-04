@@ -8,6 +8,39 @@
         <loop name="rewrite_url" class="RewriteUrl\Loop\RewriteUrlLoop" />
         <loop name="list-notrewritenurls" class="RewriteUrl\Loop\NotRewritenUrlCategoryLoop"/>
         <loop name="rewrite_url_rule" class="RewriteUrl\Loop\RewriteUrlRuleLoop"/>
+        <loop name="rewrite_url_gone_url_loop" class="RewriteUrl\Loop\RewriteUrlGoneUrlLoop"/>
     </loops>
+
+    <import_categories>
+        <import_category id="rewrite_url.imports">
+            <title locale="fr_FR">Imports RewriteUrl</title>
+            <title locale="en_US">Imports RewriteUrl</title>
+        </import_category>
+    </import_categories>
+
+    <imports>
+        <import id="rewrite_url.import.redirect_gone" class="RewriteUrl\Import\RewriteUrlImport" category_id="rewrite_url.imports">
+            <import_descriptive locale="fr_FR">
+                <title>Import Redirections et URLs supprimées</title>
+                <description>
+                    <![CDATA[
+                            <p>Importe des urls de redirections (301) et des URLs supprimées (410).</p>
+                            <p>(colonnes : URL, REDIRECT, GONE)</p>
+                            <p>Désactivé le module UrlSanitizer avant de faire l'import</p>
+                    ]]>
+                </description>
+            </import_descriptive>
+            <import_descriptive locale="en_US">
+                <title>Import Redirections and Gone URLs</title>
+                <description>
+                    <![CDATA[
+                            <p>Imports redirect URLs (301) and deleted URLs (410).</p>
+                            <p>(columns: URL, REDIRECT, GONE)</p>
+                            <p>Disable module UrlSanitizer before importing datas</p>
+                    ]]>
+                </description>
+            </import_descriptive>
+        </import>
+    </imports>
 
 </config>

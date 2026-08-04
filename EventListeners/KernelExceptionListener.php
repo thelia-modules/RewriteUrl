@@ -6,13 +6,13 @@ use Propel\Runtime\Exception\PropelException;
 use RewriteUrl\Model\RewriteurlErrorUrl;
 use RewriteUrl\Model\RewriteurlErrorUrlQuery;
 use RewriteUrl\Model\RewriteurlErrorUrlRefererQuery;
-use RewriteUrl\Model\RewriteurlErrorUrlReferrerQuery;
+use RewriteUrl\Model\RewriteurlGoneUrlQuery;
 use RewriteUrl\Model\RewriteurlRule;
 use RewriteUrl\Model\RewriteurlRuleQuery;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
-use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
+use Symfony\Component\HttpKernel\Exception\GoneHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Thelia\Core\HttpKernel\Exception\RedirectException;
@@ -43,6 +43,18 @@ class KernelExceptionListener implements EventSubscriberInterface
 
             $request = $this->requestStack->getCurrentRequest();
             $pathInfo = $request instanceof TheliaRequest ? $request->getRealPathInfo() : $request->getPathInfo();
+
+            // Gone URLs are stored as a path, the way they are imported and typed in the
+            // back-office: the encoded and the decoded path are both looked up, and the
+            // request URI is kept for the URLs stored with their query string.
+            $gonePaths = [ltrim($pathInfo, '/'), ltrim($request->getRequestUri(), '/')];
+            $gonePaths[] = urldecode($gonePaths[0]);
+
+            $gone = RewriteurlGoneUrlQuery::create()->filterByUrlSource(array_unique($gonePaths))->findOne();
+            if (null !== $gone) {
+                $event->setThrowable(new GoneHttpException());
+                return;
+            }
 
             // Errors Url
             $userAgent = $this->requestStack->getCurrentRequest()->headers->get('user_agent');
