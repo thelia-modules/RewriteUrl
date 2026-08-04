@@ -24,7 +24,7 @@ return array(
     'Redirect url cannot be empty.' => 'L URL redirigée ne peut pas être vide.',
     'Redirect url cannot be the same as source url' => 'L\'URL de redirection ne peut pas être identique à l\'URL de départ.',
     'Regex' => 'Expression régulière',
-    'Report: %total% data line(s) in the file, %imported% imported, %refused% refused, %unreadable% unreadable, %completed% completed with empty columns.' => 'Bilan : %total% ligne(s) de données dans le fichier, %imported% importée(s), %refused% refusée(s), %unreadable% illisible(s), %completed% complétée(s) avec des colonnes vides.',
+    'Report: %imported% line(s) imported out of the %total% line(s) of the file.' => 'Bilan : %imported% ligne(s) importée(s) sur les %total% ligne(s) du fichier.',
     'Regex and Get Params' => 'Expr. régulière + Param. GET',
     'Regex value cannot be empty.' => 'La valeur de l\'expression régulière ne peut pas être vide.',
     'Text' => 'Texte',

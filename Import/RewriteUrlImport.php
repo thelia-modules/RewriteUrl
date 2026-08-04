@@ -298,13 +298,10 @@ class RewriteUrlImport extends AbstractImport
 
         if (0 < $this->refusedLines + $this->unreadableLines + $this->completedLines + \count($this->warnings)) {
             $report[] = $this->trans(
-                'Report: %total% data line(s) in the file, %imported% imported, %refused% refused, %unreadable% unreadable, %completed% completed with empty columns.',
+                'Report: %imported% line(s) imported out of the %total% line(s) of the file.',
                 [
-                    '%total%' => $this->dataLines > 0 ? $this->dataLines : \count($this->getData()),
                     '%imported%' => $this->importedRows,
-                    '%refused%' => $this->refusedLines,
-                    '%unreadable%' => $this->unreadableLines,
-                    '%completed%' => $this->completedLines,
+                    '%total%' => $this->dataLines > 0 ? $this->dataLines : \count($this->getData()),
                 ]
             );
         }
