@@ -2,7 +2,6 @@
 
 return array(
     'A redirection rule has been created for "%url%", which is the URL of the %view% #%viewId%: if that %view% is put back online, delete the rule, otherwise its page will stay redirected.' => 'Une règle de redirection a été créée pour "%url%", qui est l\'URL du %view% #%viewId% : si ce %view% est remis en ligne, supprimez la règle, sinon sa page restera redirigée.',
-    'And %count% other line(s) in the same case: those rules can be deleted from the rules page of the module.' => 'Et %count% autre(s) ligne(s) dans le même cas : ces règles sont supprimables depuis la page des règles du module.',
     'At least one GET parameter is required.' => 'Au moins un paramètre GET est requis.',
     'Both Redirect 301 and Delete 410 are set for "%url%": keep only one of them.' => 'Redirection 301 et Supp 410 sont renseignées toutes les deux pour "%url%" : n\'en gardez qu\'une.',
     'Column REDIRECT is not a valid URL: "%url%".' => 'La colonne REDIRECT ne contient pas une URL valide : "%url%".',

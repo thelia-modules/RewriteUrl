@@ -16,9 +16,6 @@ class RewriteUrlImport extends AbstractImport
     const COL_REDIRECT    = 'REDIRECT';
     const COL_GONE        = 'GONE';
 
-    /** @var int Number of warnings detailed in the report, the other ones being counted */
-    const MAX_DETAILED_WARNINGS = 20;
-
     protected $mandatoryColumns = [self::COL_URL, self::COL_REDIRECT, self::COL_GONE];
 
     protected ImportRewriteUrlService $importRewriteUrlService;
@@ -295,17 +292,8 @@ class RewriteUrlImport extends AbstractImport
             $report[] = $unreadableLineMessage;
         }
 
-        $detailedWarnings = \array_slice($this->warnings, 0, self::MAX_DETAILED_WARNINGS);
-
-        foreach ($detailedWarnings as $warning) {
+        foreach ($this->warnings as $warning) {
             $report[] = $warning;
-        }
-
-        if (\count($this->warnings) > \count($detailedWarnings)) {
-            $report[] = $this->trans(
-                'And %count% other line(s) in the same case: those rules can be deleted from the rules page of the module.',
-                ['%count%' => \count($this->warnings) - \count($detailedWarnings)]
-            );
         }
 
         if (0 < $this->refusedLines + $this->unreadableLines + $this->completedLines + \count($this->warnings)) {
