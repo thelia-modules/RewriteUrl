@@ -87,7 +87,7 @@ class RewriteUrl extends BaseModule
          * Fix for urls that redirect on itself
          */
         $urls = RewritingUrlQuery::create()
-            ->where(RewritingUrlTableMap::ID . " = " . RewritingUrlTableMap::REDIRECTED)
+            ->where(RewritingUrlTableMap::COL_ID . " = " . RewritingUrlTableMap::COL_REDIRECTED)
             ->find();
 
         /** @var RewritingUrl $url */
