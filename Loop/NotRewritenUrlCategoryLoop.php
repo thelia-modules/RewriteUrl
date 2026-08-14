@@ -73,8 +73,8 @@ class NotRewritenUrlCategoryLoop extends BaseI18nLoop implements PropelSearchLoo
 
         if (!isset(static::$cacheRewritingUrl[$view])) {
             static::$cacheRewritingUrl[$view] = $rewritingUrlQuery
-                ->select([RewritingUrlTableMap::VIEW_ID])
-                ->groupBy(RewritingUrlTableMap::VIEW_ID)
+                ->select([RewritingUrlTableMap::COL_VIEW_ID])
+                ->groupBy(RewritingUrlTableMap::COL_VIEW_ID)
                 ->find();
         }
 
