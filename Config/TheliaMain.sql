@@ -67,9 +67,9 @@ DROP TABLE IF EXISTS `rewriteurl_error_url`;
 CREATE TABLE `rewriteurl_error_url`
 (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `url_source` VARCHAR(255) NOT NULL,
+    `url_source` VARCHAR(1024) NOT NULL,
     `count` INTEGER NOT NULL,
-    `user_agent` VARCHAR(255) NOT NULL,
+    `user_agent` VARCHAR(512) NOT NULL,
     `rewriteurl_rule_id` INTEGER,
     `created_at` DATETIME,
     `updated_at` DATETIME,
@@ -91,7 +91,7 @@ CREATE TABLE `rewriteurl_error_url_referer`
 (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `rewriteurl_error_url_id` INTEGER NOT NULL,
-    `referer` VARCHAR(255) NOT NULL,
+    `referer` VARCHAR(1024) NOT NULL,
     PRIMARY KEY (`id`),
     INDEX `rewriteurl_error_url_referer_fi_e0277e` (`rewriteurl_error_url_id`),
     CONSTRAINT `rewriteurl_error_url_referer_fk_e0277e`

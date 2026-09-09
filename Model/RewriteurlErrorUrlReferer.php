@@ -15,5 +15,9 @@ use RewriteUrl\Model\Base\RewriteurlErrorUrlReferer as BaseRewriteurlErrorUrlRef
  */
 class RewriteurlErrorUrlReferer extends BaseRewriteurlErrorUrlReferer
 {
-
+    /**
+     * Column width, mirroring Config/schema.xml. See RewriteurlErrorUrl for why the
+     * caller has to cut the value first.
+     */
+    public const REFERER_MAX_LENGTH = 1024;
 }
