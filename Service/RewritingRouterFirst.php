@@ -30,7 +30,9 @@ class RewritingRouterFirst extends RewritingRouter
      */
     public function matchRequest(Request $request): array
     {
-        if (ConfigQuery::isRewritingEnable()) {
+        // A rule redirects with a 301, which browsers follow with a GET: on a form sent to an address that a
+        // rule matches (a `?lang=` parameter, an old path), the data would be lost and the action never run.
+        if (ConfigQuery::isRewritingEnable() && \in_array($request->getMethod(), [Request::METHOD_GET, Request::METHOD_HEAD], true)) {
             $this->applyRules($request);
         }
 
