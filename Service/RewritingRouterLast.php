@@ -4,6 +4,7 @@ namespace RewriteUrl\Service;
 
 use RewriteUrl\Model\RewriteurlRule;
 use RewriteUrl\Model\RewriteurlRuleQuery;
+use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 use Thelia\Core\Routing\RewritingRouter;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
@@ -14,6 +15,7 @@ use Thelia\Tools\URL;
 /**
  * This router is intended to be the very last checked by the ChainRouter on a request.
  */
+#[AutoconfigureTag('router.register', ['priority' => -300])]
 class RewritingRouterLast extends RewritingRouter
 {
     /**
