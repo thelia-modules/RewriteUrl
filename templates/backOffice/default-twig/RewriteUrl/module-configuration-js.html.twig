@@ -9,13 +9,18 @@
 <script>
     (function () {
         const urls = {
-            setRewritingEnable: '{{ path('rewrite.url.config.set-rewriting_enable') }}?_token={{ assignToken() }}',
-            moveRulePosition: '{{ path('rewrite.url.rule.move-position') }}?_token={{ assignToken() }}',
-            addRule: '{{ path('rewrite.url.rule.add') }}?_token={{ assignToken() }}',
-            updateRule: '{{ path('rewrite.url.rule.update') }}?_token={{ assignToken() }}',
-            removeRule: '{{ path('rewrite.url.rule.remove') }}?_token={{ assignToken() }}',
+            setRewritingEnable: '{{ path('rewrite.url.config.set-rewriting_enable') }}',
+            moveRulePosition: '{{ path('rewrite.url.rule.move-position') }}',
+            addRule: '{{ path('rewrite.url.rule.add') }}',
+            updateRule: '{{ path('rewrite.url.rule.update') }}',
+            removeRule: '{{ path('rewrite.url.rule.remove') }}',
             getRules: '{{ path('rewrite.url.config.get.rules') }}'
         };
+
+        function getToken() {
+            const el = document.querySelector('.js_rewriteurl_config');
+            return el ? el.dataset.token : '';
+        }
 
         function initSelectors() {
             const $loader = $('<div class="loader"></div>');
@@ -28,7 +33,7 @@
                 const checkbox = this;
                 $.ajax({
                     url: urls.setRewritingEnable,
-                    data: { rewriting_enable: (checkbox.checked ? 1 : 0) },
+                    data: { rewriting_enable: (checkbox.checked ? 1 : 0), _token: getToken() },
                     type: 'post',
                     success: function () { $loader.hide(); },
                     error: function (jqXHR) {
@@ -124,7 +129,7 @@
 
             function moveRulePosition(id, type, position) {
                 $loader.show();
-                const dataToSend = { id: id, type: type };
+                const dataToSend = { id: id, type: type, _token: getToken() };
                 if (type === "absolute") { dataToSend.position = position; }
                 $.ajax({
                     url: urls.moveRulePosition,
@@ -136,7 +141,7 @@
             }
 
             function getPackedData(ruleid) {
-                const data = {};
+                const data = { _token: getToken() };
                 const $tr = $('tr[data-idrule="' + ruleid + '"]');
                 data.id = ruleid;
                 data.ruleType = $tr.find(".js_rule_type").val();
@@ -190,7 +195,7 @@
                 $alertError.hide();
                 $.ajax({
                     url: urls.removeRule,
-                    data: { id: ruleid },
+                    data: { id: ruleid, _token: getToken() },
                     type: 'post',
                     success: function () { $('tr[data-idrule="' + ruleid + '"]').remove(); $loader.hide(); },
                     error: function (jqXHR) { $alertError.html(jqXHR.responseText).show(); $loader.hide(); }

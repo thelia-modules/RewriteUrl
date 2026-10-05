@@ -140,7 +140,7 @@ class ModuleConfigController extends BaseAdminController
 
     public function setRewritingEnableAction(Request $request, TokenProvider $tokenProvider): Response
     {
-        $tokenProvider->checkToken((string) $request->query->get('_token'));
+        $tokenProvider->checkToken((string) $request->request->get('_token'));
 
         $isRewritingEnable = $request->attributes->get('rewriting_enable', $request->query->get('rewriting_enable', $request->request->get('rewriting_enable', null)));
 
@@ -159,7 +159,7 @@ class ModuleConfigController extends BaseAdminController
 
     public function addRuleAction(Request $request, TokenProvider $tokenProvider)
     {
-        $tokenProvider->checkToken((string) $request->query->get('_token'));
+        $tokenProvider->checkToken((string) $request->request->get('_token'));
 
         try {
             $rule = new RewriteurlRule();
@@ -174,7 +174,7 @@ class ModuleConfigController extends BaseAdminController
 
     public function updateRuleAction(Request $request, TokenProvider $tokenProvider)
     {
-        $tokenProvider->checkToken((string) $request->query->get('_token'));
+        $tokenProvider->checkToken((string) $request->request->get('_token'));
 
         try {
             $rule = RewriteurlRuleQuery::create()->findOneById($request->attributes->get('id', $request->query->get('id', $request->request->get('id'))));
@@ -197,7 +197,7 @@ class ModuleConfigController extends BaseAdminController
 
     public function removeRuleAction(Request $request, TokenProvider $tokenProvider)
     {
-        $tokenProvider->checkToken((string) $request->query->get('_token'));
+        $tokenProvider->checkToken((string) $request->request->get('_token'));
 
         try {
             $rule = RewriteurlRuleQuery::create()->findOneById($request->attributes->get('id', $request->query->get('id', $request->request->get('id'))));
@@ -220,7 +220,7 @@ class ModuleConfigController extends BaseAdminController
 
     public function moveRulePositionAction(Request $request, TokenProvider $tokenProvider)
     {
-        $tokenProvider->checkToken((string) $request->query->get('_token'));
+        $tokenProvider->checkToken((string) $request->request->get('_token'));
 
         try {
             $rule = RewriteurlRuleQuery::create()->findOneById($request->attributes->get('id', $request->query->get('id', $request->request->get('id'))));

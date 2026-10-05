@@ -1,6 +1,6 @@
 {# RewriteUrl module configuration (config hook fragment) #}
 {% set d = 'rewriteurl.bo.default' %}
-<div class="modules-configure">
+<div class="modules-configure js_rewriteurl_config" data-token="{{ assignToken() }}">
     <div class="card mb-3">
         <div class="card-body">
             <h2 class="card-title h4">{{ 'Global URL Rewriting'|trans({}, d) }}</h2>
