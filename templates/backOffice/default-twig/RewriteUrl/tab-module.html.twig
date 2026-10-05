@@ -8,7 +8,8 @@
      class="bo-rewriteurl"
      data-search-url="{{ path('rewrite.url.search') }}"
      data-exist-url="{{ path('rewrite.url.exist') }}"
-     data-change-type-url="{{ path('rewrite.url.change-redirect-type') }}?_token={{ assignToken() }}"
+     data-change-type-url="{{ path('rewrite.url.change-redirect-type') }}"
+     data-token="{{ assignToken() }}"
      data-reassign-label="{{ 'Reassign the url'|trans({}, d) }}"
      data-reassign-all-label="{{ 'Reassign all urls'|trans({}, d) }}"
      data-exist-error="{{ 'This URL already exists. You can reassign it from the list above.'|trans({}, d) }}">
@@ -249,7 +250,7 @@
     // Change redirect type (301/302) — AJAX, no reload.
     root.querySelectorAll('.js-redirect-type').forEach(function (sel) {
         sel.addEventListener('change', function () {
-            var body = new URLSearchParams({ id_url: sel.dataset.id, httpcode: sel.value });
+            var body = new URLSearchParams({ id_url: sel.dataset.id, httpcode: sel.value, _token: cfg.token });
             fetch(cfg.changeTypeUrl, {
                 method: 'POST',
                 credentials: 'same-origin',

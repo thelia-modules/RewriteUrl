@@ -212,7 +212,7 @@ class RewriteUrlAdminController extends BaseAdminController
             return $response;
         }
 
-        $tokenProvider->checkToken((string) $request->query->get('_token'));
+        $tokenProvider->checkToken((string) $request->request->get('_token'));
 
         $urlId = $request->attributes->get('id_url', $request->query->get('id_url', $request->request->get('id_url')));
         $httpcode = $request->attributes->get('httpcode', $request->query->get('httpcode', $request->request->get('httpcode')));
