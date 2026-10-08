@@ -11,6 +11,7 @@ return array(
     'Regex' => 'Expression régulière',
     'Regex and Get Params' => 'Expr. régulière + Param. GET',
     'Regex value cannot be empty.' => 'La valeur de l\'expression régulière ne peut pas être vide.',
+    'Invalid regex value (escape the "/" characters).' => 'Expression régulière invalide (échappez les caractères "/").',
     'Text' => 'Texte',
     'Text value cannot be empty.' => 'Le champ texte ne peux pas être vide',
     'This url is already used here %url.' => 'L URL est déjà utilisée ici : %url',

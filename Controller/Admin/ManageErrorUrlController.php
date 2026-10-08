@@ -16,6 +16,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Thelia\Controller\Admin\BaseAdminController;
 use Thelia\Core\HttpFoundation\JsonResponse;
+use Thelia\Core\Security\AccessManager;
+use Thelia\Core\Security\Resource\AdminResources;
 use Thelia\Core\Template\ParserContext;
 use Thelia\Form\Exception\FormValidationException;
 use Thelia\Tools\URL;
@@ -26,6 +28,10 @@ class ManageErrorUrlController extends BaseAdminController
     #[Route('', name: 'show', methods: ['GET'])]
     public function manageErrorUrl(Request $request): Response|RedirectResponse
     {
+        if (null !== $response = $this->checkAuth([AdminResources::MODULE], 'RewriteUrl', AccessManager::VIEW)) {
+            return $response;
+        }
+
         $search = $request->query->get('search');
         $page = max(1, (int) $request->query->get('page', 1));
         $limit = 20;
@@ -71,6 +77,10 @@ class ManageErrorUrlController extends BaseAdminController
     #[Route('/update/{id}', name: 'update', methods: ['POST'])]
     public function updateRewriteUrl(ParserContext $parserContext, $id): Response|RedirectResponse
     {
+        if (null !== $response = $this->checkAuth([AdminResources::MODULE], 'RewriteUrl', AccessManager::UPDATE)) {
+            return $response;
+        }
+
         $form = $this->createForm(UpdateRewriteUrlForm::getName());
 
         try {
@@ -116,6 +126,10 @@ class ManageErrorUrlController extends BaseAdminController
     #[Route('/delete/{id}', name: 'delete')]
     public function deleteErrorUrl($id): JsonResponse
     {
+        if (null !== $this->checkAuth([AdminResources::MODULE], 'RewriteUrl', AccessManager::DELETE)) {
+            return new JsonResponse(['success' => false], Response::HTTP_FORBIDDEN);
+        }
+
         try {
             RewriteurlErrorUrlQuery::create()->filterById($id)->delete();
         } catch (PropelException) {
@@ -131,6 +145,10 @@ class ManageErrorUrlController extends BaseAdminController
     #[Route('/delete', name: 'delete_all')]
     public function deleteAllErrorUrl(): Response|RedirectResponse
     {
+        if (null !== $response = $this->checkAuth([AdminResources::MODULE], 'RewriteUrl', AccessManager::DELETE)) {
+            return $response;
+        }
+
         RewriteurlErrorUrlQuery::create()->deleteAll();
 
         return $this->generateRedirect('/admin/module/RewriteUrl/manageErrorUrl');
@@ -142,6 +160,10 @@ class ManageErrorUrlController extends BaseAdminController
     #[Route('/referer/{id}', name: 'get_referer')]
     public function getReferer($id): JsonResponse
     {
+        if (null !== $this->checkAuth([AdminResources::MODULE], 'RewriteUrl', AccessManager::VIEW)) {
+            return new JsonResponse(['success' => false], Response::HTTP_FORBIDDEN);
+        }
+
         $referees = RewriteurlErrorUrlRefererQuery::create()->filterByRewriteurlErrorUrlId($id)->find();
 
         $result = array_map(function (RewriteurlErrorUrlReferer $referer){
