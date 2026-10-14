@@ -20,6 +20,7 @@ use Thelia\Core\Security\AccessManager;
 use Thelia\Core\Security\Resource\AdminResources;
 use Thelia\Core\Template\ParserContext;
 use Thelia\Form\Exception\FormValidationException;
+use Thelia\Tools\TokenProvider;
 use Thelia\Tools\URL;
 
 #[Route('/admin/module/RewriteUrl/manageErrorUrl', name: 'admin_rewrite_url_manage_error_url_')]
@@ -123,12 +124,14 @@ class ManageErrorUrlController extends BaseAdminController
         return $this->generateErrorRedirect($form);
     }
 
-    #[Route('/delete/{id}', name: 'delete')]
-    public function deleteErrorUrl($id): JsonResponse
+    #[Route('/delete/{id}', name: 'delete', methods: ['POST'])]
+    public function deleteErrorUrl(Request $request, TokenProvider $tokenProvider, $id): JsonResponse
     {
         if (null !== $this->checkAuth([AdminResources::MODULE], 'RewriteUrl', AccessManager::DELETE)) {
             return new JsonResponse(['success' => false], Response::HTTP_FORBIDDEN);
         }
+
+        $tokenProvider->checkToken((string) $request->request->get('_token', ''));
 
         try {
             RewriteurlErrorUrlQuery::create()->filterById($id)->delete();
@@ -142,12 +145,14 @@ class ManageErrorUrlController extends BaseAdminController
     /**
      * @throws PropelException
      */
-    #[Route('/delete', name: 'delete_all')]
-    public function deleteAllErrorUrl(): Response|RedirectResponse
+    #[Route('/delete', name: 'delete_all', methods: ['POST'])]
+    public function deleteAllErrorUrl(Request $request, TokenProvider $tokenProvider): Response|RedirectResponse
     {
         if (null !== $response = $this->checkAuth([AdminResources::MODULE], 'RewriteUrl', AccessManager::DELETE)) {
             return $response;
         }
+
+        $tokenProvider->checkToken((string) $request->request->get('_token', ''));
 
         RewriteurlErrorUrlQuery::create()->deleteAll();
 
