@@ -12,6 +12,7 @@
 
 namespace RewriteUrl\Controller\Admin;
 
+use Symfony\Component\Routing\Attribute\Route;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\ModelCriteria;
 use Thelia\Controller\Admin\AdminController;
@@ -29,6 +30,7 @@ class NotRewritenUrlsAdminController extends AdminController
 {
     private const PAGE_SIZE = 10;
 
+    #[Route('/admin/list-notrewritenurls', name: 'rewrite.url.list-notrewritenurls')]
     public function defaultAction(Request $request)
     {
         $currentTab = $request->query->get('current_tab', 'categories');

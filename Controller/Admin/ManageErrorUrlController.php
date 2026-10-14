@@ -16,8 +16,11 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Thelia\Controller\Admin\BaseAdminController;
 use Thelia\Core\HttpFoundation\JsonResponse;
+use Thelia\Core\Security\AccessManager;
+use Thelia\Core\Security\Resource\AdminResources;
 use Thelia\Core\Template\ParserContext;
 use Thelia\Form\Exception\FormValidationException;
+use Thelia\Tools\TokenProvider;
 use Thelia\Tools\URL;
 
 #[Route('/admin/module/RewriteUrl/manageErrorUrl', name: 'admin_rewrite_url_manage_error_url_')]
@@ -26,6 +29,10 @@ class ManageErrorUrlController extends BaseAdminController
     #[Route('', name: 'show', methods: ['GET'])]
     public function manageErrorUrl(Request $request): Response|RedirectResponse
     {
+        if (null !== $response = $this->checkAuth([AdminResources::MODULE], 'RewriteUrl', AccessManager::VIEW)) {
+            return $response;
+        }
+
         $search = $request->query->get('search');
         $page = max(1, (int) $request->query->get('page', 1));
         $limit = 20;
@@ -71,6 +78,10 @@ class ManageErrorUrlController extends BaseAdminController
     #[Route('/update/{id}', name: 'update', methods: ['POST'])]
     public function updateRewriteUrl(ParserContext $parserContext, $id): Response|RedirectResponse
     {
+        if (null !== $response = $this->checkAuth([AdminResources::MODULE], 'RewriteUrl', AccessManager::UPDATE)) {
+            return $response;
+        }
+
         $form = $this->createForm(UpdateRewriteUrlForm::getName());
 
         try {
@@ -113,9 +124,15 @@ class ManageErrorUrlController extends BaseAdminController
         return $this->generateErrorRedirect($form);
     }
 
-    #[Route('/delete/{id}', name: 'delete')]
-    public function deleteErrorUrl($id): JsonResponse
+    #[Route('/delete/{id}', name: 'delete', methods: ['POST'])]
+    public function deleteErrorUrl(Request $request, TokenProvider $tokenProvider, $id): JsonResponse
     {
+        if (null !== $this->checkAuth([AdminResources::MODULE], 'RewriteUrl', AccessManager::DELETE)) {
+            return new JsonResponse(['success' => false], Response::HTTP_FORBIDDEN);
+        }
+
+        $tokenProvider->checkToken((string) $request->request->get('_token', ''));
+
         try {
             RewriteurlErrorUrlQuery::create()->filterById($id)->delete();
         } catch (PropelException) {
@@ -128,9 +145,15 @@ class ManageErrorUrlController extends BaseAdminController
     /**
      * @throws PropelException
      */
-    #[Route('/delete', name: 'delete_all')]
-    public function deleteAllErrorUrl(): Response|RedirectResponse
+    #[Route('/delete', name: 'delete_all', methods: ['POST'])]
+    public function deleteAllErrorUrl(Request $request, TokenProvider $tokenProvider): Response|RedirectResponse
     {
+        if (null !== $response = $this->checkAuth([AdminResources::MODULE], 'RewriteUrl', AccessManager::DELETE)) {
+            return $response;
+        }
+
+        $tokenProvider->checkToken((string) $request->request->get('_token', ''));
+
         RewriteurlErrorUrlQuery::create()->deleteAll();
 
         return $this->generateRedirect('/admin/module/RewriteUrl/manageErrorUrl');
@@ -142,6 +165,10 @@ class ManageErrorUrlController extends BaseAdminController
     #[Route('/referer/{id}', name: 'get_referer')]
     public function getReferer($id): JsonResponse
     {
+        if (null !== $this->checkAuth([AdminResources::MODULE], 'RewriteUrl', AccessManager::VIEW)) {
+            return new JsonResponse(['success' => false], Response::HTTP_FORBIDDEN);
+        }
+
         $referees = RewriteurlErrorUrlRefererQuery::create()->filterByRewriteurlErrorUrlId($id)->find();
 
         $result = array_map(function (RewriteurlErrorUrlReferer $referer){
@@ -154,6 +181,44 @@ class ManageErrorUrlController extends BaseAdminController
     #[Route('/search', name: 'search_url')]
     public function search(Request $request): Response|RedirectResponse
     {
-        return $this->generateRedirect(URL::getInstance()?->absoluteUrl($request->attributes->get('success_url', $request->query->get('success_url', $request->request->get('success_url'))), ['search'=>$request->attributes->get('search_term', $request->query->get('search_term', $request->request->get('search_term')))]));
+        if (null !== $response = $this->checkAuth([AdminResources::MODULE], 'RewriteUrl', AccessManager::VIEW)) {
+            return $response;
+        }
+
+        $successUrl = (string) $request->attributes->get('success_url', $request->query->get('success_url', $request->request->get('success_url', '')));
+        $searchTerm = $request->attributes->get('search_term', $request->query->get('search_term', $request->request->get('search_term')));
+
+        if (!$this->isLocalUrl($successUrl, $request->getHost())) {
+            $successUrl = '/admin/module/RewriteUrl/manageErrorUrl';
+        }
+
+        return $this->generateRedirect(URL::getInstance()?->absoluteUrl($successUrl, ['search' => $searchTerm]));
+    }
+
+    /**
+     * The search form sends the page to come back to: only a path of this site, or an
+     * http(s) URL on the host being browsed, is followed. A browser drops tabs and
+     * newlines from a URL before reading it (`http\t://host` becomes `http://host`),
+     * so a URL holding any control character is never followed.
+     */
+    private function isLocalUrl(string $url, string $currentHost): bool
+    {
+        if (1 === preg_match('/[\x00-\x1F\x7F]/', $url)) {
+            return false;
+        }
+
+        $url = trim($url);
+
+        if ('' === $url || str_starts_with($url, '//') || str_contains($url, '\\')) {
+            return false;
+        }
+
+        if (preg_match('#^https?://#i', $url)) {
+            $host = parse_url($url, \PHP_URL_HOST);
+
+            return \is_string($host) && '' !== $host && 0 === strcasecmp($host, $currentHost);
+        }
+
+        return 1 !== preg_match('#^[a-z][a-z0-9+.\-]*:#i', $url);
     }
 }

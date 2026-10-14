@@ -25,7 +25,10 @@
                         <button class="btn btn-secondary" type="submit"><i class="bi bi-search"></i></button>
                     </div>
                 </form>
-                <a href="{{ path('admin_rewrite_url_manage_error_url_delete_all') }}" class="btn btn-danger js-delete-all">{{ 'Delete All Errors Urls'|trans({}, d) }}</a>
+                <form action="{{ path('admin_rewrite_url_manage_error_url_delete_all') }}" method="post" class="js-delete-all">
+                    <input type="hidden" name="_token" value="{{ assignToken() }}">
+                    <button type="submit" class="btn btn-danger">{{ 'Delete All Errors Urls'|trans({}, d) }}</button>
+                </form>
             </div>
         </div>
         <div class="card-body">
@@ -157,8 +160,8 @@
             });
         });
 
-        document.querySelectorAll('.js-delete-all').forEach(function (button) {
-            button.addEventListener('click', function (e) {
+        document.querySelectorAll('.js-delete-all').forEach(function (deleteAllForm) {
+            deleteAllForm.addEventListener('submit', function (e) {
                 if (!confirm("{{ 'Delete all error urls?'|trans({}, d) }}")) { e.preventDefault(); }
             });
         });

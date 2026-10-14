@@ -12,6 +12,7 @@
 
 namespace RewriteUrl\Controller\Admin;
 
+use Symfony\Component\Routing\Attribute\Route;
 use Propel\Runtime\ActiveQuery\Criteria;
 use RewriteUrl\Model\RewriteurlRule;
 use RewriteUrl\Model\RewriteurlRuleParam;
@@ -46,8 +47,13 @@ class ModuleConfigController extends BaseAdminController
         );
     }
 
+    #[Route('/admin/module/RewriteUrl/get-rules', name: 'rewrite.url.config.get.rules')]
     public function getDatatableRules(Request $request)
     {
+        if (null !== $response = $this->checkAuth([AdminResources::MODULE], 'RewriteUrl', AccessManager::VIEW)) {
+            return $response;
+        }
+
         // DataTables sends search/order as arrays; InputBag::get() throws on non-scalar values, so read them with all().
         $searchParam = $request->attributes->get('search', $request->query->all()['search'] ?? $request->request->all()['search'] ?? null);
         $requestSearchValue = $searchParam ? '%' . $searchParam['value'] . '%' : '';
@@ -138,8 +144,13 @@ class ModuleConfigController extends BaseAdminController
         ]);
     }
 
+    #[Route('/admin/module/RewriteUrl/config/setRewritingEnable', name: 'rewrite.url.config.set-rewriting_enable')]
     public function setRewritingEnableAction(Request $request, TokenProvider $tokenProvider): Response
     {
+        if (null !== $response = $this->checkAuth([AdminResources::MODULE], 'RewriteUrl', AccessManager::UPDATE)) {
+            return $response;
+        }
+
         $tokenProvider->checkToken((string) $request->request->get('_token'));
 
         $isRewritingEnable = $request->attributes->get('rewriting_enable', $request->query->get('rewriting_enable', $request->request->get('rewriting_enable', null)));
@@ -157,8 +168,13 @@ class ModuleConfigController extends BaseAdminController
         ), 500);
     }
 
+    #[Route('/admin/module/RewriteUrl/rule/add', name: 'rewrite.url.rule.add')]
     public function addRuleAction(Request $request, TokenProvider $tokenProvider)
     {
+        if (null !== $response = $this->checkAuth([AdminResources::MODULE], 'RewriteUrl', AccessManager::CREATE)) {
+            return $response;
+        }
+
         $tokenProvider->checkToken((string) $request->request->get('_token'));
 
         try {
@@ -172,8 +188,13 @@ class ModuleConfigController extends BaseAdminController
         return $this->jsonResponse(json_encode(['state' => 'Success']), 200);
     }
 
+    #[Route('/admin/module/RewriteUrl/rule/update', name: 'rewrite.url.rule.update')]
     public function updateRuleAction(Request $request, TokenProvider $tokenProvider)
     {
+        if (null !== $response = $this->checkAuth([AdminResources::MODULE], 'RewriteUrl', AccessManager::UPDATE)) {
+            return $response;
+        }
+
         $tokenProvider->checkToken((string) $request->request->get('_token'));
 
         try {
@@ -195,8 +216,13 @@ class ModuleConfigController extends BaseAdminController
         return $this->jsonResponse(json_encode(['state' => 'Success']), 200);
     }
 
+    #[Route('/admin/module/RewriteUrl/rule/remove', name: 'rewrite.url.rule.remove')]
     public function removeRuleAction(Request $request, TokenProvider $tokenProvider)
     {
+        if (null !== $response = $this->checkAuth([AdminResources::MODULE], 'RewriteUrl', AccessManager::DELETE)) {
+            return $response;
+        }
+
         $tokenProvider->checkToken((string) $request->request->get('_token'));
 
         try {
@@ -218,8 +244,13 @@ class ModuleConfigController extends BaseAdminController
         return $this->jsonResponse(json_encode(['state' => 'Success']), 200);
     }
 
+    #[Route('/admin/module/RewriteUrl/rule/movePosition', name: 'rewrite.url.rule.move-position')]
     public function moveRulePositionAction(Request $request, TokenProvider $tokenProvider)
     {
+        if (null !== $response = $this->checkAuth([AdminResources::MODULE], 'RewriteUrl', AccessManager::UPDATE)) {
+            return $response;
+        }
+
         $tokenProvider->checkToken((string) $request->request->get('_token'));
 
         try {
@@ -276,6 +307,12 @@ class ModuleConfigController extends BaseAdminController
 
         if ($isRegexRule && empty($regexValue)) {
             throw new TheliaProcessException(Translator::getInstance()->trans('Regex value cannot be empty.', [], RewriteUrl::MODULE_DOMAIN));
+        }
+
+        // The pattern is matched as '/'.$value.'/' on every request (RewriteurlRule::isMatchingPath()):
+        // an invalid one (an unescaped "/" for instance) would never match and log an error on each request.
+        if ($isRegexRule && false === @preg_match('/'.$regexValue.'/', '')) {
+            throw new TheliaProcessException(Translator::getInstance()->trans('Invalid regex value (escape the "/" characters).', [], RewriteUrl::MODULE_DOMAIN));
         }
 
         $redirectUrl = $request->attributes->get('redirectUrl', $request->query->get('redirectUrl', $request->request->get('redirectUrl', null)));

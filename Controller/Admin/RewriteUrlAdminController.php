@@ -12,6 +12,7 @@
 
 namespace RewriteUrl\Controller\Admin;
 
+use Symfony\Component\Routing\Attribute\Route;
 use Propel\Runtime\ActiveQuery\Criteria;
 use RewriteUrl\Model\RewritingRedirectType;
 use RewriteUrl\Model\RewritingRedirectTypeQuery;
@@ -63,13 +64,17 @@ class RewriteUrlAdminController extends BaseAdminController
     /**
      * @return mixed
      */
+    #[Route('/admin/module/rewriteurl/delete', name: 'rewrite.url.delete')]
     public function deleteAction(
         Request $request,
-        EventDispatcherInterface $dispatcher
+        EventDispatcherInterface $dispatcher,
+        TokenProvider $tokenProvider
     ) {
         if (null !== $response = $this->checkAuth(array(AdminResources::MODULE), 'RewriteUrl', AccessManager::DELETE)) {
             return $response;
         }
+
+        $tokenProvider->checkToken((string) $request->request->get('_token', ''));
 
         $urlId = $request->request->get('id_url');
         $rewritingUrl = RewritingUrlQuery::create()->findOneById($urlId);
@@ -94,6 +99,7 @@ class RewriteUrlAdminController extends BaseAdminController
     /**
      * @return mixed
      */
+    #[Route('/admin/module/rewriteurl/add', name: 'rewrite.url.add')]
     public function addAction(EventDispatcherInterface $dispatcher, ParserContext $parserContext)
     {
         $message = null;
@@ -179,6 +185,7 @@ class RewriteUrlAdminController extends BaseAdminController
     /**
      * @return mixed
      */
+    #[Route('/admin/module/rewriteurl/setdefault', name: 'rewrite.url.setdefault')]
     public function setDefaultAction(Request $request, EventDispatcherInterface $dispatcher)
     {
         if (null !== $response = $this->checkAuth(AdminResources::MODULE, 'RewriteUrl', AccessManager::UPDATE)) {
@@ -206,6 +213,7 @@ class RewriteUrlAdminController extends BaseAdminController
     }
 
 
+    #[Route('/admin/module/rewriteurl/change-redirect-type', name: 'rewrite.url.change-redirect-type', methods: ['POST'])]
     public function changeRedirectTypeAction(Request $request, EventDispatcherInterface $dispatcher, TokenProvider $tokenProvider)
     {
         if (null !== $response = $this->checkAuth(AdminResources::MODULE, 'RewriteUrl', AccessManager::UPDATE)) {
@@ -234,6 +242,7 @@ class RewriteUrlAdminController extends BaseAdminController
     /**
      * @return mixed
      */
+    #[Route('/admin/module/rewriteurl/reassign', name: 'rewrite.url.reassign')]
     public function reassignAction(EventDispatcherInterface $dispatcher, ParserContext $parserContext)
     {
         if (null !== $response = $this->checkAuth(AdminResources::MODULE, 'RewriteUrl', AccessManager::UPDATE)) {
@@ -278,6 +287,7 @@ class RewriteUrlAdminController extends BaseAdminController
     /**
      * @return mixed|\Thelia\Core\HttpFoundation\Response
      */
+    #[Route('/admin/module/rewriteurl/exist', name: 'rewrite.url.exist')]
     public function existAction(Request $request)
     {
         if (null !== $response = $this->checkAuth(array(AdminResources::MODULE), 'RewriteUrl', AccessManager::VIEW)) {
@@ -307,6 +317,7 @@ class RewriteUrlAdminController extends BaseAdminController
      * @return mixed|\Thelia\Core\HttpFoundation\Response
      * @throws \Propel\Runtime\Exception\PropelException
      */
+    #[Route('/admin/module/rewriteurl/search', name: 'rewrite.url.search')]
     public function searchAction(Request $request)
     {
         if (null !== $response = $this->checkAuth(array(AdminResources::MODULE), 'RewriteUrl', AccessManager::VIEW)) {
