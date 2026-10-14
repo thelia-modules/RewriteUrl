@@ -176,6 +176,38 @@ class ManageErrorUrlController extends BaseAdminController
     #[Route('/search', name: 'search_url')]
     public function search(Request $request): Response|RedirectResponse
     {
-        return $this->generateRedirect(URL::getInstance()?->absoluteUrl($request->attributes->get('success_url', $request->query->get('success_url', $request->request->get('success_url'))), ['search'=>$request->attributes->get('search_term', $request->query->get('search_term', $request->request->get('search_term')))]));
+        if (null !== $response = $this->checkAuth([AdminResources::MODULE], 'RewriteUrl', AccessManager::VIEW)) {
+            return $response;
+        }
+
+        $successUrl = (string) $request->attributes->get('success_url', $request->query->get('success_url', $request->request->get('success_url', '')));
+        $searchTerm = $request->attributes->get('search_term', $request->query->get('search_term', $request->request->get('search_term')));
+
+        if (!$this->isLocalUrl($successUrl, $request->getHost())) {
+            $successUrl = '/admin/module/RewriteUrl/manageErrorUrl';
+        }
+
+        return $this->generateRedirect(URL::getInstance()?->absoluteUrl($successUrl, ['search' => $searchTerm]));
+    }
+
+    /**
+     * The search form sends the page to come back to: only a path of this site, or an
+     * http(s) URL on the host being browsed, is followed.
+     */
+    private function isLocalUrl(string $url, string $currentHost): bool
+    {
+        $url = trim($url);
+
+        if ('' === $url || str_starts_with($url, '//') || str_contains($url, '\\')) {
+            return false;
+        }
+
+        if (preg_match('#^https?://#i', $url)) {
+            $host = parse_url($url, \PHP_URL_HOST);
+
+            return \is_string($host) && '' !== $host && 0 === strcasecmp($host, $currentHost);
+        }
+
+        return 1 !== preg_match('#^[a-z][a-z0-9+.\-]*:#i', $url);
     }
 }
