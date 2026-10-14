@@ -192,10 +192,16 @@ class ManageErrorUrlController extends BaseAdminController
 
     /**
      * The search form sends the page to come back to: only a path of this site, or an
-     * http(s) URL on the host being browsed, is followed.
+     * http(s) URL on the host being browsed, is followed. A browser drops tabs and
+     * newlines from a URL before reading it (`http\t://host` becomes `http://host`),
+     * so a URL holding any control character is never followed.
      */
     private function isLocalUrl(string $url, string $currentHost): bool
     {
+        if (1 === preg_match('/[\x00-\x1F\x7F]/', $url)) {
+            return false;
+        }
+
         $url = trim($url);
 
         if ('' === $url || str_starts_with($url, '//') || str_contains($url, '\\')) {
