@@ -12,6 +12,7 @@
 
 namespace RewriteUrl\Controller\Admin;
 
+use Symfony\Component\Routing\Attribute\Route;
 use Propel\Runtime\ActiveQuery\Criteria;
 use RewriteUrl\Model\RewriteurlRule;
 use RewriteUrl\Model\RewriteurlRuleParam;
@@ -46,6 +47,7 @@ class ModuleConfigController extends BaseAdminController
         );
     }
 
+    #[Route('/admin/module/RewriteUrl/get-rules', name: 'rewrite.url.config.get.rules')]
     public function getDatatableRules(Request $request)
     {
         if (null !== $response = $this->checkAuth([AdminResources::MODULE], 'RewriteUrl', AccessManager::VIEW)) {
@@ -142,6 +144,7 @@ class ModuleConfigController extends BaseAdminController
         ]);
     }
 
+    #[Route('/admin/module/RewriteUrl/config/setRewritingEnable', name: 'rewrite.url.config.set-rewriting_enable')]
     public function setRewritingEnableAction(Request $request, TokenProvider $tokenProvider): Response
     {
         if (null !== $response = $this->checkAuth([AdminResources::MODULE], 'RewriteUrl', AccessManager::UPDATE)) {
@@ -165,6 +168,7 @@ class ModuleConfigController extends BaseAdminController
         ), 500);
     }
 
+    #[Route('/admin/module/RewriteUrl/rule/add', name: 'rewrite.url.rule.add')]
     public function addRuleAction(Request $request, TokenProvider $tokenProvider)
     {
         if (null !== $response = $this->checkAuth([AdminResources::MODULE], 'RewriteUrl', AccessManager::CREATE)) {
@@ -184,6 +188,7 @@ class ModuleConfigController extends BaseAdminController
         return $this->jsonResponse(json_encode(['state' => 'Success']), 200);
     }
 
+    #[Route('/admin/module/RewriteUrl/rule/update', name: 'rewrite.url.rule.update')]
     public function updateRuleAction(Request $request, TokenProvider $tokenProvider)
     {
         if (null !== $response = $this->checkAuth([AdminResources::MODULE], 'RewriteUrl', AccessManager::UPDATE)) {
@@ -211,6 +216,7 @@ class ModuleConfigController extends BaseAdminController
         return $this->jsonResponse(json_encode(['state' => 'Success']), 200);
     }
 
+    #[Route('/admin/module/RewriteUrl/rule/remove', name: 'rewrite.url.rule.remove')]
     public function removeRuleAction(Request $request, TokenProvider $tokenProvider)
     {
         if (null !== $response = $this->checkAuth([AdminResources::MODULE], 'RewriteUrl', AccessManager::DELETE)) {
@@ -238,6 +244,7 @@ class ModuleConfigController extends BaseAdminController
         return $this->jsonResponse(json_encode(['state' => 'Success']), 200);
     }
 
+    #[Route('/admin/module/RewriteUrl/rule/movePosition', name: 'rewrite.url.rule.move-position')]
     public function moveRulePositionAction(Request $request, TokenProvider $tokenProvider)
     {
         if (null !== $response = $this->checkAuth([AdminResources::MODULE], 'RewriteUrl', AccessManager::UPDATE)) {
