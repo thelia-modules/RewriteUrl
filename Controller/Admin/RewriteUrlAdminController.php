@@ -67,11 +67,14 @@ class RewriteUrlAdminController extends BaseAdminController
     #[Route('/admin/module/rewriteurl/delete', name: 'rewrite.url.delete')]
     public function deleteAction(
         Request $request,
-        EventDispatcherInterface $dispatcher
+        EventDispatcherInterface $dispatcher,
+        TokenProvider $tokenProvider
     ) {
         if (null !== $response = $this->checkAuth(array(AdminResources::MODULE), 'RewriteUrl', AccessManager::DELETE)) {
             return $response;
         }
+
+        $tokenProvider->checkToken((string) $request->request->get('_token', ''));
 
         $urlId = $request->request->get('id_url');
         $rewritingUrl = RewritingUrlQuery::create()->findOneById($urlId);
