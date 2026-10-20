@@ -185,12 +185,14 @@ class RewriteUrlAdminController extends BaseAdminController
     /**
      * @return mixed
      */
-    #[Route('/admin/module/rewriteurl/setdefault', name: 'rewrite.url.setdefault')]
-    public function setDefaultAction(Request $request, EventDispatcherInterface $dispatcher)
+    #[Route('/admin/module/rewriteurl/setdefault', name: 'rewrite.url.setdefault', methods: ['POST'])]
+    public function setDefaultAction(Request $request, EventDispatcherInterface $dispatcher, TokenProvider $tokenProvider)
     {
         if (null !== $response = $this->checkAuth(AdminResources::MODULE, 'RewriteUrl', AccessManager::UPDATE)) {
             return $response;
         }
+
+        $tokenProvider->checkToken((string) $request->request->get('_token', ''));
 
         $urlId = $request->request->get('id_url');
         $rewritingUrl = RewritingUrlQuery::create()->findOneById($urlId);
