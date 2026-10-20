@@ -213,6 +213,7 @@
         <div class="modal-dialog">
             <form class="modal-content" method="post" action="{{ path('rewrite.url.setdefault') }}">
                 <input type="hidden" name="id_url" class="js-input-default" value="">
+                <input type="hidden" name="_token" value="{{ assignToken() }}">
                 <div class="modal-header">
                     <h5 class="modal-title">{{ 'Default URL'|trans({}, d) }}</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ 'Close'|trans({}, d) }}"></button>
