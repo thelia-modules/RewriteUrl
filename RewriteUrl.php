@@ -66,7 +66,7 @@ class RewriteUrl extends BaseModule
      * @throws \Propel\Runtime\Exception\PropelException
      * @since 1.2.3
      */
-    public function update($currentVersion, $newVersion, ConnectionInterface $con = null): void
+    public function update($currentVersion, $newVersion, ?ConnectionInterface $con = null): void
     {
         $finder = (new Finder())->files()->name('#.*?\.sql#')->sortByName()->in(self::UPDATE_PATH);
 

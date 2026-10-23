@@ -49,7 +49,7 @@ class RewriteUrlEvent extends ActionEvent
      * @param RewritingUrl $rewritingUrl
      * @param RewritingRedirectType $redirectType
      */
-    public function __construct(RewritingUrl $rewritingUrl, RewritingRedirectType $redirectType = null)
+    public function __construct(RewritingUrl $rewritingUrl, ?RewritingRedirectType $redirectType = null)
     {
         $this->id = $rewritingUrl->getId();
         $this->url = $rewritingUrl->getUrl();
